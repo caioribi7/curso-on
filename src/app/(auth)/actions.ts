@@ -71,18 +71,19 @@ export async function signUp(_prev: ActionState, formData: FormData): Promise<Ac
     return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
   }
 
+  const next = safeNextPath(formData.get("next")?.toString());
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
       data: { full_name: parsed.data.fullName },
-      emailRedirectTo: `${await siteUrl()}/auth/callback?next=/app`,
+      emailRedirectTo: `${await siteUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
   if (error) return { error: authErrorMessage(error.code) };
 
-  if (data.session) redirect("/app");
+  if (data.session) redirect(next);
   return {
     ok: true,
     message: "Conta criada! Enviamos um link de confirmação para o seu e-mail.",

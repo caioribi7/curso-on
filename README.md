@@ -35,7 +35,21 @@ cp .env.example .env.local   # preencha as chaves
 npm run dev
 ```
 
-### 1. Supabase
+### Opção rápida: Supabase local (Docker)
+
+```bash
+npx supabase start        # sobe Postgres + Auth + API e aplica a migration
+```
+
+Copie a URL e as chaves que o comando mostra para `.env.local`. Para testar o pagamento sem conta Stripe, use qualquer `STRIPE_WEBHOOK_SECRET` (ex.: `whsec_local`) e envie um webhook assinado:
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_local node scripts/webhook-test.mjs <courseId> <userId> 4990
+```
+
+O script envia primeiro uma assinatura falsa (deve dar 400), depois uma válida (200, cria pagamento + matrícula) e por fim um reenvio (idempotente, sem duplicar). Contas de teste locais: `scripts/test-accounts.md`.
+
+### 1. Supabase (produção)
 
 1. Crie um projeto em [supabase.com](https://supabase.com).
 2. Copie **Project URL**, **Publishable key** e **Secret key** (Project Settings → API) para `.env.local`.

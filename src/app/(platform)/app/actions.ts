@@ -46,7 +46,9 @@ export async function startCheckout(formData: FormData) {
   if (existing) redirect(`/app/cursos/${course.slug}`);
 
   const site = publicEnv.siteUrl();
-  const session = await getStripe().checkout.sessions.create({
+  let session: Awaited<ReturnType<ReturnType<typeof getStripe>["checkout"]["sessions"]["create"]>>;
+  try {
+    session = await getStripe().checkout.sessions.create({
     mode: "payment",
     customer_email: user.email || undefined,
     client_reference_id: user.id,
@@ -65,7 +67,11 @@ export async function startCheckout(formData: FormData) {
     success_url: `${site}/checkout/sucesso?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${site}/cursos/${course.slug}?checkout=cancelado`,
     locale: "pt-BR",
-  });
+    });
+  } catch (err) {
+    console.error("[checkout]", err instanceof Error ? err.message : err);
+    redirect(`/cursos/${course.slug}?erro=pagamento`);
+  }
   if (!session.url) redirect(`/cursos/${course.slug}?erro=pagamento`);
   redirect(session.url);
 }

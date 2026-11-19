@@ -13,13 +13,14 @@ import {
 import { ButtonLink } from "@/components/ui/button";
 import { ProgressBar, Ring } from "@/components/ui/progress";
 import { effectiveStreak, getProfile } from "@/lib/dal";
-import { getCompletedLessonIds, getCourseOutline, getLeaderboard, getStudyDaysThisWeek, getTodayXp } from "@/lib/queries";
+import { getCompletedLessonIds, getCourseBySlug, getCourseOutline, getLeaderboard, getStudyDaysThisWeek, getTodayXp } from "@/lib/queries";
 import { cn, courseThemeVars, initials } from "@/lib/utils";
 import { requireCourseAccess } from "./access";
 
 export async function generateMetadata({ params }: PageProps<"/app/cursos/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  return { title: slug.replace(/-[a-z0-9]{5}$/, "").replace(/-/g, " ") };
+  const course = await getCourseBySlug(slug);
+  return { title: course?.title ?? "Curso" };
 }
 
 const DAILY_GOAL = 50;

@@ -32,11 +32,12 @@ export const getProfile = cache(async (): Promise<Profile | null> => {
   const user = await getCurrentUser();
   if (!user) return null;
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .select("id, full_name, avatar_url, xp, streak_days, last_study_date")
     .eq("id", user.id)
     .single();
+  if (error) console.error("[getProfile]", error.message, error.code);
   return (data as Profile | null) ?? null;
 });
 

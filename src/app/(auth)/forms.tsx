@@ -68,6 +68,7 @@ export function SignUpForm({ next }: { next?: string }) {
   return (
     <div className="flex flex-col gap-7">
       <form action={action} className="flex flex-col gap-4" noValidate>
+        <input type="hidden" name="next" value={next ?? ""} />
         <FormMessage state={state} />
         <Field label="Seu nome" htmlFor="fullName" error={err(state, "fullName")}>
           <Input id="fullName" name="fullName" autoComplete="name" required aria-invalid={!!err(state, "fullName")} />

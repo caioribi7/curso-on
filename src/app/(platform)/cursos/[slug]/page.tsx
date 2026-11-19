@@ -97,7 +97,7 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
               <div className="flex flex-wrap gap-2 font-display text-sm font-extrabold">
                 <span className="rounded-full bg-white/20 px-3 py-1.5">{outline.length} módulos</span>
                 <span className="rounded-full bg-white/20 px-3 py-1.5">{lessons.length} aulas</span>
-                {minutes ? <span className="rounded-full bg-white/20 px-3 py-1.5">{Math.max(1, Math.round(minutes / 60))}h de conteúdo</span> : null}
+                {minutes ? <span className="rounded-full bg-white/20 px-3 py-1.5">{minutes < 60 ? `${minutes} min` : `${Math.round(minutes / 60)}h`} de conteúdo</span> : null}
                 {xp ? <span className="rounded-full bg-sun px-3 py-1.5 text-ink">até {xp} XP</span> : null}
               </div>
             </div>
