@@ -48,6 +48,8 @@ export type Course = {
   description: string;
   theme_color: string;
   icon: CourseIcon;
+  subject: string | null;
+  level: number | null;
   price_cents: number;
   currency: string;
   status: CourseStatus;

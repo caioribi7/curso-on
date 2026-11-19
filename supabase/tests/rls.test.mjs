@@ -1,7 +1,10 @@
 import { PGlite } from "@electric-sql/pglite";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 
-const migration = readFileSync(process.argv[2] ?? new URL("../migrations/20261118000000_init.sql", import.meta.url), "utf8").replace(/create extension if not exists pgcrypto;/i, "");
+// Todas as migrations em ordem (ou um arquivo específico passado como argumento).
+const dir = new URL("../migrations/", import.meta.url);
+const files = process.argv[2] ? [process.argv[2]] : readdirSync(dir).filter((f) => f.endsWith(".sql")).sort().map((f) => new URL(f, dir));
+const migration = files.map((f) => readFileSync(f, "utf8")).join("\n").replace(/create extension if not exists pgcrypto;/i, "");
 const db = new PGlite();
 
 const ok = (m) => console.log("  ✓", m);
@@ -29,7 +32,7 @@ await db.exec(`
   alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
 `);
 await db.exec(migration);
-ok("migration aplicada");
+ok(`${files.length} migration(s) aplicada(s)`);
 
 const OWNER = "00000000-0000-0000-0000-000000000001";
 const STUDENT = "00000000-0000-0000-0000-000000000002";
@@ -125,5 +128,14 @@ r = await as(STUDENT, `update public.profiles set full_name = 'Aluna Nova' where
 r.rows[0]?.full_name === "Aluna Nova" ? ok("aluno edita o próprio nome") : fail("nome");
 r = await as(STUDENT, `update public.profiles set full_name = 'x' where id = $1 returning id`, [OWNER]);
 r.rows.length === 0 ? ok("aluno não edita nome alheio") : fail("nome alheio");
+
+// ENEM: matéria + nível
+const enem = await as(OWNER, `insert into public.courses (owner_id, slug, title, theme_color, icon, subject, level, status) values ($1,'enem-matematica-2','Matemática 2','#2534B8','abacus','matematica',2,'published') returning subject, level`, [OWNER]);
+enem.rows[0]?.subject === "matematica" && enem.rows[0]?.level === 2 ? ok("curso ENEM com matéria e nível") : fail("curso ENEM");
+await expectError("matéria desconhecida", () => as(OWNER, `insert into public.courses (owner_id, slug, title, subject, level) values ($1,'x-astro','Astrologia','astrologia',1)`, [OWNER]));
+await expectError("nível 3", () => as(OWNER, `insert into public.courses (owner_id, slug, title, subject, level) values ($1,'x-fis3','Física 3','fisica',3)`, [OWNER]));
+await expectError("matéria sem nível", () => as(OWNER, `insert into public.courses (owner_id, slug, title, subject) values ($1,'x-fis','Física','fisica')`, [OWNER]));
+r = await as(null, `select count(*)::int n from public.courses where subject = 'matematica' and level = 2`);
+r.rows[0].n === 1 ? ok("visitante vê curso ENEM publicado") : fail("catálogo ENEM");
 
 console.log(process.exitCode ? "\nFALHOU" : "\nTODOS OS TESTES PASSARAM");

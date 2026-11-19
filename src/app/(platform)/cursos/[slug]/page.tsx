@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CheckIcon, CourseIllustration, LockIcon, ModuleGlyph, PlayIcon, moduleIconBg } from "@/components/icons/flat-icons";
+import { CheckIcon, LockIcon, ModuleGlyph, PlayIcon, moduleIconBg } from "@/components/icons/flat-icons";
+import { CourseBadge } from "@/components/icons/subject-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { getCurrentUser } from "@/lib/dal";
@@ -144,7 +145,7 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
         <aside className="lg:sticky lg:top-28 lg:self-start">
           <div className="flex flex-col gap-5 overflow-hidden rounded-[28px] border border-line bg-white">
             <div className="flex h-48 items-center justify-center bg-course-soft">
-              <CourseIllustration icon={course.icon} size={128} />
+              <CourseBadge course={course} size={128} />
             </div>
             <div className="flex flex-col gap-5 px-6 pb-6">
               <p className="font-display text-[36px] font-black leading-none">{formatPrice(course.price_cents, course.currency)}</p>

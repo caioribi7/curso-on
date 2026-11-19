@@ -1,15 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BoltIcon, CourseIllustration, FlameIcon, TrophyIcon } from "@/components/icons/flat-icons";
+import { CourseBadge } from "@/components/icons/subject-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { effectiveStreak, getProfile, levelFromXp, requireUser } from "@/lib/dal";
 import { getMyEnrolledCourses, getStudyDaysThisWeek, getTodayXp } from "@/lib/queries";
+import { AREAS, getSubject } from "@/lib/subjects";
 import { courseThemeVars } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Início" };
 
 const DAILY_GOAL = 50;
+
+type Enrolled = Awaited<ReturnType<typeof getMyEnrolledCourses>>;
+
+function groupByArea(rows: Enrolled) {
+  const groups = AREAS.map((a) => ({
+    key: a.key as string,
+    name: a.name,
+    color: a.color,
+    items: rows.filter((r) => getSubject(r.course.subject)?.area === a.key),
+  }));
+  groups.push({ key: "outros", name: "Outros cursos", color: "#8A8F9C", items: rows.filter((r) => !getSubject(r.course.subject)) });
+  return groups.filter((g) => g.items.length > 0);
+}
 const WEEK = ["S", "T", "Q", "Q", "S", "S", "D"];
 
 export default async function DashboardPage() {
@@ -111,30 +126,40 @@ export default async function DashboardPage() {
             </div>
           </div>
         ) : (
-          <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {courses.map(({ course, totalLessons, completedLessons }) => {
-              const pct = totalLessons ? (completedLessons / totalLessons) * 100 : 0;
-              return (
-                <li key={course.id} style={courseThemeVars(course.theme_color)}>
-                  <Link
-                    href={`/app/cursos/${course.slug}`}
-                    className="flex h-full items-center gap-5 rounded-[28px] border border-line bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-lg"
-                  >
-                    <span className="flex size-20 shrink-0 items-center justify-center rounded-[20px] bg-course-soft">
-                      <CourseIllustration icon={course.icon} size={60} />
-                    </span>
-                    <span className="flex min-w-0 flex-1 flex-col gap-2">
-                      <span className="truncate font-display text-lg font-black">{course.title}</span>
-                      <ProgressBar value={pct} />
-                      <span className="text-sm font-semibold text-muted">
-                        {completedLessons}/{totalLessons} aulas
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          <div className="flex flex-col gap-6">
+            {groupByArea(courses).map((group) => (
+              <div key={group.key} className="flex flex-col gap-3">
+                <h3 className="flex items-center gap-2 font-display text-sm font-extrabold uppercase tracking-wide text-muted">
+                  <span className="size-2.5 rounded-full" style={{ background: group.color }} />
+                  {group.name}
+                </h3>
+                <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  {group.items.map(({ course, totalLessons, completedLessons }) => {
+                    const pct = totalLessons ? (completedLessons / totalLessons) * 100 : 0;
+                    return (
+                      <li key={course.id} style={courseThemeVars(course.theme_color)}>
+                        <Link
+                          href={`/app/cursos/${course.slug}`}
+                          className="flex h-full items-center gap-5 rounded-[28px] border border-line bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-lg"
+                        >
+                          <span className="flex size-20 shrink-0 items-center justify-center rounded-[20px] bg-course-soft">
+                            <CourseBadge course={course} size={60} />
+                          </span>
+                          <span className="flex min-w-0 flex-1 flex-col gap-2">
+                            <span className="truncate font-display text-lg font-black">{course.title}</span>
+                            <ProgressBar value={pct} />
+                            <span className="text-sm font-semibold text-muted">
+                              {completedLessons}/{totalLessons} aulas
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
         )}
       </section>
     </div>

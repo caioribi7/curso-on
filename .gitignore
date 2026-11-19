@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# painel em Rust e integração Masterbase
+/cli/target/
+/.masterbase/

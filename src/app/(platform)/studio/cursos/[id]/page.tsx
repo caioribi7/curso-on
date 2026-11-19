@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckIcon, CourseIllustration, ModuleGlyph, moduleIconBg } from "@/components/icons/flat-icons";
+import { CheckIcon, ModuleGlyph, moduleIconBg } from "@/components/icons/flat-icons";
+import { CourseBadge } from "@/components/icons/subject-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/field";
 import { requireUser } from "@/lib/dal";
@@ -54,7 +55,7 @@ export default async function CourseEditorPage({ params, searchParams }: PagePro
     <div className="flex flex-col gap-8" style={courseThemeVars(course.theme_color)}>
       <header className="flex flex-wrap items-center gap-6 rounded-[32px] border border-line bg-white p-6">
         <div className="flex size-24 items-center justify-center rounded-[24px] bg-course-soft">
-          <CourseIllustration icon={course.icon} size={72} />
+          <CourseBadge course={course} size={72} />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <Link href="/studio" className="font-display text-sm font-bold text-muted hover:text-ink">

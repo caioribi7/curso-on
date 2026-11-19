@@ -3,13 +3,13 @@ import Link from "next/link";
 import {
   CheckIcon,
   ChevronRight,
-  CourseIllustration,
   FlameIcon,
   ModuleGlyph,
   PlayIcon,
   TrophyIcon,
   moduleIconBg,
 } from "@/components/icons/flat-icons";
+import { CourseBadge } from "@/components/icons/subject-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { ProgressBar, Ring } from "@/components/ui/progress";
 import { effectiveStreak, getProfile } from "@/lib/dal";
@@ -70,7 +70,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
         <div className="absolute -right-16 -top-24 size-80 rounded-full bg-white/10" />
         <div className="relative flex flex-wrap items-center gap-8">
           <div className="flex size-36 shrink-0 items-center justify-center rounded-[32px] bg-white">
-            <CourseIllustration icon={course.icon} size={108} />
+            <CourseBadge course={course} size={108} />
           </div>
           <div className="flex min-w-0 flex-1 flex-col gap-3">
             <p className="font-display text-sm font-extrabold uppercase tracking-wide text-white/80">

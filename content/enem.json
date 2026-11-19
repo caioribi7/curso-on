@@ -1,0 +1,764 @@
+{
+  "version": 1,
+  "name": "Pacote ENEM — Curso On",
+  "description": "13 matérias do ENEM em dois níveis. Conteúdo inicial aberto (licença MIT): edite, amplie e compartilhe.",
+  "courses": [
+    {
+      "subject": "matematica", "level": 1,
+      "subtitle": "Aritmética, razão, porcentagem e equações sem medo.",
+      "description": "A base que mais cai no ENEM: operações, frações, razão e proporção, porcentagem e equações do 1º grau, sempre com exemplos do dia a dia.",
+      "modules": [
+        { "title": "Números e operações", "icon": "blocks", "lessons": [
+          { "title": "As quatro operações e a ordem de cálculo", "summary": "Parênteses, multiplicação e divisão antes de soma e subtração.", "minutes": 8, "xp": 15,
+            "body": "# Ordem das operações\n\nResolva primeiro o que está entre parênteses, depois potências, depois multiplicações e divisões (da esquerda para a direita) e por fim somas e subtrações.\n\n- 2 + 3 × 4 = 2 + 12 = 14\n- (2 + 3) × 4 = 5 × 4 = 20" },
+          { "title": "Frações no dia a dia", "summary": "Somar, comparar e simplificar frações.", "minutes": 10, "xp": 20,
+            "body": "# Frações\n\nUma fração mostra partes de um todo: o numerador diz quantas partes pegamos e o denominador em quantas o todo foi dividido.\n\nPara somar frações com denominadores diferentes, deixe todas com o mesmo denominador (o MMC) e some os numeradores." }
+        ]},
+        { "title": "Razão, proporção e porcentagem", "icon": "percent", "lessons": [
+          { "title": "Regra de três", "summary": "Grandezas diretamente e inversamente proporcionais.", "minutes": 10, "xp": 20,
+            "body": "# Regra de três\n\nSe 3 cadernos custam R$ 18, quanto custam 5? Monte a proporção 3/18 = 5/x e multiplique cruzado: 3x = 90, x = 30.\n\nQuando uma grandeza aumenta e a outra diminui (mais pedreiros, menos dias), a proporção é inversa: inverta uma das razões antes de multiplicar." },
+          { "title": "Porcentagem, aumento e desconto", "summary": "Fator multiplicativo para resolver rápido.", "minutes": 10, "xp": 20,
+            "body": "# Porcentagem\n\n25% significa 25/100. Para aumentar 20%, multiplique por 1,20. Para dar 15% de desconto, multiplique por 0,85.\n\nAumentos e descontos seguidos se multiplicam: +10% e depois -10% dá 1,1 × 0,9 = 0,99, ou seja, 1% a menos." }
+        ]},
+        { "title": "Equações do 1º grau", "icon": "scale", "lessons": [
+          { "title": "Equação é uma balança", "summary": "O que faz de um lado, faz do outro.", "minutes": 8, "xp": 15,
+            "body": "# Equações\n\nPense em 2x + 5 = 17 como uma balança equilibrada. Tire 5 dos dois lados: 2x = 12. Divida os dois lados por 2: x = 6.\n\nConfira sempre substituindo: 2 × 6 + 5 = 17." },
+          { "title": "Do texto para a equação", "summary": "Transformar problemas do ENEM em contas.", "minutes": 12, "xp": 25,
+            "body": "# Montando a equação\n\nLeia o problema e dê nome ao que você não sabe (x). Traduza cada frase: \"o dobro de um número\" é 2x, \"5 a mais\" é + 5.\n\nNo ENEM, muitas questões longas viram uma equação curta. Sublinhe os números e o que está sendo perguntado." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Uma camiseta custava R$ 80 e teve desconto de 15%. Qual o novo preço?", "options": ["R$ 65,00", "R$ 68,00", "R$ 70,00", "R$ 72,00", "R$ 12,00"], "correct": 1, "difficulty": "easy", "explanation": "80 × 0,85 = 68." },
+        { "statement": "Quanto é 3/4 de 20?", "options": ["12", "15", "16", "18", "5"], "correct": 1, "difficulty": "easy", "explanation": "20 ÷ 4 = 5, e 5 × 3 = 15." },
+        { "statement": "Se 4 torneiras enchem um tanque em 6 horas, em quanto tempo 3 torneiras iguais enchem o mesmo tanque?", "options": ["4,5 h", "6 h", "7 h", "8 h", "9 h"], "correct": 3, "difficulty": "medium", "explanation": "Grandezas inversas: 4 × 6 = 3 × t, então t = 8 horas." }
+      ]
+    },
+    {
+      "subject": "matematica", "level": 2,
+      "subtitle": "Funções, geometria, estatística e probabilidade para o ENEM.",
+      "description": "Os temas que separam as notas altas: leitura de gráficos e funções, geometria plana e espacial, estatística e probabilidade.",
+      "modules": [
+        { "title": "Funções e gráficos", "icon": "graph", "lessons": [
+          { "title": "Função do 1º grau", "summary": "Taxa de variação e valor inicial.", "minutes": 10, "xp": 20,
+            "body": "# Função afim\n\nf(x) = ax + b. O 'b' é onde a reta corta o eixo y (valor inicial) e o 'a' diz quanto y muda quando x aumenta 1 (taxa).\n\nExemplo: uma corrida de táxi com bandeirada de R$ 5 e R$ 2 por km é f(x) = 2x + 5." },
+          { "title": "Função do 2º grau", "summary": "Parábola, raízes e vértice.", "minutes": 12, "xp": 25,
+            "body": "# Função quadrática\n\nf(x) = ax² + bx + c desenha uma parábola. Se a > 0 ela abre para cima e tem um ponto mínimo; se a < 0, abre para baixo e tem um máximo.\n\nO x do vértice é -b / 2a. No ENEM ele aparece como 'lucro máximo' ou 'altura máxima'." }
+        ]},
+        { "title": "Geometria", "icon": "shapes", "lessons": [
+          { "title": "Áreas de figuras planas", "summary": "Retângulo, triângulo e círculo.", "minutes": 10, "xp": 20,
+            "body": "# Áreas\n\n- Retângulo: base × altura\n- Triângulo: base × altura ÷ 2\n- Círculo: π × r²\n\nFiguras complicadas quase sempre são a soma ou a diferença dessas três." },
+          { "title": "Volumes", "summary": "Prismas, cilindros e a conversão para litros.", "minutes": 12, "xp": 25,
+            "body": "# Volume\n\nPrisma e cilindro: área da base × altura. Pirâmide e cone: um terço disso.\n\nLembre: 1 dm³ = 1 litro e 1 m³ = 1000 litros. O ENEM adora caixas d'água." }
+        ]},
+        { "title": "Estatística e probabilidade", "icon": "pie", "lessons": [
+          { "title": "Média, moda e mediana", "summary": "Qual medida usar em cada situação.", "minutes": 10, "xp": 20,
+            "body": "# Medidas de tendência central\n\nMédia: soma tudo e divide pela quantidade. Moda: o valor que mais aparece. Mediana: o valor do meio depois de ordenar.\n\nQuando há valores muito fora do padrão, a mediana representa melhor o grupo do que a média." },
+          { "title": "Probabilidade", "summary": "Casos favoráveis sobre casos possíveis.", "minutes": 12, "xp": 25,
+            "body": "# Probabilidade\n\nP = casos favoráveis ÷ casos possíveis. A chance de tirar um número par num dado é 3/6 = 1/2.\n\nPara eventos independentes que acontecem juntos, multiplique as probabilidades." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Os valores 2, 3, 3, 7 e 20 têm mediana igual a:", "options": ["3", "5", "7", "7,5", "20"], "correct": 0, "difficulty": "easy", "explanation": "Ordenados, o valor do meio é o terceiro: 3." },
+        { "statement": "Qual o volume, em litros, de uma caixa d'água em forma de cubo com 2 m de aresta?", "options": ["8", "80", "800", "8.000", "80.000"], "correct": 3, "difficulty": "medium", "explanation": "2 × 2 × 2 = 8 m³ = 8.000 litros." },
+        { "statement": "Ao lançar duas moedas, qual a probabilidade de sair cara nas duas?", "options": ["1/2", "1/3", "1/4", "1/8", "3/4"], "correct": 2, "difficulty": "easy", "explanation": "1/2 × 1/2 = 1/4." }
+      ]
+    },
+    {
+      "subject": "portugues", "level": 1,
+      "subtitle": "Interpretação de texto e gramática que o ENEM cobra.",
+      "description": "Ler bem é a habilidade mais cobrada da prova inteira. Aqui você treina interpretação, gêneros textuais e a gramática a serviço do sentido.",
+      "modules": [
+        { "title": "Interpretação de texto", "icon": "book", "lessons": [
+          { "title": "Tema, assunto e tese", "summary": "Do que o texto fala e o que ele defende.", "minutes": 8, "xp": 15,
+            "body": "# Tema e tese\n\nO assunto é sobre o que o texto fala. A tese é o que o autor defende sobre esse assunto.\n\nNo ENEM, desconfie de alternativas que trazem algo verdadeiro, mas que o texto não diz." },
+          { "title": "Inferência", "summary": "O que está nas entrelinhas.", "minutes": 10, "xp": 20,
+            "body": "# Inferir\n\nInferir é concluir algo que o texto sugere sem dizer com todas as letras. A inferência precisa ter apoio em alguma pista do texto.\n\nSe para chegar na alternativa você precisou imaginar muita coisa, provavelmente ela está errada." }
+        ]},
+        { "title": "Gêneros textuais", "icon": "target", "lessons": [
+          { "title": "Para que serve cada texto", "summary": "Notícia, crônica, charge, anúncio e mais.", "minutes": 10, "xp": 20,
+            "body": "# Gêneros\n\nCada gênero tem uma função: a notícia informa, o anúncio convence a comprar, a charge critica com humor, a crônica comenta o cotidiano.\n\nPerguntar 'qual a função deste texto?' resolve muitas questões." },
+          { "title": "Funções da linguagem", "summary": "Referencial, emotiva, apelativa e outras.", "minutes": 10, "xp": 20,
+            "body": "# Funções da linguagem\n\n- Referencial: informa (foco no assunto)\n- Emotiva: expressa sentimentos (foco no emissor)\n- Apelativa: tenta convencer (foco no receptor)\n- Metalinguística: a língua falando da própria língua" }
+        ]},
+        { "title": "Gramática no texto", "icon": "blocks", "lessons": [
+          { "title": "Conectivos", "summary": "As palavras que ligam ideias.", "minutes": 8, "xp": 15,
+            "body": "# Conectivos\n\n'Mas', 'porém' e 'contudo' indicam oposição. 'Portanto' e 'logo' indicam conclusão. 'Porque' e 'pois' indicam causa.\n\nTrocar um conectivo por outro de mesmo sentido é uma questão clássica." },
+          { "title": "Variação linguística", "summary": "Não existe 'jeito errado' de falar, existe adequação.", "minutes": 8, "xp": 15,
+            "body": "# Variação linguística\n\nA língua muda conforme a região, a idade, o grupo social e a situação. O ENEM valoriza o respeito às variedades e a ideia de adequação ao contexto, não de 'certo e errado'." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Em 'Estudou muito, portanto passou', o conectivo 'portanto' indica:", "options": ["oposição", "conclusão", "condição", "tempo", "comparação"], "correct": 1, "difficulty": "easy", "explanation": "'Portanto' introduz a conclusão do que foi dito antes." },
+        { "statement": "Um anúncio publicitário com frases como 'Compre já!' usa principalmente a função:", "options": ["referencial", "emotiva", "apelativa (conativa)", "poética", "fática"], "correct": 2, "difficulty": "easy", "explanation": "O foco é convencer o leitor: função apelativa." }
+      ]
+    },
+    {
+      "subject": "portugues", "level": 2,
+      "subtitle": "Semântica, coesão e análise de textos complexos.",
+      "description": "Para quem já lê bem e quer acertar as questões difíceis: coesão e coerência, figuras de linguagem, sentido das palavras e textos multimodais.",
+      "modules": [
+        { "title": "Coesão e coerência", "icon": "blocks", "lessons": [
+          { "title": "Referenciação", "summary": "Pronomes e sinônimos que retomam ideias.", "minutes": 10, "xp": 20,
+            "body": "# Referenciação\n\nTextos evitam repetir palavras usando pronomes, sinônimos e expressões que retomam algo já dito. Perguntas como 'o termo X se refere a quê?' testam isso.\n\nVolte no texto e encontre o antecedente." },
+          { "title": "Coerência", "summary": "Quando o texto faz sentido como um todo.", "minutes": 8, "xp": 15,
+            "body": "# Coerência\n\nUm texto é coerente quando as ideias não se contradizem e combinam com o mundo que ele descreve. A coesão ajuda, mas não garante coerência." }
+        ]},
+        { "title": "Figuras de linguagem", "icon": "bulb", "lessons": [
+          { "title": "Metáfora, metonímia e ironia", "summary": "As figuras que mais caem.", "minutes": 10, "xp": 20,
+            "body": "# Figuras\n\n- Metáfora: comparação sem 'como' (\"Você é um sol\")\n- Metonímia: troca por proximidade (\"Li Machado\")\n- Ironia: dizer o contrário do que se quer dizer" },
+          { "title": "Ambiguidade e humor", "summary": "Duplo sentido em tirinhas e anúncios.", "minutes": 10, "xp": 20,
+            "body": "# Ambiguidade\n\nO humor de tirinhas e propagandas costuma nascer de uma palavra com dois sentidos. Identifique os dois sentidos e qual deles o autor explora." }
+        ]},
+        { "title": "Textos multimodais", "icon": "target", "lessons": [
+          { "title": "Imagem e texto juntos", "summary": "Charges, infográficos e memes.", "minutes": 10, "xp": 20,
+            "body": "# Multimodalidade\n\nNa charge e no infográfico, o sentido vem da soma de imagem e palavra. Descreva a imagem para si mesmo antes de ler as alternativas." },
+          { "title": "Argumentação", "summary": "Estratégias para convencer.", "minutes": 12, "xp": 25,
+            "body": "# Argumentos\n\nDados, exemplos, citação de autoridade e relação de causa e consequência são estratégias argumentativas. O ENEM pede para identificar qual estratégia o autor usou." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Em 'Comprei um Picasso', a figura de linguagem é:", "options": ["metáfora", "metonímia", "hipérbole", "ironia", "eufemismo"], "correct": 1, "difficulty": "medium", "explanation": "O autor (Picasso) está no lugar da obra: metonímia." },
+        { "statement": "Dizer 'Que dia lindo!' durante uma tempestade é um exemplo de:", "options": ["ironia", "pleonasmo", "metáfora", "antítese", "comparação"], "correct": 0, "difficulty": "easy", "explanation": "Diz-se o contrário do que se pensa: ironia." }
+      ]
+    },
+    {
+      "subject": "literatura", "level": 1,
+      "subtitle": "Escolas literárias do Quinhentismo ao Realismo.",
+      "description": "Conheça os movimentos literários brasileiros pela ordem, com o contexto histórico de cada um e trechos que caem no ENEM.",
+      "modules": [
+        { "title": "Primeiros textos do Brasil", "icon": "book", "lessons": [
+          { "title": "Quinhentismo", "summary": "A carta de Caminha e a literatura de informação.", "minutes": 8, "xp": 15,
+            "body": "# Quinhentismo\n\nOs primeiros textos sobre o Brasil foram cartas e relatos de viajantes e jesuítas, como a Carta de Pero Vaz de Caminha. Descrevem a terra e os indígenas pelo olhar do colonizador." },
+          { "title": "Barroco e Arcadismo", "summary": "Contrastes e vida no campo.", "minutes": 10, "xp": 20,
+            "body": "# Barroco e Arcadismo\n\nO Barroco (Gregório de Matos) é cheio de contrastes: fé e pecado, luz e sombra. O Arcadismo (Tomás Antônio Gonzaga) busca simplicidade e a vida tranquila no campo." }
+        ]},
+        { "title": "Romantismo", "icon": "bulb", "lessons": [
+          { "title": "As três gerações", "summary": "Indianismo, mal do século e poesia social.", "minutes": 12, "xp": 25,
+            "body": "# Romantismo\n\n- 1ª geração: nacionalismo e o indígena como herói (Gonçalves Dias)\n- 2ª geração: pessimismo e morte (Álvares de Azevedo)\n- 3ª geração: poesia social e abolicionista (Castro Alves)" },
+          { "title": "O romance romântico", "summary": "José de Alencar e o Brasil idealizado.", "minutes": 8, "xp": 15,
+            "body": "# Prosa romântica\n\nJosé de Alencar escreveu romances indianistas (Iracema), urbanos (Senhora) e regionalistas, criando uma imagem idealizada do Brasil." }
+        ]},
+        { "title": "Realismo e Naturalismo", "icon": "target", "lessons": [
+          { "title": "Machado de Assis", "summary": "Ironia e análise psicológica.", "minutes": 10, "xp": 20,
+            "body": "# Realismo\n\nMachado de Assis (Memórias Póstumas de Brás Cubas, Dom Casmurro) critica a sociedade com ironia e mergulha na mente das personagens." },
+          { "title": "Naturalismo", "summary": "O ser humano moldado pelo meio.", "minutes": 8, "xp": 15,
+            "body": "# Naturalismo\n\nAluísio Azevedo (O Cortiço) mostra as pessoas como produtos do ambiente e dos instintos, com descrições cruas." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "O poeta conhecido como 'poeta dos escravos', da 3ª geração romântica, é:", "options": ["Gonçalves Dias", "Álvares de Azevedo", "Castro Alves", "Olavo Bilac", "Gregório de Matos"], "correct": 2, "difficulty": "easy", "explanation": "Castro Alves escreveu poesia abolicionista, como 'O Navio Negreiro'." },
+        { "statement": "'O Cortiço', de Aluísio Azevedo, pertence ao:", "options": ["Romantismo", "Naturalismo", "Barroco", "Modernismo", "Arcadismo"], "correct": 1, "difficulty": "easy", "explanation": "Mostra personagens determinadas pelo meio: Naturalismo." }
+      ]
+    },
+    {
+      "subject": "literatura", "level": 2,
+      "subtitle": "Modernismo e literatura contemporânea.",
+      "description": "A Semana de 22, as gerações modernistas e autores contemporâneos que aparecem com frequência nas provas recentes.",
+      "modules": [
+        { "title": "Modernismo", "icon": "bulb", "lessons": [
+          { "title": "Semana de Arte Moderna", "summary": "1922 e a ruptura com o passado.", "minutes": 10, "xp": 20,
+            "body": "# Semana de 22\n\nArtistas como Mário de Andrade e Oswald de Andrade romperam com regras rígidas e buscaram uma arte brasileira, com linguagem coloquial e humor." },
+          { "title": "Geração de 30", "summary": "Romance regionalista e denúncia social.", "minutes": 10, "xp": 20,
+            "body": "# Romance de 30\n\nGraciliano Ramos (Vidas Secas), Rachel de Queiroz e Jorge Amado mostram a seca, a miséria e as desigualdades do Brasil." }
+        ]},
+        { "title": "Poesia moderna", "icon": "book", "lessons": [
+          { "title": "Drummond, Bandeira e Cecília", "summary": "Cotidiano e reflexão.", "minutes": 10, "xp": 20,
+            "body": "# Poesia moderna\n\nCarlos Drummond de Andrade mistura ironia e reflexão sobre o mundo; Manuel Bandeira fala do cotidiano com simplicidade; Cecília Meireles traz musicalidade e transitoriedade." },
+          { "title": "João Cabral e Clarice", "summary": "Geração de 45 e o mergulho interior.", "minutes": 10, "xp": 20,
+            "body": "# Geração de 45\n\nJoão Cabral de Melo Neto (Morte e Vida Severina) tem poesia precisa e social. Clarice Lispector explora a consciência das personagens em momentos de revelação." }
+        ]},
+        { "title": "Contemporâneos", "icon": "target", "lessons": [
+          { "title": "Vozes atuais", "summary": "Conceição Evaristo, Carolina Maria de Jesus e outros.", "minutes": 10, "xp": 20,
+            "body": "# Literatura contemporânea\n\nAutoras como Carolina Maria de Jesus (Quarto de Despejo) e Conceição Evaristo trazem a experiência de pessoas negras e periféricas para o centro da literatura." },
+          { "title": "Como o ENEM cobra literatura", "summary": "Texto antes de nome de escola.", "minutes": 8, "xp": 15,
+            "body": "# Estratégia\n\nO ENEM raramente pede só datas e nomes. Ele dá um trecho e pergunta sobre linguagem, contexto ou crítica social. Leia o texto com atenção antes de pensar na escola literária." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "'Vidas Secas', que retrata uma família de retirantes, foi escrito por:", "options": ["Jorge Amado", "Graciliano Ramos", "Clarice Lispector", "Mário de Andrade", "Machado de Assis"], "correct": 1, "difficulty": "easy", "explanation": "Obra de Graciliano Ramos, da geração de 30." },
+        { "statement": "A Semana de Arte Moderna aconteceu em:", "options": ["1889", "1902", "1922", "1945", "1964"], "correct": 2, "difficulty": "easy", "explanation": "Fevereiro de 1922, em São Paulo." }
+      ]
+    },
+    {
+      "subject": "redacao", "level": 1,
+      "subtitle": "A estrutura da redação nota mil, passo a passo.",
+      "description": "Entenda as 5 competências, monte a estrutura dissertativo-argumentativa e escreva sua primeira redação completa.",
+      "modules": [
+        { "title": "Como a redação é corrigida", "icon": "target", "lessons": [
+          { "title": "As 5 competências", "summary": "O que vale cada 200 pontos.", "minutes": 10, "xp": 20,
+            "body": "# Competências\n\n- C1: norma culta\n- C2: entender o tema e o tipo de texto\n- C3: organizar argumentos\n- C4: coesão\n- C5: proposta de intervenção\n\nCada uma vale até 200 pontos." },
+          { "title": "Fugir do tema zera", "summary": "Ler a proposta com cuidado.", "minutes": 8, "xp": 15,
+            "body": "# Tema\n\nSublinhe as palavras-chave da frase-tema e use-as no texto. Tangenciar o tema derruba a nota; fugir dele zera a redação." }
+        ]},
+        { "title": "Estrutura", "icon": "blocks", "lessons": [
+          { "title": "Introdução com tese", "summary": "Contextualizar e posicionar.", "minutes": 10, "xp": 20,
+            "body": "# Introdução\n\nApresente o contexto (um dado, fato histórico ou referência) e termine com a sua tese: o que você vai defender e os dois argumentos que vai usar." },
+          { "title": "Desenvolvimento e conclusão", "summary": "Dois parágrafos de argumento e uma proposta.", "minutes": 12, "xp": 25,
+            "body": "# Desenvolvimento\n\nCada parágrafo: tópico frasal, explicação, repertório e fechamento.\n\n# Conclusão\n\nRetome a tese e faça a proposta de intervenção." }
+        ]},
+        { "title": "Proposta de intervenção", "icon": "trophy", "lessons": [
+          { "title": "Os 5 elementos", "summary": "Agente, ação, meio, finalidade e detalhamento.", "minutes": 10, "xp": 20,
+            "body": "# Proposta completa\n\nQuem faz (agente), o que faz (ação), como faz (meio), para quê (finalidade) e um detalhamento de qualquer um deles. Com os 5, a C5 pode valer 200." },
+          { "title": "Respeito aos direitos humanos", "summary": "O que nunca propor.", "minutes": 6, "xp": 10,
+            "body": "# Direitos humanos\n\nPropostas que defendem violência, tortura ou discriminação são penalizadas. Prefira soluções educativas, legislativas e de políticas públicas." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Qual competência da redação avalia a proposta de intervenção?", "options": ["C1", "C2", "C3", "C4", "C5"], "correct": 4, "difficulty": "easy", "explanation": "A competência 5 avalia a proposta de intervenção." },
+        { "statement": "Qual destes NÃO é um dos 5 elementos da proposta de intervenção?", "options": ["Agente", "Ação", "Meio", "Título", "Finalidade"], "correct": 3, "difficulty": "easy", "explanation": "A redação do ENEM nem precisa de título." }
+      ]
+    },
+    {
+      "subject": "redacao", "level": 2,
+      "subtitle": "Repertório, coesão avançada e treino com temas reais.",
+      "description": "Para sair dos 700 e chegar perto dos 1000: repertório legitimado e produtivo, argumentação mais profunda e coesão entre parágrafos.",
+      "modules": [
+        { "title": "Repertório sociocultural", "icon": "book", "lessons": [
+          { "title": "Repertório legitimado", "summary": "Citações, leis, dados e obras.", "minutes": 10, "xp": 20,
+            "body": "# Repertório\n\nUse referências que existem e podem ser verificadas: a Constituição, dados do IBGE, filósofos, livros e filmes. Ele precisa conversar com o argumento, não ser enfeite." },
+          { "title": "Repertórios coringa", "summary": "Referências que servem para muitos temas.", "minutes": 10, "xp": 20,
+            "body": "# Coringas\n\nA Constituição de 1988 (direitos fundamentais), Zygmunt Bauman (modernidade líquida) e dados oficiais servem para muitos temas. Mas adapte sempre ao tema do ano." }
+        ]},
+        { "title": "Argumentação", "icon": "scale", "lessons": [
+          { "title": "Aprofundar o argumento", "summary": "Causa, consequência e exemplo.", "minutes": 12, "xp": 25,
+            "body": "# Profundidade\n\nNão basta dizer que algo é um problema. Explique por que acontece (causa) e o que provoca (consequência), e mostre um exemplo concreto." },
+          { "title": "Coesão entre parágrafos", "summary": "Conectivos que amarram o texto.", "minutes": 8, "xp": 15,
+            "body": "# Coesão\n\nComece parágrafos com conectivos variados: 'Em primeiro lugar', 'Além disso', 'Dessa forma'. Evite repetir o mesmo conectivo." }
+        ]},
+        { "title": "Treino", "icon": "trophy", "lessons": [
+          { "title": "Temas que já caíram", "summary": "Como o ENEM escolhe os temas.", "minutes": 10, "xp": 20,
+            "body": "# Temas anteriores\n\nOs temas falam de problemas sociais brasileiros: invisibilidade do trabalho de cuidado, valorização de povos tradicionais, democratização do cinema, entre outros. Treine com eles." },
+          { "title": "Checklist antes de entregar", "summary": "Revisão em 5 minutos.", "minutes": 6, "xp": 10,
+            "body": "# Checklist\n\n- Tese clara na introdução\n- Um repertório por desenvolvimento\n- Conectivos entre parágrafos\n- Proposta com 5 elementos\n- Até 30 linhas, letra legível" }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Um bom repertório na redação deve ser:", "options": ["Inventado para impressionar", "Legitimado e ligado ao argumento", "Sempre uma música", "Colocado só na conclusão", "Repetido em todos os parágrafos"], "correct": 1, "difficulty": "easy", "explanation": "Repertório legitimado e produtivo, que serve ao argumento." },
+        { "statement": "Explicar por que um problema acontece é trabalhar a:", "options": ["consequência", "causa", "proposta", "introdução", "norma culta"], "correct": 1, "difficulty": "easy", "explanation": "Por que acontece = causa." }
+      ]
+    },
+    {
+      "subject": "ingles", "level": 1,
+      "subtitle": "Estratégias de leitura para acertar as 5 questões.",
+      "description": "O ENEM não cobra gramática decorada: cobra leitura. Aprenda cognatos, skimming e scanning para entender textos sem saber todas as palavras.",
+      "modules": [
+        { "title": "Estratégias de leitura", "icon": "target", "lessons": [
+          { "title": "Cognatos", "summary": "Palavras parecidas com o português.", "minutes": 8, "xp": 15,
+            "body": "# Cognatos\n\nMuitas palavras se parecem com o português: 'important', 'family', 'possible'. Use-as como âncora para entender o texto." },
+          { "title": "Falsos cognatos", "summary": "Os que enganam.", "minutes": 8, "xp": 15,
+            "body": "# Falsos amigos\n\n- actually = na verdade\n- pretend = fingir\n- push = empurrar\n- library = biblioteca" }
+        ]},
+        { "title": "Skimming e scanning", "icon": "globe", "lessons": [
+          { "title": "Skimming", "summary": "Ler rápido para pegar a ideia geral.", "minutes": 8, "xp": 15,
+            "body": "# Skimming\n\nLeia título, primeira e última frase de cada parágrafo. Em um minuto você sabe do que o texto trata." },
+          { "title": "Scanning", "summary": "Procurar uma informação específica.", "minutes": 8, "xp": 15,
+            "body": "# Scanning\n\nLeia a pergunta primeiro e procure no texto só a palavra ou número que ela pede, como faz em uma lista telefônica." }
+        ]},
+        { "title": "Gêneros em inglês", "icon": "book", "lessons": [
+          { "title": "Tirinhas, poemas e notícias", "summary": "O que cada um pede.", "minutes": 10, "xp": 20,
+            "body": "# Gêneros\n\nO ENEM usa letras de música, tirinhas, poemas e trechos de notícias. Pense na função do texto, como faria em português." },
+          { "title": "Inglês e Espanhol", "summary": "Você escolhe uma língua na inscrição.", "minutes": 5, "xp": 10,
+            "body": "# Escolha da língua\n\nNa inscrição você escolhe Inglês ou Espanhol, e responde 5 questões da língua escolhida. Escolha aquela em que você lê melhor." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "A palavra inglesa 'actually' significa:", "options": ["atualmente", "na verdade", "ação", "ator", "agora"], "correct": 1, "difficulty": "easy", "explanation": "Falso cognato: 'actually' = na verdade; 'atualmente' é 'nowadays'." },
+        { "statement": "Ler a pergunta e procurar apenas a informação pedida no texto é a estratégia de:", "options": ["skimming", "scanning", "tradução", "resumo", "inferência"], "correct": 1, "difficulty": "easy", "explanation": "Scanning é buscar informação específica." }
+      ]
+    },
+    {
+      "subject": "ingles", "level": 2,
+      "subtitle": "Vocabulário, conectivos e textos mais difíceis.",
+      "description": "Avance com conectivos, phrasal verbs comuns e textos argumentativos, os que mais derrubam pontos.",
+      "modules": [
+        { "title": "Conectivos em inglês", "icon": "blocks", "lessons": [
+          { "title": "However, therefore, although", "summary": "Oposição, conclusão e concessão.", "minutes": 10, "xp": 20,
+            "body": "# Linking words\n\n- however / but = porém\n- therefore = portanto\n- although = embora\n- because = porque" },
+          { "title": "Referência pronominal", "summary": "A que 'it' e 'they' se referem.", "minutes": 8, "xp": 15,
+            "body": "# Pronomes\n\nQuestões perguntam a que 'it', 'they' ou 'this' se referem. Volte à frase anterior e encontre o substantivo retomado." }
+        ]},
+        { "title": "Vocabulário útil", "icon": "book", "lessons": [
+          { "title": "Phrasal verbs comuns", "summary": "Verbo + partícula muda o sentido.", "minutes": 10, "xp": 20,
+            "body": "# Phrasal verbs\n\n- give up = desistir\n- find out = descobrir\n- look for = procurar\n- turn off = desligar" },
+          { "title": "Prefixos e sufixos", "summary": "Deduzir palavras novas.", "minutes": 8, "xp": 15,
+            "body": "# Afixos\n\n'un-' e 'dis-' negam (unhappy). '-less' indica falta (homeless). '-ful' indica cheio de (useful)." }
+        ]},
+        { "title": "Textos argumentativos", "icon": "target", "lessons": [
+          { "title": "Opinião do autor", "summary": "Identificar ponto de vista.", "minutes": 10, "xp": 20,
+            "body": "# Ponto de vista\n\nAdjetivos e verbos como 'should', 'must' e 'unfortunately' revelam a opinião do autor." },
+          { "title": "Treino de prova", "summary": "Tempo e ordem de resolução.", "minutes": 6, "xp": 10,
+            "body": "# Na prova\n\nAs questões de língua estrangeira são as primeiras do caderno de Linguagens. Resolva rápido para sobrar tempo para os textos longos." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "'Although' tem o sentido de:", "options": ["portanto", "embora", "porque", "além disso", "então"], "correct": 1, "difficulty": "easy", "explanation": "'Although' introduz concessão: embora." },
+        { "statement": "'Homeless' significa:", "options": ["caseiro", "sem-teto", "doméstico", "lar", "feliz"], "correct": 1, "difficulty": "easy", "explanation": "'-less' indica falta: sem casa." }
+      ]
+    },
+    {
+      "subject": "espanhol", "level": 1,
+      "subtitle": "Leitura em espanhol e os heterossemânticos.",
+      "description": "Espanhol parece fácil para brasileiros, mas tem armadilhas. Aprenda as palavras que enganam e as estratégias de leitura.",
+      "modules": [
+        { "title": "Primeiros passos", "icon": "globe", "lessons": [
+          { "title": "Parece, mas não é", "summary": "Heterossemânticos clássicos.", "minutes": 10, "xp": 20,
+            "body": "# Heterossemânticos\n\n- exquisito = delicioso\n- embarazada = grávida\n- polvo = pó\n- oficina = escritório\n- rato = momento" },
+          { "title": "Artigos e contrações", "summary": "El, la, lo, al, del.", "minutes": 8, "xp": 15,
+            "body": "# Artigos\n\n'El' é masculino, 'la' feminino e 'lo' neutro (lo bueno = o que é bom). 'A + el' vira 'al'; 'de + el' vira 'del'." }
+        ]},
+        { "title": "Leitura", "icon": "book", "lessons": [
+          { "title": "Ideia principal", "summary": "Título e primeiro parágrafo.", "minutes": 8, "xp": 15,
+            "body": "# Ideia principal\n\nAssim como em português, título e primeiro parágrafo trazem o assunto. Não traduza palavra por palavra." },
+          { "title": "Gêneros em espanhol", "summary": "Charges, poemas e notícias.", "minutes": 8, "xp": 15,
+            "body": "# Gêneros\n\nTextos de países hispânicos costumam trazer temas sociais e culturais da América Latina e da Espanha." }
+        ]},
+        { "title": "Cultura hispânica", "icon": "target", "lessons": [
+          { "title": "América Latina no ENEM", "summary": "Temas frequentes.", "minutes": 8, "xp": 15,
+            "body": "# Temas\n\nIdentidade latino-americana, povos originários, migração e desigualdade aparecem com frequência." },
+          { "title": "Revisão rápida", "summary": "As armadilhas mais comuns.", "minutes": 6, "xp": 10,
+            "body": "# Revisão\n\nDesconfie de palavras iguais ao português. Confira o sentido pelo contexto antes de marcar a alternativa." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Em espanhol, 'embarazada' significa:", "options": ["envergonhada", "grávida", "embaraçada", "atrasada", "cansada"], "correct": 1, "difficulty": "easy", "explanation": "Heterossemântico clássico: embarazada = grávida." },
+        { "statement": "A palavra 'oficina' em espanhol significa:", "options": ["oficina mecânica", "escritório", "fábrica", "escola", "loja"], "correct": 1, "difficulty": "easy", "explanation": "Oficina = escritório." }
+      ]
+    },
+    {
+      "subject": "espanhol", "level": 2,
+      "subtitle": "Tempos verbais, conectores e textos complexos.",
+      "description": "Aprofunde a leitura com verbos, conectores e textos argumentativos em espanhol.",
+      "modules": [
+        { "title": "Gramática para leitura", "icon": "blocks", "lessons": [
+          { "title": "Pretéritos", "summary": "Indefinido e perfecto.", "minutes": 10, "xp": 20,
+            "body": "# Passado\n\n'Comí' (pretérito indefinido) é uma ação terminada; 'he comido' (pretérito perfecto) liga o passado ao presente." },
+          { "title": "Conectores", "summary": "Sin embargo, por lo tanto, aunque.", "minutes": 8, "xp": 15,
+            "body": "# Conectores\n\n- sin embargo = no entanto\n- por lo tanto = portanto\n- aunque = embora\n- además = além disso" }
+        ]},
+        { "title": "Mais heterossemânticos", "icon": "book", "lessons": [
+          { "title": "Lista avançada", "summary": "Mais palavras traiçoeiras.", "minutes": 8, "xp": 15,
+            "body": "# Mais falsos amigos\n\n- borrar = apagar\n- cena = jantar\n- largo = comprido\n- apellido = sobrenome" },
+          { "title": "Expressões idiomáticas", "summary": "Sentido figurado.", "minutes": 8, "xp": 15,
+            "body": "# Expressões\n\n'Tomar el pelo' = enganar alguém. 'Estar en las nubes' = estar distraído. O sentido não é literal." }
+        ]},
+        { "title": "Textos argumentativos", "icon": "target", "lessons": [
+          { "title": "Opinião e crítica", "summary": "Identificar a posição do autor.", "minutes": 10, "xp": 20,
+            "body": "# Opinião\n\nVerbos como 'creo', 'opino' e adjetivos avaliativos mostram a posição do autor." },
+          { "title": "Treino de prova", "summary": "Como gerenciar o tempo.", "minutes": 6, "xp": 10,
+            "body": "# Tempo\n\nResolva as 5 questões de espanhol em até 15 minutos." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "'Sin embargo' equivale em português a:", "options": ["sem dúvida", "no entanto", "por isso", "além disso", "embora"], "correct": 1, "difficulty": "easy", "explanation": "Conector de oposição: no entanto." },
+        { "statement": "'Apellido' significa:", "options": ["apelido", "sobrenome", "apelo", "nome do meio", "primeiro nome"], "correct": 1, "difficulty": "easy", "explanation": "Apellido = sobrenome." }
+      ]
+    },
+    {
+      "subject": "historia", "level": 1,
+      "subtitle": "História do Brasil: da colônia à República.",
+      "description": "Os grandes períodos da história brasileira que o ENEM mais cobra, com foco em sociedade, trabalho e cidadania.",
+      "modules": [
+        { "title": "Brasil Colônia", "icon": "globe", "lessons": [
+          { "title": "Economia açucareira", "summary": "Engenho, latifúndio e escravidão.", "minutes": 10, "xp": 20,
+            "body": "# Ciclo do açúcar\n\nO açúcar foi a base da colônia nos séculos XVI e XVII, com grandes propriedades (latifúndio), monocultura e trabalho escravizado de africanos." },
+          { "title": "Resistência", "summary": "Quilombos e povos indígenas.", "minutes": 10, "xp": 20,
+            "body": "# Resistência\n\nPalmares foi o maior quilombo, liderado por Zumbi. Povos indígenas também resistiram com guerras, fugas e preservação cultural." }
+        ]},
+        { "title": "Império", "icon": "book", "lessons": [
+          { "title": "Independência e Primeiro Reinado", "summary": "1822 e a Constituição de 1824.", "minutes": 10, "xp": 20,
+            "body": "# Independência\n\nA independência em 1822 manteve a monarquia e a escravidão. A Constituição de 1824 criou o Poder Moderador, que dava muito poder ao imperador." },
+          { "title": "Abolição", "summary": "Da Lei Eusébio de Queirós à Lei Áurea.", "minutes": 10, "xp": 20,
+            "body": "# Abolição gradual\n\n- 1850: fim do tráfico (Eusébio de Queirós)\n- 1871: Lei do Ventre Livre\n- 1885: Lei dos Sexagenários\n- 1888: Lei Áurea, sem políticas de inclusão para os libertos" }
+        ]},
+        { "title": "República", "icon": "scale", "lessons": [
+          { "title": "República Velha", "summary": "Café com leite e coronelismo.", "minutes": 10, "xp": 20,
+            "body": "# Primeira República\n\nSão Paulo e Minas alternavam o poder (política do café com leite). O voto era aberto e os coronéis controlavam eleitores (voto de cabresto)." },
+          { "title": "Era Vargas", "summary": "Trabalhismo e Estado Novo.", "minutes": 12, "xp": 25,
+            "body": "# Vargas\n\nGetúlio Vargas criou a CLT e o salário mínimo, mas também governou como ditador no Estado Novo (1937–1945), com censura." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "A lei que extinguiu oficialmente a escravidão no Brasil, em 1888, foi a:", "options": ["Lei do Ventre Livre", "Lei Áurea", "Lei Eusébio de Queirós", "Lei dos Sexagenários", "Lei de Terras"], "correct": 1, "difficulty": "easy", "explanation": "A Lei Áurea, assinada em 13 de maio de 1888." },
+        { "statement": "A Consolidação das Leis do Trabalho (CLT) foi criada no governo de:", "options": ["D. Pedro II", "Getúlio Vargas", "Juscelino Kubitschek", "Deodoro da Fonseca", "Fernando Collor"], "correct": 1, "difficulty": "easy", "explanation": "CLT, 1943, governo Vargas." }
+      ]
+    },
+    {
+      "subject": "historia", "level": 2,
+      "subtitle": "História geral, Ditadura e Brasil contemporâneo.",
+      "description": "Grandes processos mundiais, a Ditadura Militar e a redemocratização: temas cobrados com textos e imagens.",
+      "modules": [
+        { "title": "História geral", "icon": "globe", "lessons": [
+          { "title": "Revolução Industrial", "summary": "Máquinas, fábricas e operários.", "minutes": 10, "xp": 20,
+            "body": "# Revolução Industrial\n\nComeçou na Inglaterra no século XVIII. Trouxe produção em massa, crescimento das cidades e jornadas longas de trabalho, que levaram aos primeiros sindicatos." },
+          { "title": "Guerra Fria", "summary": "EUA x URSS sem guerra direta.", "minutes": 10, "xp": 20,
+            "body": "# Guerra Fria\n\nDisputa entre capitalismo (EUA) e socialismo (URSS) de 1947 a 1991, com corrida armamentista, espacial e guerras em outros países." }
+        ]},
+        { "title": "Ditadura Militar", "icon": "scale", "lessons": [
+          { "title": "1964 e o AI-5", "summary": "Golpe, censura e repressão.", "minutes": 12, "xp": 25,
+            "body": "# Ditadura (1964–1985)\n\nO golpe de 1964 instalou governos militares. O AI-5, de 1968, fechou o Congresso, suspendeu direitos e intensificou censura e tortura." },
+          { "title": "Redemocratização", "summary": "Diretas Já e Constituição de 1988.", "minutes": 10, "xp": 20,
+            "body": "# Redemocratização\n\nO movimento Diretas Já (1984) pediu eleições diretas. A Constituição de 1988, a 'Constituição Cidadã', ampliou direitos." }
+        ]},
+        { "title": "Brasil contemporâneo", "icon": "target", "lessons": [
+          { "title": "Cidadania e direitos", "summary": "Movimentos sociais.", "minutes": 8, "xp": 15,
+            "body": "# Movimentos sociais\n\nMovimentos negro, feminista, indígena e LGBTQIA+ ampliaram a cidadania no Brasil democrático." },
+          { "title": "Como estudar História para o ENEM", "summary": "Processos, não datas.", "minutes": 6, "xp": 10,
+            "body": "# Estratégia\n\nO ENEM cobra causas, consequências e permanências. Relacione o passado com problemas atuais." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "O Ato Institucional que fechou o Congresso e endureceu a Ditadura em 1968 foi o:", "options": ["AI-1", "AI-2", "AI-5", "AI-10", "AI-13"], "correct": 2, "difficulty": "easy", "explanation": "O AI-5, de dezembro de 1968." },
+        { "statement": "A Guerra Fria opôs principalmente:", "options": ["Brasil e Argentina", "EUA e URSS", "Inglaterra e França", "China e Japão", "Alemanha e Itália"], "correct": 1, "difficulty": "easy", "explanation": "Estados Unidos (capitalismo) contra União Soviética (socialismo)." }
+      ]
+    },
+    {
+      "subject": "geografia", "level": 1,
+      "subtitle": "Cartografia, clima e o espaço brasileiro.",
+      "description": "Mapas e escalas, climas e biomas do Brasil e a formação do território, com leitura de mapas e gráficos.",
+      "modules": [
+        { "title": "Cartografia", "icon": "globe", "lessons": [
+          { "title": "Escala", "summary": "Quanto 1 cm no mapa vale no real.", "minutes": 10, "xp": 20,
+            "body": "# Escala\n\nNa escala 1:100.000, 1 cm no mapa vale 100.000 cm (1 km) no terreno. Quanto maior o denominador, menor a escala e menos detalhes." },
+          { "title": "Coordenadas e fusos", "summary": "Latitude, longitude e horas.", "minutes": 10, "xp": 20,
+            "body": "# Coordenadas\n\nLatitude mede a distância à Linha do Equador; longitude, ao Meridiano de Greenwich. Cada 15° de longitude equivale a 1 hora de fuso." }
+        ]},
+        { "title": "Natureza do Brasil", "icon": "flask", "lessons": [
+          { "title": "Biomas brasileiros", "summary": "Amazônia, Cerrado, Caatinga e outros.", "minutes": 12, "xp": 25,
+            "body": "# Biomas\n\n- Amazônia: floresta úmida\n- Cerrado: savana, 'berço das águas'\n- Caatinga: semiárido, exclusivamente brasileiro\n- Mata Atlântica: muito devastada\n- Pantanal e Pampa" },
+          { "title": "Climas", "summary": "Equatorial, tropical, semiárido e subtropical.", "minutes": 10, "xp": 20,
+            "body": "# Climas do Brasil\n\nO clima depende de latitude, altitude, massas de ar e maritimidade. O semiárido do Sertão tem chuvas escassas e irregulares." }
+        ]},
+        { "title": "População e cidades", "icon": "graph", "lessons": [
+          { "title": "Urbanização", "summary": "Do campo para a cidade.", "minutes": 10, "xp": 20,
+            "body": "# Urbanização\n\nO Brasil se urbanizou rápido após 1950. Isso gerou periferias, favelas e problemas de mobilidade e saneamento." },
+          { "title": "Pirâmide etária", "summary": "Envelhecimento da população.", "minutes": 8, "xp": 15,
+            "body": "# Transição demográfica\n\nCom menos filhos por mulher e mais expectativa de vida, a pirâmide brasileira estreita na base e alarga no topo." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Em um mapa de escala 1:100.000, 3 cm representam:", "options": ["300 m", "3 km", "30 km", "1 km", "100 km"], "correct": 1, "difficulty": "medium", "explanation": "1 cm = 1 km, então 3 cm = 3 km." },
+        { "statement": "O bioma exclusivamente brasileiro, típico do semiárido nordestino, é a:", "options": ["Amazônia", "Caatinga", "Pampa", "Mata Atlântica", "Pantanal"], "correct": 1, "difficulty": "easy", "explanation": "A Caatinga só existe no Brasil." }
+      ]
+    },
+    {
+      "subject": "geografia", "level": 2,
+      "subtitle": "Geopolítica, economia e questões ambientais.",
+      "description": "Globalização, agropecuária, energia e meio ambiente: os temas de atualidade que o ENEM transforma em questões.",
+      "modules": [
+        { "title": "Globalização", "icon": "globe", "lessons": [
+          { "title": "Redes e fluxos", "summary": "Mercadorias, informação e pessoas.", "minutes": 10, "xp": 20,
+            "body": "# Globalização\n\nA integração mundial acelerou com transportes e internet. Empresas multinacionais espalham etapas da produção por vários países." },
+          { "title": "Blocos econômicos", "summary": "Mercosul, União Europeia e outros.", "minutes": 8, "xp": 15,
+            "body": "# Blocos\n\nPaíses se unem para facilitar o comércio. O Mercosul reúne Brasil, Argentina, Paraguai e Uruguai, entre outros." }
+        ]},
+        { "title": "Economia e energia", "icon": "graph", "lessons": [
+          { "title": "Agronegócio", "summary": "Commodities e conflitos no campo.", "minutes": 10, "xp": 20,
+            "body": "# Agropecuária\n\nO Brasil exporta soja, carne e café. A expansão da fronteira agrícola pressiona o Cerrado e a Amazônia e gera conflitos fundiários." },
+          { "title": "Matriz energética", "summary": "Hidrelétricas e fontes renováveis.", "minutes": 10, "xp": 20,
+            "body": "# Energia\n\nA eletricidade brasileira vem principalmente de hidrelétricas, uma fonte renovável, mas com impactos sobre rios e populações. Eólica e solar crescem rápido." }
+        ]},
+        { "title": "Meio ambiente", "icon": "flask", "lessons": [
+          { "title": "Mudanças climáticas", "summary": "Efeito estufa e aquecimento global.", "minutes": 10, "xp": 20,
+            "body": "# Clima\n\nGases como CO₂ e metano intensificam o efeito estufa. Desmatamento e queima de combustíveis fósseis são as principais causas." },
+          { "title": "Problemas urbanos ambientais", "summary": "Ilhas de calor e enchentes.", "minutes": 8, "xp": 15,
+            "body": "# Cidade e ambiente\n\nAsfalto e concreto criam ilhas de calor. A impermeabilização do solo aumenta as enchentes." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "A principal fonte de energia elétrica do Brasil é:", "options": ["carvão", "nuclear", "hidrelétrica", "petróleo", "gás natural"], "correct": 2, "difficulty": "easy", "explanation": "As hidrelétricas geram a maior parte da eletricidade brasileira." },
+        { "statement": "A impermeabilização do solo nas cidades contribui principalmente para:", "options": ["chuva ácida", "enchentes", "erosão eólica", "desertificação", "inversão térmica"], "correct": 1, "difficulty": "easy", "explanation": "A água não infiltra e escoa rápido: enchentes." }
+      ]
+    },
+    {
+      "subject": "filosofia", "level": 1,
+      "subtitle": "Dos pré-socráticos a Aristóteles.",
+      "description": "O nascimento da filosofia na Grécia: mito e razão, Sócrates, Platão e Aristóteles, de um jeito simples.",
+      "modules": [
+        { "title": "Origem da filosofia", "icon": "bulb", "lessons": [
+          { "title": "Do mito ao logos", "summary": "Explicar o mundo pela razão.", "minutes": 8, "xp": 15,
+            "body": "# Mito e razão\n\nOs mitos explicavam o mundo pela ação dos deuses. A filosofia nasce quando os gregos buscam explicações racionais (logos)." },
+          { "title": "Pré-socráticos", "summary": "Qual é a origem de tudo?", "minutes": 8, "xp": 15,
+            "body": "# Arché\n\nTales dizia que a origem de tudo era a água; Heráclito, que tudo está em mudança; Parmênides, que o ser é imutável." }
+        ]},
+        { "title": "Sócrates e Platão", "icon": "book", "lessons": [
+          { "title": "Sócrates", "summary": "'Só sei que nada sei.'", "minutes": 8, "xp": 15,
+            "body": "# Sócrates\n\nUsava perguntas (maiêutica) para mostrar que as pessoas não sabiam o que achavam que sabiam, e as levava a buscar o conhecimento." },
+          { "title": "Platão e a caverna", "summary": "Mundo sensível e mundo das ideias.", "minutes": 10, "xp": 20,
+            "body": "# Alegoria da caverna\n\nPrisioneiros veem apenas sombras e pensam que são a realidade. Sair da caverna é chegar ao conhecimento verdadeiro, o mundo das ideias." }
+        ]},
+        { "title": "Aristóteles", "icon": "target", "lessons": [
+          { "title": "Ética e virtude", "summary": "O justo meio.", "minutes": 10, "xp": 20,
+            "body": "# Virtude\n\nPara Aristóteles, a virtude é o meio-termo entre dois excessos: a coragem fica entre a covardia e a imprudência. O objetivo da vida é a felicidade (eudaimonia)." },
+          { "title": "O ser humano é político", "summary": "Vida em sociedade.", "minutes": 8, "xp": 15,
+            "body": "# Animal político\n\nAristóteles afirmava que o ser humano só se realiza plenamente vivendo na pólis, em comunidade." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "A 'Alegoria da Caverna' foi escrita por:", "options": ["Sócrates", "Platão", "Aristóteles", "Tales", "Descartes"], "correct": 1, "difficulty": "easy", "explanation": "Está no livro A República, de Platão." },
+        { "statement": "Para Aristóteles, a virtude está:", "options": ["no excesso", "no meio-termo", "na riqueza", "na obediência aos deuses", "no prazer imediato"], "correct": 1, "difficulty": "easy", "explanation": "A virtude é o justo meio entre dois vícios." }
+      ]
+    },
+    {
+      "subject": "filosofia", "level": 2,
+      "subtitle": "Filosofia moderna e contemporânea.",
+      "description": "Descartes, os contratualistas, Kant e os pensadores contemporâneos que aparecem nas questões do ENEM.",
+      "modules": [
+        { "title": "Conhecimento moderno", "icon": "bulb", "lessons": [
+          { "title": "Racionalismo e empirismo", "summary": "Razão ou experiência?", "minutes": 10, "xp": 20,
+            "body": "# Conhecimento\n\nDescartes (racionalismo): 'Penso, logo existo'; a razão é a base. Locke e Hume (empirismo): o conhecimento vem da experiência dos sentidos." },
+          { "title": "Kant", "summary": "Imperativo categórico.", "minutes": 10, "xp": 20,
+            "body": "# Kant\n\nAja de modo que sua ação possa virar uma lei universal. Trate as pessoas sempre como fins, nunca apenas como meios." }
+        ]},
+        { "title": "Contratualistas", "icon": "scale", "lessons": [
+          { "title": "Hobbes, Locke e Rousseau", "summary": "Por que existe o Estado?", "minutes": 12, "xp": 25,
+            "body": "# Contrato social\n\n- Hobbes: sem Estado, guerra de todos contra todos\n- Locke: Estado protege vida, liberdade e propriedade\n- Rousseau: o ser humano nasce bom; a sociedade o corrompe" },
+          { "title": "Maquiavel", "summary": "Política como ela é.", "minutes": 8, "xp": 15,
+            "body": "# O Príncipe\n\nMaquiavel separa política e moral religiosa: o governante deve manter o poder e a estabilidade do Estado." }
+        ]},
+        { "title": "Contemporâneos", "icon": "target", "lessons": [
+          { "title": "Existencialismo", "summary": "Sartre e Simone de Beauvoir.", "minutes": 10, "xp": 20,
+            "body": "# Existencialismo\n\nSartre: 'a existência precede a essência'; somos o que fazemos. Beauvoir: 'Ninguém nasce mulher: torna-se mulher.'" },
+          { "title": "Escola de Frankfurt", "summary": "Indústria cultural.", "minutes": 8, "xp": 15,
+            "body": "# Indústria cultural\n\nAdorno e Horkheimer criticaram a cultura produzida em massa como mercadoria, que padroniza gostos e reduz o pensamento crítico." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "A frase 'Penso, logo existo' é de:", "options": ["Kant", "Descartes", "Hume", "Locke", "Sartre"], "correct": 1, "difficulty": "easy", "explanation": "René Descartes, racionalista." },
+        { "statement": "Para Hobbes, sem o Estado os seres humanos viveriam em:", "options": ["harmonia natural", "guerra de todos contra todos", "comunismo primitivo", "paz perpétua", "teocracia"], "correct": 1, "difficulty": "medium", "explanation": "O estado de natureza hobbesiano é de guerra constante." }
+      ]
+    },
+    {
+      "subject": "sociologia", "level": 1,
+      "subtitle": "Os clássicos: Durkheim, Weber e Marx.",
+      "description": "O que é sociologia e como os três autores clássicos explicam a sociedade, o trabalho e as instituições.",
+      "modules": [
+        { "title": "O que é sociologia", "icon": "globe", "lessons": [
+          { "title": "Olhar sociológico", "summary": "Estranhar o que parece natural.", "minutes": 8, "xp": 15,
+            "body": "# Sociologia\n\nA sociologia estuda as relações sociais e mostra que muitos comportamentos que parecem naturais são construídos pela sociedade." },
+          { "title": "Socialização", "summary": "Família, escola e mídia.", "minutes": 8, "xp": 15,
+            "body": "# Socialização\n\nAprendemos regras e valores com a família (primária) e com escola, trabalho e mídia (secundária)." }
+        ]},
+        { "title": "Clássicos", "icon": "book", "lessons": [
+          { "title": "Durkheim", "summary": "Fato social e coesão.", "minutes": 10, "xp": 20,
+            "body": "# Durkheim\n\nFato social é uma forma de agir que é exterior, geral e coercitiva (exerce pressão sobre o indivíduo), como as leis e a língua." },
+          { "title": "Weber e Marx", "summary": "Ação social e luta de classes.", "minutes": 12, "xp": 25,
+            "body": "# Weber e Marx\n\nWeber estuda a ação social e seus sentidos. Marx explica a sociedade pela luta de classes entre burguesia e proletariado, e critica a exploração do trabalho." }
+        ]},
+        { "title": "Trabalho", "icon": "target", "lessons": [
+          { "title": "Fordismo e toyotismo", "summary": "Linha de montagem e produção flexível.", "minutes": 10, "xp": 20,
+            "body": "# Modelos de produção\n\nFordismo: linha de montagem e produção em massa. Toyotismo: produção flexível, estoque mínimo (just in time) e trabalhador polivalente." },
+          { "title": "Trabalho hoje", "summary": "Informalidade e plataformas.", "minutes": 8, "xp": 15,
+            "body": "# Uberização\n\nTrabalho por aplicativos aumenta a flexibilidade, mas também a informalidade e a falta de direitos." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "O conceito de 'fato social' é associado a:", "options": ["Marx", "Weber", "Durkheim", "Comte", "Bauman"], "correct": 2, "difficulty": "easy", "explanation": "Émile Durkheim definiu o fato social." },
+        { "statement": "O sistema 'just in time', com estoque mínimo, é característico do:", "options": ["fordismo", "taylorismo", "toyotismo", "feudalismo", "mercantilismo"], "correct": 2, "difficulty": "easy", "explanation": "O toyotismo produz conforme a demanda." }
+      ]
+    },
+    {
+      "subject": "sociologia", "level": 2,
+      "subtitle": "Cultura, desigualdade e cidadania.",
+      "description": "Cultura e identidade, desigualdades sociais e raciais, movimentos sociais e democracia no Brasil.",
+      "modules": [
+        { "title": "Cultura", "icon": "bulb", "lessons": [
+          { "title": "Etnocentrismo e relativismo", "summary": "Julgar outras culturas.", "minutes": 8, "xp": 15,
+            "body": "# Etnocentrismo\n\nÉ julgar outras culturas a partir da sua, como se fosse superior. O relativismo cultural propõe entender cada cultura em seu contexto." },
+          { "title": "Indústria cultural e consumo", "summary": "Cultura de massa.", "minutes": 8, "xp": 15,
+            "body": "# Consumo\n\nA publicidade transforma desejos em necessidades. Bauman fala em 'modernidade líquida', com relações frágeis e consumo constante." }
+        ]},
+        { "title": "Desigualdades", "icon": "scale", "lessons": [
+          { "title": "Racismo estrutural", "summary": "Desigualdade nas instituições.", "minutes": 10, "xp": 20,
+            "body": "# Racismo estrutural\n\nO racismo está presente na forma como instituições e a economia funcionam, não só em atitudes individuais. Os dados de renda, emprego e violência mostram isso." },
+          { "title": "Gênero", "summary": "Papéis sociais construídos.", "minutes": 8, "xp": 15,
+            "body": "# Gênero\n\nPapéis de 'homem' e 'mulher' são construídos socialmente. A divisão desigual do trabalho doméstico é um tema frequente." }
+        ]},
+        { "title": "Cidadania", "icon": "trophy", "lessons": [
+          { "title": "Direitos civis, políticos e sociais", "summary": "A cidadania segundo Marshall.", "minutes": 10, "xp": 20,
+            "body": "# Cidadania\n\nDireitos civis (liberdade), políticos (votar e ser votado) e sociais (saúde, educação). No Brasil, os sociais vieram antes dos políticos plenos, segundo José Murilo de Carvalho." },
+          { "title": "Movimentos sociais", "summary": "Organização coletiva por direitos.", "minutes": 8, "xp": 15,
+            "body": "# Movimentos\n\nMovimentos sociais pressionam o Estado por direitos: terra, moradia, igualdade racial e de gênero." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Julgar a cultura de outro povo a partir da própria cultura, como superior, é:", "options": ["relativismo", "etnocentrismo", "aculturação", "sincretismo", "multiculturalismo"], "correct": 1, "difficulty": "easy", "explanation": "Essa atitude é o etnocentrismo." },
+        { "statement": "O conceito de 'modernidade líquida' é de:", "options": ["Durkheim", "Zygmunt Bauman", "Max Weber", "Karl Marx", "Pierre Bourdieu"], "correct": 1, "difficulty": "easy", "explanation": "Zygmunt Bauman." }
+      ]
+    },
+    {
+      "subject": "biologia", "level": 1,
+      "subtitle": "Células, ecologia e corpo humano.",
+      "description": "A biologia que mais cai: ecologia, citologia e fisiologia humana, explicadas com exemplos do cotidiano.",
+      "modules": [
+        { "title": "Ecologia", "icon": "globe", "lessons": [
+          { "title": "Cadeias alimentares", "summary": "Produtores, consumidores e decompositores.", "minutes": 10, "xp": 20,
+            "body": "# Cadeia alimentar\n\nProdutores (plantas) fazem fotossíntese. Consumidores comem outros seres. Decompositores (fungos e bactérias) reciclam a matéria. A energia diminui a cada nível." },
+          { "title": "Relações ecológicas", "summary": "Mutualismo, parasitismo e mais.", "minutes": 10, "xp": 20,
+            "body": "# Relações\n\n- Mutualismo: os dois ganham (abelha e flor)\n- Parasitismo: um ganha, o outro perde\n- Competição: disputa por recursos" }
+        ]},
+        { "title": "Citologia", "icon": "flask", "lessons": [
+          { "title": "A célula", "summary": "Membrana, citoplasma e núcleo.", "minutes": 10, "xp": 20,
+            "body": "# Célula\n\nProcariontes (bactérias) não têm núcleo organizado; eucariontes têm. Mitocôndrias fazem respiração celular; cloroplastos, fotossíntese." },
+          { "title": "Fotossíntese e respiração", "summary": "Energia para a vida.", "minutes": 10, "xp": 20,
+            "body": "# Energia\n\nFotossíntese: CO₂ + água + luz → glicose + O₂. Respiração: glicose + O₂ → CO₂ + água + energia." }
+        ]},
+        { "title": "Corpo humano", "icon": "target", "lessons": [
+          { "title": "Sistema imunológico e vacinas", "summary": "Como o corpo se defende.", "minutes": 10, "xp": 20,
+            "body": "# Vacinas\n\nVacinas apresentam ao corpo partes ou versões enfraquecidas de um agente, e ele produz anticorpos e células de memória sem ficar doente." },
+          { "title": "Doenças e saneamento", "summary": "Dengue, esquistossomose e prevenção.", "minutes": 8, "xp": 15,
+            "body": "# Saúde pública\n\nSaneamento básico previne muitas doenças. A dengue é transmitida pelo Aedes aegypti, que se reproduz em água parada." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Em uma cadeia alimentar, as plantas são:", "options": ["consumidores primários", "produtores", "decompositores", "consumidores secundários", "parasitas"], "correct": 1, "difficulty": "easy", "explanation": "Fazem fotossíntese e produzem seu próprio alimento." },
+        { "statement": "A organela responsável pela respiração celular é a:", "options": ["ribossomo", "mitocôndria", "cloroplasto", "lisossomo", "complexo golgiense"], "correct": 1, "difficulty": "easy", "explanation": "A mitocôndria produz energia (ATP)." },
+        { "statement": "A melhor forma de combater a dengue é:", "options": ["tomar antibiótico", "eliminar água parada", "evitar contato com doentes", "ferver a água", "usar máscara"], "correct": 1, "difficulty": "easy", "explanation": "O mosquito se reproduz em água parada." }
+      ]
+    },
+    {
+      "subject": "biologia", "level": 2,
+      "subtitle": "Genética, evolução e biotecnologia.",
+      "description": "Herança genética, DNA, evolução das espécies e as biotecnologias que aparecem nas notícias e no ENEM.",
+      "modules": [
+        { "title": "Genética", "icon": "blocks", "lessons": [
+          { "title": "Primeira Lei de Mendel", "summary": "Dominante e recessivo.", "minutes": 12, "xp": 25,
+            "body": "# Mendel\n\nCada característica é determinada por um par de genes. No cruzamento Aa × Aa, os filhos são 1 AA : 2 Aa : 1 aa, ou seja, 3/4 com a característica dominante." },
+          { "title": "DNA e proteínas", "summary": "Do gene à característica.", "minutes": 10, "xp": 20,
+            "body": "# DNA\n\nO DNA guarda a informação. Ele é transcrito em RNA, que é traduzido em proteína. As proteínas determinam grande parte das características." }
+        ]},
+        { "title": "Evolução", "icon": "graph", "lessons": [
+          { "title": "Seleção natural", "summary": "Darwin e a adaptação.", "minutes": 10, "xp": 20,
+            "body": "# Darwin\n\nIndivíduos variam. Os mais adaptados ao ambiente sobrevivem e se reproduzem mais, passando suas características adiante." },
+          { "title": "Resistência a antibióticos", "summary": "Seleção natural acontecendo agora.", "minutes": 8, "xp": 15,
+            "body": "# Bactérias resistentes\n\nO uso errado de antibióticos elimina as bactérias sensíveis e seleciona as resistentes. O antibiótico não 'cria' a resistência." }
+        ]},
+        { "title": "Biotecnologia", "icon": "flask", "lessons": [
+          { "title": "Transgênicos e clonagem", "summary": "Mexer nos genes.", "minutes": 10, "xp": 20,
+            "body": "# Biotecnologia\n\nTransgênicos recebem genes de outra espécie (ex.: insulina produzida por bactérias). Clonagem gera indivíduos geneticamente iguais." },
+          { "title": "Vacinas de RNA", "summary": "Tecnologia recente.", "minutes": 8, "xp": 15,
+            "body": "# RNA mensageiro\n\nVacinas de RNAm levam a instrução para as células produzirem uma proteína do vírus, treinando o sistema imune." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "No cruzamento Aa × Aa, a proporção de filhos aa é:", "options": ["0", "1/4", "1/2", "3/4", "1"], "correct": 1, "difficulty": "medium", "explanation": "AA, Aa, Aa, aa: 1 em 4." },
+        { "statement": "O aumento de bactérias resistentes a antibióticos é explicado por:", "options": ["mutação causada pelo remédio", "seleção natural", "lamarckismo", "geração espontânea", "clonagem"], "correct": 1, "difficulty": "medium", "explanation": "O antibiótico seleciona as bactérias que já eram resistentes." }
+      ]
+    },
+    {
+      "subject": "quimica", "level": 1,
+      "subtitle": "Matéria, átomos, ligações e soluções.",
+      "description": "Os fundamentos da química: estados físicos, separação de misturas, tabela periódica, ligações e concentração de soluções.",
+      "modules": [
+        { "title": "Matéria", "icon": "flask", "lessons": [
+          { "title": "Estados físicos e mudanças", "summary": "Sólido, líquido e gasoso.", "minutes": 8, "xp": 15,
+            "body": "# Mudanças de estado\n\nFusão (sólido→líquido), vaporização (líquido→gás), condensação (gás→líquido), solidificação e sublimação (sólido↔gás)." },
+          { "title": "Separação de misturas", "summary": "Filtração, decantação e destilação.", "minutes": 10, "xp": 20,
+            "body": "# Separação\n\n- Filtração: sólido de líquido\n- Decantação: líquidos que não se misturam\n- Destilação: separa por ponto de ebulição" }
+        ]},
+        { "title": "Átomos", "icon": "blocks", "lessons": [
+          { "title": "Tabela periódica", "summary": "Famílias e períodos.", "minutes": 10, "xp": 20,
+            "body": "# Tabela\n\nColunas são famílias (propriedades parecidas), linhas são períodos. Metais à esquerda, ametais à direita, gases nobres na última coluna." },
+          { "title": "Ligações químicas", "summary": "Iônica, covalente e metálica.", "minutes": 10, "xp": 20,
+            "body": "# Ligações\n\nIônica: metal + ametal, transferência de elétrons (sal de cozinha). Covalente: ametais compartilham elétrons (água). Metálica: entre metais." }
+        ]},
+        { "title": "Soluções", "icon": "percent", "lessons": [
+          { "title": "Concentração", "summary": "g/L e mol/L.", "minutes": 10, "xp": 20,
+            "body": "# Concentração\n\nC = massa do soluto ÷ volume da solução. 20 g de açúcar em 0,5 L de água dão 40 g/L." },
+          { "title": "Diluição", "summary": "Adicionar solvente.", "minutes": 8, "xp": 15,
+            "body": "# Diluição\n\nC₁ × V₁ = C₂ × V₂. Ao adicionar água, a quantidade de soluto não muda; só o volume aumenta e a concentração cai." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Qual método separa água e sal dissolvido, recuperando a água?", "options": ["filtração", "decantação", "destilação simples", "peneiração", "imantação"], "correct": 2, "difficulty": "easy", "explanation": "A destilação evapora e condensa a água, deixando o sal." },
+        { "statement": "20 g de açúcar em 0,5 L de solução resultam em concentração de:", "options": ["10 g/L", "20 g/L", "40 g/L", "0,4 g/L", "100 g/L"], "correct": 2, "difficulty": "easy", "explanation": "20 ÷ 0,5 = 40 g/L." }
+      ]
+    },
+    {
+      "subject": "quimica", "level": 2,
+      "subtitle": "Estequiometria, orgânica e química ambiental.",
+      "description": "Cálculos com mol, reações, química orgânica e os temas ambientais que mais caem no ENEM.",
+      "modules": [
+        { "title": "Estequiometria", "icon": "scale", "lessons": [
+          { "title": "Mol e massa molar", "summary": "Contar partículas pela massa.", "minutes": 12, "xp": 25,
+            "body": "# Mol\n\n1 mol = 6 × 10²³ partículas. A massa molar da água (H₂O) é 18 g/mol: 2 × 1 + 16." },
+          { "title": "Proporção nas reações", "summary": "Equação balanceada como receita.", "minutes": 12, "xp": 25,
+            "body": "# Reações\n\nNa equação 2H₂ + O₂ → 2H₂O, 2 mol de H₂ reagem com 1 mol de O₂. Use essas proporções como regra de três." }
+        ]},
+        { "title": "Química orgânica", "icon": "flask", "lessons": [
+          { "title": "Funções orgânicas", "summary": "Álcool, ácido, éster e outras.", "minutes": 10, "xp": 20,
+            "body": "# Funções\n\n- Álcool: -OH ligado a carbono (etanol)\n- Ácido carboxílico: -COOH (vinagre)\n- Éster: aromas de frutas\n- Hidrocarbonetos: só C e H (petróleo)" },
+          { "title": "Combustíveis", "summary": "Combustão e biocombustíveis.", "minutes": 8, "xp": 15,
+            "body": "# Combustão\n\nCombustível + O₂ → CO₂ + H₂O + energia. O etanol é renovável; a gasolina vem do petróleo, que é fóssil." }
+        ]},
+        { "title": "Química ambiental", "icon": "globe", "lessons": [
+          { "title": "Chuva ácida", "summary": "Óxidos de enxofre e nitrogênio.", "minutes": 8, "xp": 15,
+            "body": "# Chuva ácida\n\nÓxidos de enxofre e nitrogênio liberados por indústrias e veículos reagem com a água da chuva formando ácidos." },
+          { "title": "pH", "summary": "Ácido, neutro e básico.", "minutes": 8, "xp": 15,
+            "body": "# pH\n\nAbaixo de 7: ácido. Igual a 7: neutro. Acima de 7: básico. Cada unidade de pH muda 10 vezes a acidez." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "A massa molar da água (H = 1, O = 16) é:", "options": ["16 g/mol", "17 g/mol", "18 g/mol", "20 g/mol", "32 g/mol"], "correct": 2, "difficulty": "easy", "explanation": "2 × 1 + 16 = 18 g/mol." },
+        { "statement": "Uma solução com pH 3 é:", "options": ["básica", "neutra", "ácida", "salina", "alcalina"], "correct": 2, "difficulty": "easy", "explanation": "pH menor que 7 é ácido." }
+      ]
+    },
+    {
+      "subject": "fisica", "level": 1,
+      "subtitle": "Movimento, forças e energia.",
+      "description": "Cinemática, leis de Newton e energia mecânica, com foco na interpretação de situações do cotidiano.",
+      "modules": [
+        { "title": "Movimento", "icon": "graph", "lessons": [
+          { "title": "Velocidade média", "summary": "Distância dividida pelo tempo.", "minutes": 8, "xp": 15,
+            "body": "# Velocidade média\n\nv = Δs ÷ Δt. Um carro que anda 120 km em 2 h tem velocidade média de 60 km/h. Para converter km/h em m/s, divida por 3,6." },
+          { "title": "Aceleração", "summary": "Mudança de velocidade.", "minutes": 10, "xp": 20,
+            "body": "# Aceleração\n\na = Δv ÷ Δt. No movimento uniformemente variado: v = v₀ + a·t." }
+        ]},
+        { "title": "Leis de Newton", "icon": "target", "lessons": [
+          { "title": "Inércia e F = m·a", "summary": "Primeira e segunda leis.", "minutes": 10, "xp": 20,
+            "body": "# Newton\n\nInércia: um corpo tende a manter seu estado de movimento (por isso usamos cinto). Segunda lei: força resultante = massa × aceleração." },
+          { "title": "Ação e reação", "summary": "Terceira lei.", "minutes": 8, "xp": 15,
+            "body": "# Ação e reação\n\nToda ação tem uma reação de mesma intensidade e sentido oposto, aplicada em corpos diferentes. É assim que um foguete sobe." }
+        ]},
+        { "title": "Energia", "icon": "trophy", "lessons": [
+          { "title": "Energia cinética e potencial", "summary": "Movimento e altura.", "minutes": 10, "xp": 20,
+            "body": "# Energia mecânica\n\nCinética: m·v²/2. Potencial gravitacional: m·g·h. Sem atrito, a soma das duas se conserva." },
+          { "title": "Potência", "summary": "Energia por tempo.", "minutes": 8, "xp": 15,
+            "body": "# Potência\n\nP = energia ÷ tempo, em watts. Um chuveiro de 5.000 W ligado 1 h consome 5 kWh." }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Um ônibus percorre 180 km em 3 h. Sua velocidade média é:", "options": ["50 km/h", "60 km/h", "90 km/h", "540 km/h", "30 km/h"], "correct": 1, "difficulty": "easy", "explanation": "180 ÷ 3 = 60 km/h." },
+        { "statement": "O uso do cinto de segurança está relacionado principalmente à:", "options": ["lei da inércia", "lei da gravitação", "terceira lei de Newton", "lei de Ohm", "conservação da carga"], "correct": 0, "difficulty": "easy", "explanation": "Na freada, o corpo tende a continuar em movimento: inércia." }
+      ]
+    },
+    {
+      "subject": "fisica", "level": 2,
+      "subtitle": "Eletricidade, ondas e termologia.",
+      "description": "Circuitos e consumo de energia, ondas e som, calor e temperatura: os temas de física mais ligados ao dia a dia no ENEM.",
+      "modules": [
+        { "title": "Eletricidade", "icon": "blocks", "lessons": [
+          { "title": "Lei de Ohm", "summary": "Tensão, corrente e resistência.", "minutes": 10, "xp": 20,
+            "body": "# Lei de Ohm\n\nU = R × i. Tensão (volts) = resistência (ohms) × corrente (ampères). Potência elétrica: P = U × i." },
+          { "title": "Conta de luz", "summary": "Calcular consumo em kWh.", "minutes": 10, "xp": 20,
+            "body": "# Consumo\n\nEnergia (kWh) = potência (kW) × tempo (h). Uma lâmpada de 10 W ligada 5 h por dia, 30 dias: 0,01 × 5 × 30 = 1,5 kWh." }
+        ]},
+        { "title": "Ondas", "icon": "graph", "lessons": [
+          { "title": "Velocidade de uma onda", "summary": "v = λ × f.", "minutes": 10, "xp": 20,
+            "body": "# Ondas\n\nVelocidade = comprimento de onda × frequência. O som é uma onda mecânica (precisa de meio); a luz é eletromagnética (viaja no vácuo)." },
+          { "title": "Som", "summary": "Altura, intensidade e timbre.", "minutes": 8, "xp": 15,
+            "body": "# Som\n\nAltura depende da frequência (grave ou agudo). Intensidade é o volume. Timbre é o que diferencia instrumentos tocando a mesma nota." }
+        ]},
+        { "title": "Termologia", "icon": "flask", "lessons": [
+          { "title": "Calor e temperatura", "summary": "Não são a mesma coisa.", "minutes": 8, "xp": 15,
+            "body": "# Calor\n\nTemperatura mede a agitação das partículas. Calor é energia em trânsito, sempre do corpo mais quente para o mais frio." },
+          { "title": "Condução, convecção e irradiação", "summary": "Formas de propagar calor.", "minutes": 10, "xp": 20,
+            "body": "# Propagação\n\n- Condução: por contato (panela)\n- Convecção: por correntes de fluido (ar-condicionado no alto)\n- Irradiação: por ondas, sem meio (Sol)" }
+        ]}
+      ],
+      "questions": [
+        { "statement": "Um chuveiro de 4.000 W ligado 30 minutos por dia consome, em 30 dias:", "options": ["2 kWh", "60 kWh", "120 kWh", "4.000 kWh", "6 kWh"], "correct": 1, "difficulty": "medium", "explanation": "4 kW × 0,5 h × 30 = 60 kWh." },
+        { "statement": "O aquecimento da Terra pelo Sol acontece principalmente por:", "options": ["condução", "convecção", "irradiação", "atrito", "indução"], "correct": 2, "difficulty": "easy", "explanation": "A energia solar chega por ondas eletromagnéticas, mesmo no vácuo." }
+      ]
+    }
+  ]
+}

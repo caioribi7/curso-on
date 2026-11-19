@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/dal";
-import { COURSE_ICONS, MODULE_ICONS, type ActionState } from "@/lib/types";
+import { SUBJECT_KEYS } from "@/lib/subjects";
+import { MODULE_ICONS, type ActionState, type CourseIcon } from "@/lib/types";
 import { randomSuffix, slugify } from "@/lib/utils";
 
 // Every action re-checks identity + ownership server-side. RLS enforces the
@@ -34,10 +35,25 @@ function parsePrice(raw: FormDataEntryValue | null) {
   return Math.round(value * 100);
 }
 
+// Legacy illustration kept in `icon` for courses without a subject.
+const FALLBACK_ICON: Record<string, CourseIcon> = {
+  matematica: "abacus",
+  fisica: "flask",
+  quimica: "flask",
+  biologia: "flask",
+  geografia: "globe",
+  historia: "book",
+  filosofia: "bulb",
+  sociologia: "bulb",
+  ingles: "globe",
+  espanhol: "globe",
+};
+
 const courseFields = z.object({
   title: z.string().trim().min(3, "O título precisa de pelo menos 3 letras.").max(120),
   subtitle: z.string().trim().max(200).default(""),
-  icon: z.enum(COURSE_ICONS),
+  subject: z.enum(SUBJECT_KEYS, { error: "Escolha uma matéria." }),
+  level: z.coerce.number().int().min(1, "Escolha o nível.").max(2, "Escolha o nível."),
   themeColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Escolha uma cor válida."),
 });
 
@@ -46,7 +62,8 @@ export async function createCourse(_prev: ActionState, formData: FormData): Prom
   const parsed = courseFields.safeParse({
     title: formData.get("title"),
     subtitle: formData.get("subtitle") ?? "",
-    icon: formData.get("icon"),
+    subject: formData.get("subject"),
+    level: formData.get("level"),
     themeColor: formData.get("themeColor"),
   });
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
@@ -62,7 +79,9 @@ export async function createCourse(_prev: ActionState, formData: FormData): Prom
       slug,
       title: parsed.data.title,
       subtitle: parsed.data.subtitle,
-      icon: parsed.data.icon,
+      icon: FALLBACK_ICON[parsed.data.subject] ?? "book",
+      subject: parsed.data.subject,
+      level: parsed.data.level,
       theme_color: parsed.data.themeColor.toUpperCase(),
       price_cents: price,
     })
@@ -85,7 +104,8 @@ export async function updateCourse(_prev: ActionState, formData: FormData): Prom
     .safeParse({
       title: formData.get("title"),
       subtitle: formData.get("subtitle") ?? "",
-      icon: formData.get("icon"),
+      subject: formData.get("subject"),
+      level: formData.get("level"),
       themeColor: formData.get("themeColor"),
       description: formData.get("description") ?? "",
     });
@@ -100,7 +120,9 @@ export async function updateCourse(_prev: ActionState, formData: FormData): Prom
       title: parsed.data.title,
       subtitle: parsed.data.subtitle,
       description: parsed.data.description,
-      icon: parsed.data.icon,
+      icon: FALLBACK_ICON[parsed.data.subject] ?? "book",
+      subject: parsed.data.subject,
+      level: parsed.data.level,
       theme_color: parsed.data.themeColor.toUpperCase(),
       price_cents: price,
     })

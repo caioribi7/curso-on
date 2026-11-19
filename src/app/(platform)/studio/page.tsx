@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CourseIllustration, PencilIcon } from "@/components/icons/flat-icons";
+import { PencilIcon } from "@/components/icons/flat-icons";
+import { CourseBadge } from "@/components/icons/subject-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { requireUser } from "@/lib/dal";
 import { getOwnedCourses } from "@/lib/queries";
@@ -56,7 +57,7 @@ export default async function StudioPage() {
                 className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-lg"
               >
                 <div className="relative flex h-36 items-center justify-center bg-course-soft">
-                  <CourseIllustration icon={course.icon} size={96} />
+                  <CourseBadge course={course} size={96} />
                   <span
                     className={`absolute left-4 top-4 rounded-full px-3 py-1 font-display text-xs font-extrabold ${
                       course.status === "published" ? "bg-mint text-white" : "bg-white text-muted"

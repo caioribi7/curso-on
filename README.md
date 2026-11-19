@@ -1,17 +1,64 @@
 # Curso On
 
-Plataforma para **criar, organizar e vender cursos**, com aulas, banco de questões e gamificação (XP, níveis, sequência de dias e ranking da turma). O visual é flat e amigável, e cada curso tem a sua cor.
+Plataforma **open source** de cursos preparatórios para o **ENEM**. Cada matéria tem dois níveis (Matemática 1 e Matemática 2, Física 1 e Física 2…), com aulas curtas, banco de questões e gamificação: XP, níveis, sequência de dias e ranking da turma.
 
-**Stack:** Next.js 16 (App Router, Server Actions), Supabase (Auth + Postgres com RLS), Stripe Checkout (cartão e Pix), Tailwind CSS v4, Zod.
+Você não precisa saber programar: o painel **`curso-on`**, feito em Rust, roda no terminal e configura tudo pelo menu, do banco de dados ao seu primeiro curso.
+
+**Stack:** Next.js 16 (App Router, Server Actions), Supabase (Auth + Postgres com RLS), Stripe Checkout (cartão e Pix), Tailwind CSS v4, Zod, e o painel em Rust (ratatui).
+
+## Comece em 3 passos
+
+1. Instale o [Node.js](https://nodejs.org) (LTS) e o [Git](https://git-scm.com).
+2. Baixe o `curso-on` para o seu sistema em [Releases](https://github.com/caioribi7/curso-on/releases), ou instale com Rust:
+   ```bash
+   cargo install --git https://github.com/caioribi7/curso-on curso-on
+   ```
+3. Rode `curso-on` e siga o menu: **Configurar → Abrir a plataforma → Criar conta → Importar cursos ENEM**.
+
+Nunca usou nada disso? O [guia para iniciantes](docs/primeiros-passos.md) explica cada passo, inclusive como criar a conta no Supabase. O mesmo guia abre dentro do painel.
+
+## O painel `curso-on`
+
+| Menu | O que faz |
+|---|---|
+| **Configurar** | Baixa o projeto, liga o Supabase local (Docker) ou guia a criação do Supabase na nuvem, cria as tabelas, configura o Stripe e instala as dependências. Escreve o `.env.local` por você. |
+| **Abrir a plataforma** | Roda o site e abre o navegador em `localhost:3000`. |
+| **Criar conta / Entrar** | Conta de professor no seu Supabase. |
+| **Meus cursos** | Editor completo: curso (matéria + nível), módulos, aulas em Markdown, questões de múltipla escolha com explicação, publicar e excluir. |
+| **Importar cursos ENEM** | Cria 26 cursos prontos (13 matérias × 2 níveis) a partir de [`content/enem.json`](content/enem.json). |
+| **Masterbase** | Integração opcional, veja abaixo. |
+
+O painel fala com o Supabase só com a chave pública e o login do professor, então passa pelas mesmas regras de segurança (RLS) do site.
+
+## Integra com Masterbase
+
+O [Masterbase](https://github.com/caioribi7/masterbase) é outro projeto open source do mesmo autor: um Postgres com tela visual, para quem não sabe SQL. No menu **Masterbase** do painel você:
+
+- instala o Masterbase (um comando no Linux/macOS; download no Windows);
+- abre o banco do Curso On numa porta livre, com configuração própria em `.masterbase/` (não mexe na sua);
+- troca a conexão (`MASTERBASE_DATABASE_URL` no `.env.local`) para usar o banco na nuvem.
+
+Por padrão ele usa o Supabase local (`postgresql://postgres:postgres@127.0.0.1:54322/postgres`). Atenção: com o usuário `postgres` o Masterbase ignora o RLS. Evite editar XP, matrículas e pagamentos à mão e, em produção, use um usuário com menos permissões.
+
+## Matérias e níveis
+
+As 13 matérias do ENEM, por área, ficam em [`content/subjects.json`](content/subjects.json), a fonte única usada pelo site e pelo painel. Cada matéria tem um ícone flat próprio e uma cor para o nível 1 e outra para o nível 2.
+
+| Área | Matérias |
+|---|---|
+| Linguagens | Português, Literatura, Redação, Inglês, Espanhol |
+| Ciências Humanas | História, Geografia, Filosofia, Sociologia |
+| Ciências da Natureza | Biologia, Química, Física |
+| Matemática | Matemática |
 
 ## Funcionalidades
 
 | Área | O que tem |
 |---|---|
 | **Auth** | Cadastro, login, Google OAuth, confirmação por e-mail, recuperação e troca de senha, rotas protegidas no `proxy.ts` |
-| **Estúdio** (`/studio`) | Criar curso (título, ícone, cor, preço), módulos e aulas com reordenação, editor de aula (texto + vídeo YouTube/Vimeo, prévia grátis, XP), banco de questões com gabarito, publicar/despublicar, lista de alunos |
+| **Estúdio** (`/studio`) | Criar curso (matéria do ENEM, nível 1 ou 2, título, preço), módulos e aulas com reordenação, editor de aula (texto + vídeo YouTube/Vimeo, prévia grátis, XP), banco de questões com gabarito, publicar/despublicar, lista de alunos |
 | **Aluno** (`/app`) | Painel com nível, XP, sequência e meta diária; trilha do curso; aula com "Concluir"; prática de questões com feedback; ranking |
-| **Vitrine** (`/cursos`) | Catálogo e página de venda com currículo, matrícula grátis ou compra |
+| **Vitrine** (`/cursos`) | Catálogo por área do ENEM, com os níveis 1 e 2 lado a lado, e página de venda com currículo, matrícula grátis ou compra |
 | **Pagamento** | Stripe Checkout; o webhook assinado libera a matrícula e trata reembolso |
 
 ## Segurança
@@ -25,9 +72,11 @@ Plataforma para **criar, organizar e vender cursos**, com aulas, banco de quest�
   - os redirects pós-login são sanitizados, o que evita *open redirect*;
   - as mensagens de erro de login são genéricas, para não revelar quais e-mails têm conta.
 - **Headers de segurança:** CSP, HSTS, `X-Frame-Options: DENY`, `nosniff` e `Referrer-Policy` (ver `next.config.ts`).
-- **Testes de RLS:** `npm run test:db` roda a migration num Postgres embutido (PGlite) e cobre 29 cenários de permissão.
+- **Testes de RLS:** `npm run test:db` roda as migrations num Postgres embutido (PGlite) e cobre 29 cenários de permissão.
 
-## Rodando localmente
+## Rodando sem o painel (manual)
+
+O painel faz tudo isto por você. Se preferir os comandos:
 
 ```bash
 npm install
@@ -90,11 +139,16 @@ Teste com o cartão `4242 4242 4242 4242`, qualquer data futura e qualquer CVC.
 | `npm run build` | Build de produção |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | Gera os tipos de rota e roda `tsc` |
-| `npm run test:db` | Testes de RLS/RPC da migration (PGlite, sem Docker) |
+| `npm run test:db` | Testes de RLS/RPC das migrations (PGlite, sem Docker) |
+| `npm run curso-on` | Compila e abre o painel (precisa de Rust) |
+| `cargo test --manifest-path cli/Cargo.toml` | Testes do painel |
 
 ## Estrutura
 
 ```
+cli/                   painel `curso-on` em Rust (ratatui)
+content/               matérias do ENEM e pacote de cursos (JSON)
+docs/                  guias para iniciantes
 src/
   app/
     (auth)/            login, cadastro, recuperar/nova senha + server actions
@@ -118,3 +172,11 @@ supabase/
 1. Importe o repositório na Vercel.
 2. Configure as variáveis do `.env.example`, com `NEXT_PUBLIC_SITE_URL` apontando para o domínio final.
 3. Atualize as Redirect URLs no Supabase e crie o webhook de produção no Stripe.
+
+## Contribuindo
+
+Contribuições são bem-vindas, principalmente aulas e questões novas para o `content/enem.json`. Veja o [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Licença
+
+[MIT](LICENSE)

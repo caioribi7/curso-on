@@ -1,0 +1,23 @@
+{
+  "areas": [
+    { "key": "linguagens", "name": "Linguagens", "color": "#FF6B4A" },
+    { "key": "humanas", "name": "Ciências Humanas", "color": "#E0892B" },
+    { "key": "natureza", "name": "Ciências da Natureza", "color": "#1DB27A" },
+    { "key": "matematica", "name": "Matemática", "color": "#3B5BFD" }
+  ],
+  "subjects": [
+    { "key": "portugues", "name": "Português", "area": "linguagens", "colors": ["#FF6B4A", "#C9452B"] },
+    { "key": "literatura", "name": "Literatura", "area": "linguagens", "colors": ["#A0705A", "#6B4636"] },
+    { "key": "redacao", "name": "Redação", "area": "linguagens", "colors": ["#5B6B7A", "#36424E"] },
+    { "key": "ingles", "name": "Inglês", "area": "linguagens", "colors": ["#F2A818", "#C27D00"] },
+    { "key": "espanhol", "name": "Espanhol", "area": "linguagens", "colors": ["#E53950", "#A81F33"] },
+    { "key": "historia", "name": "História", "area": "humanas", "colors": ["#E0892B", "#A65E14"] },
+    { "key": "geografia", "name": "Geografia", "area": "humanas", "colors": ["#16A9A0", "#0B7470"] },
+    { "key": "filosofia", "name": "Filosofia", "area": "humanas", "colors": ["#9B59D6", "#6A35A0"] },
+    { "key": "sociologia", "name": "Sociologia", "area": "humanas", "colors": ["#E5458B", "#AD2864"] },
+    { "key": "biologia", "name": "Biologia", "area": "natureza", "colors": ["#6CBF3A", "#3F8A1E"] },
+    { "key": "quimica", "name": "Química", "area": "natureza", "colors": ["#1DB27A", "#0E7D55"] },
+    { "key": "fisica", "name": "Física", "area": "natureza", "colors": ["#12A4E0", "#0B6FA3"] },
+    { "key": "matematica", "name": "Matemática", "area": "matematica", "colors": ["#3B5BFD", "#2534B8"] }
+  ]
+}
