@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/*
+ * Curso On design tokens.
+ * --course-* tokens are the per-course accent: every course page overrides them
+ * inline (see CourseTheme), so creators can pick their own color.
+ */
+:root {
+  --course-primary: #3b5bfd;
+  --course-primary-dark: #2a44d4;
+  --course-primary-soft: #eef1ff;
+}
+
+@theme inline {
+  --font-display: var(--font-nunito);
+  --font-sans: var(--font-nunito-sans);
+
+  --color-ink: #14161c;
+  --color-muted: #5b6170;
+  --color-subtle: #8a8f9c;
+  --color-line: #ecf0f6;
+  --color-line-strong: #e1e5f0;
+  --color-canvas: #f6f7fa;
+
+  --color-brand: #3b5bfd;
+  --color-brand-dark: #2a44d4;
+  --color-brand-soft: #eef1ff;
+  --color-sun: #ffc93c;
+  --color-sun-dark: #f2a818;
+  --color-sun-soft: #fff6db;
+  --color-coral: #ff6b5b;
+  --color-coral-soft: #fff0ee;
+  --color-mint: #2bc48a;
+  --color-mint-dark: #1e9e6e;
+  --color-mint-soft: #e6f8f0;
+
+  --color-course: var(--course-primary);
+  --color-course-dark: var(--course-primary-dark);
+  --color-course-soft: var(--course-primary-soft);
+
+  --radius-card: 24px;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--course-primary) 45%, transparent);
+  outline-offset: 2px;
+}
