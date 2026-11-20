@@ -321,7 +321,7 @@ export function PlayIcon({ size = 16, className }: IconProps) {
   );
 }
 
-export function NavIcon({ name, size = 22 }: { name: "home" | "lessons" | "questions" | "ranking" | "studio"; size?: number }) {
+export function NavIcon({ name, size = 22 }: { name: "home" | "lessons" | "questions" | "ranking" | "studio" | "essay"; size?: number }) {
   switch (name) {
     case "home":
       return (
@@ -346,6 +346,14 @@ export function NavIcon({ name, size = 22 }: { name: "home" | "lessons" | "quest
       );
     case "ranking":
       return <TrophyIcon size={size} />;
+    case "essay":
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+          <rect x="3" y="2" width="15" height="20" rx="4" fill={B} />
+          <path d="M7 8 H14 M7 12 H14 M7 16 H11" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+          <path d="M20.5 9.5 L22 11 L15.5 17.5 L13 18 L13.5 15.5 Z" fill={Y} stroke={INK} strokeWidth="1.2" strokeLinejoin="round" />
+        </svg>
+      );
     case "studio":
       return (
         <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>

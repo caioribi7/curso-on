@@ -106,6 +106,19 @@ Next 16). Sem suporte no navegador, tudo funciona igual, só sem animação.
 | Próxima questão | Card atual sai para a esquerda, o novo entra pela direita |
 | Fim da rodada | Card entra subindo, troféu com pop, XP conta |
 
+### Redação
+
+| Estado | Animação |
+|---|---|
+| Digitar / Foto ou PDF | Indicador `--r-inner` desliza dentro da barra `--r-panel` (`--dur-move`); o painel novo entra com `.anim-in` |
+| Contador de linhas | Barra cresce com o texto (`.bar-fill`); fica amarela abaixo de 8 linhas e coral acima de 30 |
+| Andamento (enviada → em correção → corrigida) | Etapa atual com pop; ligações preenchem com `.bar-fill` |
+| Nota devolvida | Total conta até o valor (`CountUp`) e as 5 barras crescem de 0 |
+| Comentário no texto | Trecho marcado clareia no hover; o ativo fica sólido e o comentário da lista ganha anel |
+| Notas do professor | Grupo `rounded-panel p-panel` com botões `rounded-inner` (0 a 200) |
+
+Folha pautada (`.essay-sheet`, em `src/styles/redacao.css`): linhas de 32px com `--line-strong`, nos dois temas.
+
 ### Avisos, menus e acordeões
 
 | Estado | Animação |

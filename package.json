@@ -7,11 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:db": "node supabase/tests/rls.test.mjs && node supabase/tests/achievements.test.mjs",
+    "test:db": "node supabase/tests/rls.test.mjs && node supabase/tests/achievements.test.mjs && node supabase/tests/redacao.test.mjs",
     "curso-on": "cargo run --release --quiet --manifest-path cli/Cargo.toml",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.12.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.1",
     "next": "16.4.6",

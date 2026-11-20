@@ -12,6 +12,7 @@ import { MenuLink, NavLink } from "./nav-link";
 const LINKS = [
   { href: "/app", label: "Início", icon: "home" as const, exact: true },
   { href: "/cursos", label: "Explorar", icon: "lessons" as const },
+  { href: "/app/redacao", label: "Redação", icon: "essay" as const },
   { href: "/app/ranking", label: "Ranking", icon: "ranking" as const },
   { href: "/studio", label: "Estúdio", icon: "studio" as const },
 ];
@@ -30,7 +31,8 @@ export async function Navbar() {
           {LINKS.map((l) => (
             <NavLink key={l.href} href={l.href} exact={l.exact}>
               <NavIcon name={l.icon} />
-              {l.label}
+              {/* Between md and xl only the icons fit; the label stays for screen readers. */}
+              <span className="max-xl:sr-only">{l.label}</span>
             </NavLink>
           ))}
         </nav>
