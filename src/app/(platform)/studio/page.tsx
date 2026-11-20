@@ -5,7 +5,7 @@ import { CourseBadge } from "@/components/icons/subject-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { requireUser } from "@/lib/dal";
 import { getOwnedCourses } from "@/lib/queries";
-import { courseThemeVars, formatPrice } from "@/lib/utils";
+import { courseThemeVars } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Estúdio" };
 
@@ -72,7 +72,7 @@ export default async function StudioPage() {
                   <div className="mt-auto flex flex-wrap gap-2 pt-3 text-sm font-semibold text-muted">
                     <span className="rounded-full bg-canvas px-3 py-1">{lessons} aulas</span>
                     <span className="rounded-full bg-canvas px-3 py-1">{students} alunos</span>
-                    <span className="rounded-full bg-course-soft px-3 py-1 text-course">{formatPrice(course.price_cents, course.currency)}</span>
+                    {course.level ? <span className="rounded-full bg-course-soft px-3 py-1 text-course">Nível {course.level}</span> : null}
                   </div>
                 </div>
               </Link>

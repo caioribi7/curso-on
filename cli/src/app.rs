@@ -35,7 +35,6 @@ pub enum FormKind {
     Signup,
     CloudSupabase,
     ProjectRef,
-    Stripe,
     NewCourse,
     Module(Option<String>),
     Lesson { id: Option<String>, module_id: String },
@@ -67,7 +66,6 @@ pub enum Action {
     LocalSupabase,
     CloudSupabase,
     PushMigrations,
-    Stripe,
     NpmInstall,
     Back,
     // masterbase
@@ -183,7 +181,6 @@ impl App {
     pub fn refresh_checks(&mut self) {
         let env = self.env.as_ref();
         let supa = env.and_then(|e| e.real("NEXT_PUBLIC_SUPABASE_URL"));
-        let stripe = env.and_then(|e| e.real("STRIPE_SECRET_KEY"));
         let node = sys::version("node");
         let docker = sys::version("docker");
         self.checks = vec![
@@ -199,7 +196,6 @@ impl App {
                 ok: Some(supa.is_some()),
                 detail: supa.map_or("ainda não configurado".into(), |u| if u.contains("127.0.0.1") || u.contains("localhost") { format!("local · {u}") } else { format!("nuvem · {u}") }),
             },
-            Check { label: "Stripe", ok: stripe.as_ref().map(|_| true), detail: if stripe.is_some() { "configurado".into() } else { "opcional: só para cursos pagos".into() } },
             Check {
                 label: "Professor",
                 ok: Some(self.logged_in()),
@@ -241,7 +237,6 @@ impl App {
                     item(Action::LocalSupabase, "Supabase no meu computador", "Mais fácil para testar. Precisa do Docker aberto. Liga o banco local e preenche o .env.local sozinho."),
                     item(Action::CloudSupabase, "Supabase na nuvem (grátis)", "Para colocar no ar. Mostra como criar a conta em supabase.com e onde copiar as chaves."),
                     item(Action::PushMigrations, "Criar as tabelas na nuvem", "Depois de configurar a nuvem: envia as tabelas e regras de segurança para o seu projeto Supabase."),
-                    item(Action::Stripe, "Pagamentos com Stripe (opcional)", "Só se for vender cursos. Sem Stripe, os cursos grátis funcionam normalmente."),
                     item(Action::NpmInstall, "Instalar dependências do site", "Roda `npm install`. Necessário uma vez, ou depois de atualizar o projeto."),
                     item(Action::Back, "Voltar", ""),
                 ]);
@@ -508,7 +503,6 @@ impl App {
                         vec![
                             Field::new("url", "Project URL", Kind::Text).value(get("NEXT_PUBLIC_SUPABASE_URL")).hint("https://abcd1234.supabase.co"),
                             Field::new("pub", "Publishable key", Kind::Text).value(get("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY")).hint("começa com sb_publishable_"),
-                            Field::new("secret", "Secret key", Kind::Secret).value(get("SUPABASE_SECRET_KEY")).hint("começa com sb_secret_ · nunca compartilhe"),
                         ],
                     )
                     .help(&[
@@ -516,7 +510,7 @@ impl App {
                         "2. Clique em “New project”, dê um nome (ex.: curso-on), crie uma senha forte para o banco e GUARDE essa senha.",
                         "3. Escolha a região mais perto de você (São Paulo) e espere o projeto ficar pronto (~2 min).",
                         "4. Vá em Project Settings → Data API e copie a “Project URL”.",
-                        "5. Vá em Project Settings → API Keys e copie a “Publishable key” e a “Secret key”.",
+                        "5. Vá em Project Settings → API Keys e copie a “Publishable key”.",
                         "6. Cole aqui (Ctrl+V funciona). Depois use “Criar as tabelas na nuvem”.",
                     ]),
                 ));
@@ -531,26 +525,6 @@ impl App {
                             "  supabase link   → pede a senha do banco que você criou",
                             "  supabase db push → cria as tabelas e as regras de segurança",
                         ]),
-                ))
-            }
-            Action::Stripe => {
-                let get = |k: &str| self.env.as_ref().and_then(|e| e.real(k)).unwrap_or_default();
-                let (sk, wh) = (get("STRIPE_SECRET_KEY"), get("STRIPE_WEBHOOK_SECRET"));
-                self.form = Some((
-                    FormKind::Stripe,
-                    Form::new(
-                        "Stripe (opcional)",
-                        vec![
-                            Field::new("sk", "Secret key", Kind::Secret).value(sk).hint("sk_test_… (modo de teste)"),
-                            Field::new("wh", "Webhook secret", Kind::Secret).value(wh).hint("whsec_… (do `stripe listen`)"),
-                        ],
-                    )
-                    .help(&[
-                        "1. Crie uma conta em stripe.com e deixe o “Modo de teste” ligado.",
-                        "2. Developers → API keys: copie a Secret key (sk_test_…).",
-                        "3. Para testar o webhook: stripe listen --forward-to localhost:3000/api/webhooks/stripe",
-                        "   e copie o segredo whsec_… que ele mostrar.",
-                    ]),
                 ))
             }
             Action::NpmInstall => {
@@ -656,7 +630,7 @@ impl App {
     pub fn load_courses(&mut self) {
         let Some(api) = &self.api else { return };
         let Ok(uid) = api.user_id() else { return };
-        match api.select(&format!("courses?select=id,slug,title,subject,level,status,price_cents&owner_id=eq.{uid}&order=subject.asc.nullslast,level,title")) {
+        match api.select(&format!("courses?select=id,slug,title,subject,level,status&owner_id=eq.{uid}&order=subject.asc.nullslast,level,title")) {
             Ok(rows) => {
                 self.courses = rows;
                 self.selected = self.selected.min(self.courses.len().saturating_sub(1));
@@ -677,7 +651,7 @@ impl App {
         let (Some(api), Some(course)) = (&self.api, &self.course) else { return };
         let id = course["id"].as_str().unwrap_or("").to_owned();
         let res = (|| -> anyhow::Result<Vec<Row>> {
-            let fresh = api.select(&format!("courses?select=id,slug,title,subject,level,status,price_cents&id=eq.{id}"))?;
+            let fresh = api.select(&format!("courses?select=id,slug,title,subject,level,status&id=eq.{id}"))?;
             let modules = api.select(&format!("modules?select=id,title,icon&course_id=eq.{id}&order=position"))?;
             let lessons = api.select(&format!("lessons?select=id,module_id,title,duration_minutes,xp_reward&course_id=eq.{id}&order=position"))?;
             let questions = api.select(&format!("questions?select=id,statement,difficulty&course_id=eq.{id}&order=created_at"))?;
@@ -783,7 +757,6 @@ impl App {
                     Field::new("level", "Nível", Kind::Choice(vec![("1".into(), "1 · Base e conteúdos iniciais".into()), ("2".into(), "2 · Aprofundamento e ENEM".into())])),
                     Field::new("title", "Título", Kind::Text).hint("vazio = nome da matéria + nível (ex.: Matemática 1)"),
                     Field::new("subtitle", "Subtítulo", Kind::Text).hint("uma frase sobre o curso"),
-                    Field::new("price", "Preço em R$", Kind::Number).value("0").hint("0 = grátis"),
                 ],
             )
             .help(&["← → escolhe a matéria e o nível.", "A cor e o ícone vêm da matéria."]),
@@ -908,7 +881,6 @@ impl App {
                 self.write_env(&[
                     ("NEXT_PUBLIC_SUPABASE_URL", url),
                     ("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", key),
-                    ("SUPABASE_SECRET_KEY", f.get("secret")),
                     ("NEXT_PUBLIC_SITE_URL", SITE.into()),
                 ])?;
                 Ok("Supabase na nuvem salvo no .env.local. Agora: “Criar as tabelas na nuvem”.".into())
@@ -926,14 +898,6 @@ impl App {
                 });
                 Ok("Pronto. Se tudo deu certo, as tabelas já estão no seu projeto.".into())
             }
-            FormKind::Stripe => {
-                let sk = f.get("sk");
-                if !sk.is_empty() && !sk.starts_with("sk_") && !sk.starts_with("rk_") {
-                    bail!("A chave do Stripe começa com sk_test_ (ou sk_live_).");
-                }
-                self.write_env(&[("STRIPE_SECRET_KEY", sk), ("STRIPE_WEBHOOK_SECRET", f.get("wh"))])?;
-                Ok("Stripe salvo no .env.local. Reinicie a plataforma para valer.".into())
-            }
             FormKind::MasterbaseUrl => {
                 let url = required("url", "DATABASE_URL")?;
                 if !url.starts_with("postgres") {
@@ -950,7 +914,6 @@ impl App {
                 if title.chars().count() < 3 {
                     bail!("O título precisa ter pelo menos 3 letras.");
                 }
-                let price = parse_price(&f.get("price"))?;
                 let base = slugify(&title);
                 let mut slug = base.clone();
                 for n in 2..50 {
@@ -964,7 +927,7 @@ impl App {
                     json!({
                         "owner_id": api.user_id()?, "slug": slug, "title": title, "subtitle": f.get("subtitle"),
                         "theme_color": content::color(&subject, level), "icon": content::fallback_icon(&subject),
-                        "subject": subject, "level": level, "price_cents": price, "status": "draft",
+                        "subject": subject, "level": level, "status": "draft",
                     }),
                 )?;
                 self.course = Some(course);
@@ -1129,11 +1092,9 @@ impl App {
         let get = |names: &[&str]| names.iter().find_map(|n| vars.iter().find(|(k, _)| k == n).map(|(_, v)| v.clone()));
         let url = get(&["API_URL"]).ok_or_else(|| anyhow::anyhow!("Não consegui ler o endereço do Supabase local."))?;
         let key = get(&["PUBLISHABLE_KEY", "ANON_KEY"]).ok_or_else(|| anyhow::anyhow!("Não consegui ler a chave pública."))?;
-        let secret = get(&["SECRET_KEY", "SERVICE_ROLE_KEY"]).unwrap_or_default();
         let mut pairs = vec![
             ("NEXT_PUBLIC_SUPABASE_URL", url),
             ("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", key),
-            ("SUPABASE_SECRET_KEY", secret),
             ("NEXT_PUBLIC_SITE_URL", SITE.into()),
         ];
         if let Some(db) = get(&["DB_URL"]) {
@@ -1194,20 +1155,6 @@ pub fn slugify(s: &str) -> String {
     if out.is_empty() { "curso".into() } else { out }
 }
 
-pub fn parse_price(s: &str) -> anyhow::Result<i64> {
-    let t = s.trim();
-    // "1.299,90" (padrão brasileiro) ou "29.90".
-    let s = if t.contains(',') { t.replace('.', "").replace(',', ".") } else { t.to_owned() };
-    if s.is_empty() {
-        return Ok(0);
-    }
-    let v: f64 = s.parse().map_err(|_| anyhow::anyhow!("Preço inválido. Exemplo: 29,90"))?;
-    if !(0.0..=100_000.0).contains(&v) {
-        anyhow::bail!("Preço entre R$ 0 e R$ 100.000.");
-    }
-    Ok((v * 100.0).round() as i64)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1217,13 +1164,5 @@ mod tests {
         assert_eq!(slugify("Matemática 2"), "matematica-2");
         assert_eq!(slugify("  Redação: nota 1000! "), "redacao-nota-1000");
         assert_eq!(slugify("¿?"), "curso");
-    }
-
-    #[test]
-    fn prices() {
-        assert_eq!(parse_price("29,90").unwrap(), 2990);
-        assert_eq!(parse_price("0").unwrap(), 0);
-        assert_eq!(parse_price("1.299,00").unwrap(), 129900);
-        assert!(parse_price("abc").is_err());
     }
 }

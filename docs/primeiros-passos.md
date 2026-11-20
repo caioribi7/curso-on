@@ -4,7 +4,7 @@ Este guia é para quem nunca criou um curso nem mexeu com programação. Você v
 
 ## O que é o Curso On
 
-Uma plataforma de cursos preparatórios para o ENEM que você roda no seu computador (ou coloca na internet). Cada matéria tem dois níveis: 1 para a base e 2 para o aprofundamento. Os alunos ganham XP, mantêm sequência de estudos e aparecem num ranking.
+Uma plataforma gratuita e open source de cursos preparatórios para o ENEM que você roda no seu computador (ou coloca na internet). Cada matéria tem dois níveis: 1 para a base e 2 para o aprofundamento. Os alunos ganham XP, mantêm sequência de estudos e aparecem num ranking.
 
 Tudo se controla por um painel no terminal: o comando `curso-on`.
 
@@ -53,7 +53,7 @@ O Supabase guarda as contas, os cursos e o progresso dos alunos. Escolha um cami
 4. No painel do `curso-on`: **Configurar o Curso On → Supabase na nuvem**. A tela mostra onde copiar a Project URL e as chaves.
 5. Depois: **Criar as tabelas na nuvem**. Você vai precisar do Reference ID (Project Settings → General) e da senha do banco do passo 2.
 
-A chave secreta (sb_secret_…) dá acesso total ao banco. Nunca mande para ninguém nem coloque no GitHub. O arquivo `.env.local` já fica fora do Git.
+A senha do banco e a chave secreta (sb_secret_…) do Supabase dão acesso total aos dados. O Curso On não precisa da chave secreta: nunca mande para ninguém nem coloque no GitHub. O arquivo `.env.local` já fica fora do Git.
 
 ## 4. Abra a plataforma
 
@@ -75,7 +75,7 @@ No Supabase na nuvem, ele pode pedir para confirmar o e-mail. Abra o e-mail, con
 
 ### Criar do zero
 
-1. **Meus cursos → n** (novo curso). Escolha a matéria com as setas ← →, o nível e o preço (0 = grátis).
+1. **Meus cursos → n** (novo curso). Escolha a matéria com as setas ← →, e o nível. Todo curso é gratuito.
 2. Dentro do curso, aperte **m** para criar um módulo (um capítulo, como “Funções”).
 3. Com o módulo selecionado, aperte **a** para criar uma aula. O conteúdo aceita Markdown:
    - `# Título` para títulos
@@ -85,19 +85,15 @@ No Supabase na nuvem, ele pode pedir para confirmar o e-mail. Abra o e-mail, con
 5. Quando estiver pronto, aperte **p** para publicar. Rascunhos só você vê.
 6. Aperte **v** para ver o curso no site.
 
-Dica: deixe a primeira aula como **prévia grátis**. Quem visita a página do curso consegue experimentar antes de se matricular.
+Dica: deixe a primeira aula como **prévia**. Quem visita a página do curso consegue ler antes de clicar em “Começar curso”.
 
-## 7. Vender cursos (opcional)
-
-Para cursos pagos você precisa de uma conta no Stripe (stripe.com). Use o modo de teste enquanto estiver aprendendo. No painel: **Configurar o Curso On → Pagamentos com Stripe**.
-
-## 8. Masterbase: ver o banco sem SQL (opcional)
+## 7. Masterbase: ver o banco sem SQL (opcional)
 
 O Masterbase é outro projeto open source do mesmo autor. Ele mostra as tabelas do Curso On como planilhas, para você ver alunos, cursos e respostas sem escrever SQL.
 
 No painel: **Masterbase → Abrir o banco no Masterbase**. Se ele não estiver instalado, a tela mostra como instalar. A primeira conta que você criar no Masterbase vira a administradora.
 
-Cuidado: com o usuário postgres, o Masterbase ignora as regras de segurança do site. Evite mudar XP, matrículas e pagamentos à mão.
+Cuidado: com o usuário postgres, o Masterbase ignora as regras de segurança do site. Evite mudar XP e matrículas à mão.
 
 ## Deu problema?
 

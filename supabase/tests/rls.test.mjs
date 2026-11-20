@@ -54,7 +54,7 @@ async function as(uid, sql, params) {
 }
 
 // Owner creates a free course, module, lesson, content, question
-const c = await as(OWNER, `insert into public.courses (owner_id, slug, title, theme_color, icon, price_cents) values ($1, 'mat-abc12', 'Matemática', '#3B5BFD', 'abacus', 0) returning id`, [OWNER]);
+const c = await as(OWNER, `insert into public.courses (owner_id, slug, title, theme_color, icon) values ($1, 'mat-abc12', 'Matemática', '#3B5BFD', 'abacus') returning id`, [OWNER]);
 const courseId = c.rows[0].id;
 ok("dono cria curso");
 const m = await as(OWNER, `insert into public.modules (course_id, title, icon, position) values ($1, 'M1', 'blocks', 0) returning id`, [courseId]);
@@ -120,9 +120,16 @@ r.rows[0].n === 1 ? ok("dono vê matrículas do curso") : fail("dono não vê");
 r = await as(STRANGER, `select count(*)::int n from public.enrollments`);
 r.rows[0].n === 0 ? ok("estranho não vê matrículas") : fail("matrículas vazaram");
 
-// Paid course: enroll_free must refuse
-const paid = await as(OWNER, `insert into public.courses (owner_id, slug, title, theme_color, icon, price_cents, status) values ($1,'pago-xyz12','Pago','#FF6B4A','code',4990,'published') returning id`, [OWNER]);
-await expectError("enroll_free recusa curso pago", () => as(STUDENT, `select public.enroll_free($1)`, [paid.rows[0].id]));
+// Tudo grátis: matrícula direta pela API, só em nome próprio e em curso publicado
+const pub = await as(OWNER, `insert into public.courses (owner_id, slug, title, theme_color, icon, status) values ($1,'livre-xyz12','Livre','#FF6B4A','code','published') returning id`, [OWNER]);
+const pubId = pub.rows[0].id;
+r = await as(STRANGER, `insert into public.enrollments (user_id, course_id, source) values ($1,$2,'free') returning id`, [STRANGER, pubId]);
+r.rows.length === 1 ? ok("aluno se matricula direto em curso publicado") : fail("auto-matrícula");
+await expectError("matrícula em nome de outro", () => as(STRANGER, `insert into public.enrollments (user_id, course_id, source) values ($1,$2,'free')`, [STUDENT, pubId]));
+const draft = await as(OWNER, `insert into public.courses (owner_id, slug, title) values ($1,'rascunho-xyz12','Rascunho') returning id`, [OWNER]);
+await expectError("matrícula direta em rascunho", () => as(STRANGER, `insert into public.enrollments (user_id, course_id, source) values ($1,$2,'free')`, [STRANGER, draft.rows[0].id]));
+await expectError("tabela payments removida", () => db.query("select 1 from public.payments"));
+await expectError("coluna price_cents removida", () => db.query("select price_cents from public.courses"));
 
 r = await as(STUDENT, `update public.profiles set full_name = 'Aluna Nova' where id = $1 returning full_name`, [STUDENT]);
 r.rows[0]?.full_name === "Aluna Nova" ? ok("aluno edita o próprio nome") : fail("nome");

@@ -59,7 +59,6 @@ fn import_course(api: &Api, c: &PackCourse) -> Result<bool> {
             "icon": content::fallback_icon(&c.subject),
             "subject": c.subject,
             "level": c.level,
-            "price_cents": 0,
             "status": "draft",
         }),
     )?;

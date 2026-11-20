@@ -25,8 +25,8 @@ const FEATURES = [
     bg: "bg-sun-soft",
   },
   {
-    title: "Venda com Stripe",
-    text: "Checkout com cartão e Pix. A matrícula é liberada automaticamente quando o pagamento confirma.",
+    title: "Grátis e open source",
+    text: "Sem pagamento, sem assinatura. Clone do GitHub, crie seus cursos e os alunos se matriculam com um clique.",
     icon: <BoltIcon size={48} />,
     bg: "bg-mint-soft",
   },
@@ -115,7 +115,7 @@ export default async function Home() {
 
         <section className="bg-canvas py-20">
           <div className="mx-auto flex max-w-[1280px] flex-col gap-10 px-4 sm:px-8">
-            <h2 className="max-w-2xl text-[40px] font-black leading-tight tracking-[-0.03em]">Tudo para criar, organizar e vender seu curso.</h2>
+            <h2 className="max-w-2xl text-[40px] font-black leading-tight tracking-[-0.03em]">Tudo para criar e organizar seu curso.</h2>
             <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
               {FEATURES.map((f) => (
                 <li key={f.title} className="flex flex-col gap-4 rounded-[28px] border border-line bg-white p-6">

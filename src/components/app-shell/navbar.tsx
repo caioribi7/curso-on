@@ -56,9 +56,6 @@ export async function Navbar() {
               <Link href="/app/perfil" className="block rounded-xl px-3 py-2 text-sm hover:bg-canvas">
                 Meu perfil
               </Link>
-              <Link href="/app/compras" className="block rounded-xl px-3 py-2 text-sm hover:bg-canvas">
-                Minhas compras
-              </Link>
               <form action={signOut}>
                 <button className="w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-coral hover:bg-coral-soft">Sair</button>
               </form>

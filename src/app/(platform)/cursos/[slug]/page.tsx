@@ -5,10 +5,9 @@ import { CourseBadge } from "@/components/icons/subject-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { getCurrentUser } from "@/lib/dal";
-import { isStripeConfigured } from "@/lib/env";
 import { getCourseBySlug, getCourseOutline, isEnrolled } from "@/lib/queries";
-import { cn, courseThemeVars, formatPrice } from "@/lib/utils";
-import { enrollFree, startCheckout } from "../../app/actions";
+import { cn, courseThemeVars } from "@/lib/utils";
+import { enrollFree } from "../../app/actions";
 
 export async function generateMetadata({ params }: PageProps<"/cursos/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -19,7 +18,6 @@ export async function generateMetadata({ params }: PageProps<"/cursos/[slug]">):
 
 const ERRORS: Record<string, string> = {
   matricula: "Não foi possível concluir a matrícula. Tente novamente.",
-  pagamento: "O pagamento não está disponível no momento. Tente mais tarde.",
 };
 
 export default async function CourseSalesPage({ params, searchParams }: PageProps<"/cursos/[slug]">) {
@@ -34,9 +32,7 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
   const lessons = outline.flatMap((m) => m.lessons);
   const minutes = lessons.reduce((s, l) => s + l.duration_minutes, 0);
   const xp = lessons.reduce((s, l) => s + l.xp_reward, 0);
-  const free = course.price_cents === 0;
   const error = typeof sp.erro === "string" ? ERRORS[sp.erro] : undefined;
-  const cancelled = sp.checkout === "cancelado";
 
   const cta = (() => {
     if (enrolled || isOwner) {
@@ -49,26 +45,16 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
     if (!user) {
       return (
         <ButtonLink href={`/cadastro?next=${encodeURIComponent(`/cursos/${course.slug}`)}`} size="lg" className="w-full">
-          {free ? "Criar conta e começar grátis" : "Criar conta para comprar"}
+          Criar conta e começar
         </ButtonLink>
       );
     }
-    if (free) {
-      return (
-        <form action={enrollFree}>
-          <input type="hidden" name="courseId" value={course.id} />
-          <input type="hidden" name="slug" value={course.slug} />
-          <SubmitButton size="lg" className="w-full" pendingText="Matriculando…">
-            Matricular grátis
-          </SubmitButton>
-        </form>
-      );
-    }
     return (
-      <form action={startCheckout}>
+      <form action={enrollFree}>
         <input type="hidden" name="courseId" value={course.id} />
-        <SubmitButton size="lg" className="w-full" pendingText="Abrindo pagamento…" disabled={!isStripeConfigured()}>
-          Comprar por {formatPrice(course.price_cents, course.currency)}
+        <input type="hidden" name="slug" value={course.slug} />
+        <SubmitButton size="lg" className="w-full" pendingText="Matriculando…">
+          <PlayIcon /> Começar curso
         </SubmitButton>
       </form>
     );
@@ -82,11 +68,6 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
         </p>
       ) : null}
       {error ? <p role="alert" className="rounded-2xl bg-coral-soft px-5 py-3 font-semibold text-coral">{error}</p> : null}
-      {cancelled ? (
-        <p role="status" className="rounded-2xl bg-canvas px-5 py-3 font-semibold text-muted">
-          Pagamento cancelado. Nada foi cobrado.
-        </p>
-      ) : null}
 
       <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
         <div className="flex flex-col gap-8">
@@ -148,14 +129,14 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
               <CourseBadge course={course} size={128} />
             </div>
             <div className="flex flex-col gap-5 px-6 pb-6">
-              <p className="font-display text-[36px] font-black leading-none">{formatPrice(course.price_cents, course.currency)}</p>
+              <p className="font-display text-[36px] font-black leading-none">Grátis</p>
               {cta}
               <ul className="flex flex-col gap-2.5 text-sm">
                 {[
                   "Acesso a todas as aulas e atualizações",
                   "Banco de questões com XP",
                   "Ranking da turma e sequência de estudos",
-                  free ? "100% gratuito" : "Pagamento seguro via Stripe (cartão e Pix)",
+                  "100% gratuito e open source",
                 ].map((b) => (
                   <li key={b} className="flex items-center gap-2.5">
                     <span className="flex size-6 items-center justify-center rounded-full bg-mint text-white">

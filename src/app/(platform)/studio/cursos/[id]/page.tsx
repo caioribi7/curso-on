@@ -9,7 +9,7 @@ import { requireUser } from "@/lib/dal";
 import { getAnswerKey, getCourseOutline, getCourseQuestions, getOwnedCourse } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { MODULE_ICONS, type ModuleWithLessons } from "@/lib/types";
-import { cn, courseThemeVars, formatPrice } from "@/lib/utils";
+import { cn, courseThemeVars } from "@/lib/utils";
 import { createLesson, createModule, deleteModule, deleteQuestion, moveLesson, moveModule, updateModule } from "../../actions";
 import { CourseForm } from "../../course-form";
 import { DeleteCourseForm, QuestionForm, StatusForm } from "../../editor-forms";
@@ -69,13 +69,13 @@ export default async function CourseEditorPage({ params, searchParams }: PagePro
             <span className="rounded-full bg-canvas px-3 py-1">
               {outline.length} módulos · {lessonCount} aulas
             </span>
-            <span className="rounded-full bg-course-soft px-3 py-1 text-course">{formatPrice(course.price_cents, course.currency)}</span>
+            {course.level ? <span className="rounded-full bg-course-soft px-3 py-1 text-course">Nível {course.level}</span> : null}
           </div>
         </div>
         <div className="flex gap-3">
           {course.status === "published" ? (
             <ButtonLink href={`/cursos/${course.slug}`} variant="secondary">
-              Ver página de venda
+              Ver página do curso
             </ButtonLink>
           ) : null}
           <ButtonLink href={`/app/cursos/${course.slug}`} variant="secondary">
@@ -311,13 +311,13 @@ async function StudentsTab({ courseId }: { courseId: string }) {
     .order("created_at", { ascending: false })
     .limit(200);
   const rows = (data as unknown as { created_at: string; source: string; profile: { full_name: string; xp: number } | null }[] | null) ?? [];
-  const sourceLabel: Record<string, string> = { free: "Grátis", stripe: "Compra", manual: "Manual" };
+  const sourceLabel: Record<string, string> = { free: "Matrícula", stripe: "Compra (antiga)", manual: "Manual" };
 
   return (
     <section className="overflow-hidden rounded-[28px] border border-line bg-white">
       <h2 className="border-b border-line p-5 text-xl font-black">Alunos matriculados ({rows.length})</h2>
       {rows.length === 0 ? (
-        <p className="p-8 text-center text-muted">Ainda sem alunos. Publique o curso e compartilhe o link da página de venda.</p>
+        <p className="p-8 text-center text-muted">Ainda sem alunos. Publique o curso e compartilhe o link da página do curso.</p>
       ) : (
         <table className="w-full text-left text-sm">
           <thead className="bg-canvas font-display text-xs uppercase tracking-wide text-muted">

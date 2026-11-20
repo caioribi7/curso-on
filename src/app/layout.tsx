@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s · Curso On",
   },
   description:
-    "Plataforma para criar e vender cursos online com aulas, banco de questões e gamificação.",
+    "Plataforma gratuita e open source para criar cursos preparatórios para o ENEM, com aulas, questões e gamificação.",
 };
 
 export default function RootLayout({

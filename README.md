@@ -1,10 +1,10 @@
 # Curso On
 
-Plataforma **open source** de cursos preparatórios para o **ENEM**. Cada matéria tem dois níveis (Matemática 1 e Matemática 2, Física 1 e Física 2…), com aulas curtas, banco de questões e gamificação: XP, níveis, sequência de dias e ranking da turma.
+Plataforma **open source e 100% gratuita** de cursos preparatórios para o **ENEM**. Sem pagamento, sem assinatura: clone, crie seu curso e compartilhe. Cada matéria tem dois níveis (Matemática 1 e Matemática 2, Física 1 e Física 2…), com aulas curtas, banco de questões e gamificação: XP, níveis, sequência de dias e ranking da turma.
 
 Você não precisa saber programar: o painel **`curso-on`**, feito em Rust, roda no terminal e configura tudo pelo menu, do banco de dados ao seu primeiro curso.
 
-**Stack:** Next.js 16 (App Router, Server Actions), Supabase (Auth + Postgres com RLS), Stripe Checkout (cartão e Pix), Tailwind CSS v4, Zod, e o painel em Rust (ratatui).
+**Stack:** Next.js 16 (App Router, Server Actions), Supabase (Auth + Postgres com RLS), Tailwind CSS v4, Zod, e o painel em Rust (ratatui).
 
 ## Comece em 3 passos
 
@@ -21,7 +21,7 @@ Nunca usou nada disso? O [guia para iniciantes](docs/primeiros-passos.md) explic
 
 | Menu | O que faz |
 |---|---|
-| **Configurar** | Baixa o projeto, liga o Supabase local (Docker) ou guia a criação do Supabase na nuvem, cria as tabelas, configura o Stripe e instala as dependências. Escreve o `.env.local` por você. |
+| **Configurar** | Baixa o projeto, liga o Supabase local (Docker) ou guia a criação do Supabase na nuvem, cria as tabelas e instala as dependências. Escreve o `.env.local` por você. |
 | **Abrir a plataforma** | Roda o site e abre o navegador em `localhost:3000`. |
 | **Criar conta / Entrar** | Conta de professor no seu Supabase. |
 | **Meus cursos** | Editor completo: curso (matéria + nível), módulos, aulas em Markdown, questões de múltipla escolha com explicação, publicar e excluir. |
@@ -38,7 +38,7 @@ O [Masterbase](https://github.com/caioribi7/masterbase) é outro projeto open so
 - abre o banco do Curso On numa porta livre, com configuração própria em `.masterbase/` (não mexe na sua);
 - troca a conexão (`MASTERBASE_DATABASE_URL` no `.env.local`) para usar o banco na nuvem.
 
-Por padrão ele usa o Supabase local (`postgresql://postgres:postgres@127.0.0.1:54322/postgres`). Atenção: com o usuário `postgres` o Masterbase ignora o RLS. Evite editar XP, matrículas e pagamentos à mão e, em produção, use um usuário com menos permissões.
+Por padrão ele usa o Supabase local (`postgresql://postgres:postgres@127.0.0.1:54322/postgres`). Atenção: com o usuário `postgres` o Masterbase ignora o RLS. Evite editar XP e matrículas à mão e, em produção, use um usuário com menos permissões.
 
 ## Matérias e níveis
 
@@ -56,16 +56,14 @@ As 13 matérias do ENEM, por área, ficam em [`content/subjects.json`](content/s
 | Área | O que tem |
 |---|---|
 | **Auth** | Cadastro, login, Google OAuth, confirmação por e-mail, recuperação e troca de senha, rotas protegidas no `proxy.ts` |
-| **Estúdio** (`/studio`) | Criar curso (matéria do ENEM, nível 1 ou 2, título, preço), módulos e aulas com reordenação, editor de aula (texto + vídeo YouTube/Vimeo, prévia grátis, XP), banco de questões com gabarito, publicar/despublicar, lista de alunos |
+| **Estúdio** (`/studio`) | Criar curso (matéria do ENEM, nível 1 ou 2, título), módulos e aulas com reordenação, editor de aula (texto + vídeo YouTube/Vimeo, prévia grátis, XP), banco de questões com gabarito, publicar/despublicar, lista de alunos |
 | **Aluno** (`/app`) | Painel com nível, XP, sequência e meta diária; trilha do curso; aula com "Concluir"; prática de questões com feedback; ranking |
-| **Vitrine** (`/cursos`) | Catálogo por área do ENEM, com os níveis 1 e 2 lado a lado, e página de venda com currículo, matrícula grátis ou compra |
-| **Pagamento** | Stripe Checkout; o webhook assinado libera a matrícula e trata reembolso |
+| **Vitrine** (`/cursos`) | Catálogo por área do ENEM, com os níveis 1 e 2 lado a lado, e página do curso com currículo e botão “Começar curso” (matrícula grátis) |
 
 ## Segurança
 
 - **RLS em todas as tabelas.** Cursos em rascunho só aparecem para o dono. Conteúdo das aulas (`lesson_contents`) e gabarito (`question_answers`) ficam em tabelas separadas e protegidas.
-- **XP, matrículas e progresso** só mudam por funções `SECURITY DEFINER` (`complete_lesson`, `answer_question`, `enroll_free`) ou pelo webhook do Stripe. `award_xp` não pode ser chamada pelo cliente, e um *column grant* impede o aluno de editar `xp`/`streak` no próprio perfil.
-- **O preço vem sempre do banco**, nunca do formulário. A matrícula paga só é criada pelo webhook depois da verificação da assinatura (`STRIPE_WEBHOOK_SECRET`).
+- **XP, matrículas e progresso** só mudam por funções `SECURITY DEFINER` (`complete_lesson`, `answer_question`, `enroll_free`). O aluno também pode se matricular direto pela API, mas só em nome próprio e em curso publicado. `award_xp` não pode ser chamada pelo cliente, e um *column grant* impede o aluno de editar `xp`/`streak` no próprio perfil.
 - **No servidor, a sessão é lida com `getClaims()`** (JWT verificado) e não com `getSession()`.
 - **Proteções extras:**
   - todo Server Action revalida o usuário e checa a posse do recurso;
@@ -90,46 +88,23 @@ npm run dev
 npx supabase start        # sobe Postgres + Auth + API e aplica a migration
 ```
 
-Copie a URL e as chaves que o comando mostra para `.env.local`. Para testar o pagamento sem conta Stripe, use qualquer `STRIPE_WEBHOOK_SECRET` (ex.: `whsec_local`) e envie um webhook assinado:
-
-```bash
-STRIPE_WEBHOOK_SECRET=whsec_local node scripts/webhook-test.mjs <courseId> <userId> 4990
-```
-
-O script envia primeiro uma assinatura falsa (deve dar 400), depois uma válida (200, cria pagamento + matrícula) e por fim um reenvio (idempotente, sem duplicar). Contas de teste locais: `scripts/test-accounts.md`.
+Copie a URL e a chave pública que o comando mostra para `.env.local`. Contas de teste locais: `scripts/test-accounts.md`.
 
 ### 1. Supabase (produção)
 
 1. Crie um projeto em [supabase.com](https://supabase.com).
-2. Copie **Project URL**, **Publishable key** e **Secret key** (Project Settings → API) para `.env.local`.
-3. Aplique a migration usando a CLI:
+2. Copie **Project URL** e **Publishable key** (Project Settings → API) para `.env.local`.
+3. Aplique as migrations usando a CLI:
    ```bash
    npx supabase login
    npx supabase link --project-ref SEU_REF
    npx supabase db push
    ```
-   Se preferir, cole `supabase/migrations/20261118000000_init.sql` no SQL Editor.
+   Se preferir, cole os arquivos de `supabase/migrations/` no SQL Editor, em ordem.
 4. Em **Authentication → URL Configuration**, configure:
    - **Site URL**: `http://localhost:3000` (em produção, o seu domínio);
    - **Redirect URLs**: `http://localhost:3000/auth/callback` e `https://SEU-DOMINIO/auth/callback`.
 5. (Opcional) Para habilitar Google em **Authentication → Providers → Google**, informe o Client ID/Secret do Google Cloud. A *redirect URI* do Google é a callback do Supabase mostrada nessa tela.
-
-### 2. Stripe
-
-1. Pegue a **Secret key** de teste (`sk_test_…`) em Developers → API keys.
-2. Para receber webhooks localmente:
-   ```bash
-   stripe listen --forward-to localhost:3000/api/webhooks/stripe
-   ```
-   Copie o `whsec_…` exibido para `STRIPE_WEBHOOK_SECRET`.
-3. Em produção, crie um endpoint em Developers → Webhooks apontando para `https://SEU-DOMINIO/api/webhooks/stripe` com os eventos:
-   - `checkout.session.completed`
-   - `checkout.session.async_payment_succeeded`
-   - `checkout.session.async_payment_failed`
-   - `charge.refunded`
-4. Para aceitar **Pix**, ative o método em Settings → Payment methods (conta BR). O Checkout usa os métodos ativos automaticamente.
-
-Teste com o cartão `4242 4242 4242 4242`, qualquer data futura e qualquer CVC.
 
 ## Scripts
 
@@ -153,14 +128,12 @@ src/
   app/
     (auth)/            login, cadastro, recuperar/nova senha + server actions
     (platform)/
-      app/             área do aluno (painel, curso, aula, questões, perfil, compras)
+      app/             área do aluno (painel, curso, aula, questões, perfil)
       studio/          estúdio do criador (cursos, módulos, aulas, questões)
       cursos/          catálogo e página de venda (públicos)
-      checkout/        retorno do Stripe
-    api/webhooks/stripe/  webhook assinado → pagamento + matrícula
     auth/callback/     troca do código OAuth / confirmação de e-mail
   components/          logo, ícones flat, UI (botões, campos, progresso)
-  lib/                 supabase (server/admin/proxy), dal, queries, stripe, utils
+  lib/                 supabase (server/proxy), dal, queries, utils
   proxy.ts             refresh de sessão + proteção de rotas
 supabase/
   migrations/          schema, RLS, funções e grants
@@ -171,7 +144,7 @@ supabase/
 
 1. Importe o repositório na Vercel.
 2. Configure as variáveis do `.env.example`, com `NEXT_PUBLIC_SITE_URL` apontando para o domínio final.
-3. Atualize as Redirect URLs no Supabase e crie o webhook de produção no Stripe.
+3. Atualize as Redirect URLs no Supabase.
 
 ## Contribuindo
 

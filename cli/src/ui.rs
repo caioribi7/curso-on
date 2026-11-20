@@ -237,7 +237,6 @@ fn courses(f: &mut Frame, app: &App, area: Rect) {
             let level = c["level"].as_u64().unwrap_or(1) as u8;
             let color = if subject.is_empty() { BRAND } else { rgb(&content::color(subject, level)) };
             let published = c["status"] == "published";
-            let price = c["price_cents"].as_i64().unwrap_or(0);
             ListItem::new(Line::from(vec![
                 Span::styled(if subject.is_empty() { "  ●  ".into() } else { format!(" {level}  ") }, Style::new().bg(color).fg(Color::White).bold()),
                 Span::raw("  "),
@@ -245,10 +244,6 @@ fn courses(f: &mut Frame, app: &App, area: Rect) {
                 Span::styled(
                     if published { " Publicado " } else { " Rascunho  " },
                     Style::new().fg(if published { MINT } else { SUN }),
-                ),
-                Span::styled(
-                    if price == 0 { "  grátis".into() } else { format!("  R$ {},{:02}", price / 100, price % 100) },
-                    Style::new().fg(MUTED),
                 ),
             ]))
         })
@@ -422,7 +417,9 @@ fn draw_form(f: &mut Frame, form: &Form) {
         lines.push(Line::from(format!("✗ {e}")).fg(CORAL).bold());
     }
     // Rola para manter o campo atual visível em telas pequenas.
-    let scroll = cursor_line.saturating_sub(inner.height.saturating_sub(7) as usize) as u16;
+    // Rola só quando o campo atual (rótulo + até 6 linhas de valor) não cabe.
+    let visible = inner.height as usize;
+    let scroll = if lines.len() <= visible { 0 } else { (cursor_line + 6).saturating_sub(visible).min(lines.len() - visible) as u16 };
     f.render_widget(Paragraph::new(lines).scroll((scroll, 0)), inner);
 }
 

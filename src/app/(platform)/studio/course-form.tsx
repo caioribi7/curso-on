@@ -106,19 +106,10 @@ export function CourseForm({ course }: { course?: Course }) {
           <Input id="subtitle" name="subtitle" maxLength={200} defaultValue={course?.subtitle} placeholder="Do zero ao ENEM, no seu ritmo." />
         </Field>
         {editing ? (
-          <Field label="Descrição" htmlFor="description" hint="O que o aluno vai aprender? Aparece na página de venda." error={err("description")}>
+          <Field label="Descrição" htmlFor="description" hint="O que o aluno vai aprender? Aparece na página do curso." error={err("description")}>
             <Textarea id="description" name="description" rows={6} maxLength={5000} defaultValue={course?.description} />
           </Field>
         ) : null}
-        <Field label="Preço (R$)" htmlFor="price" hint="Use 0 para um curso gratuito." error={err("price")}>
-          <Input
-            id="price"
-            name="price"
-            inputMode="decimal"
-            defaultValue={course ? (course.price_cents / 100).toFixed(2).replace(".", ",") : "0"}
-            className="max-w-48"
-          />
-        </Field>
 
         <label className="flex w-fit items-center gap-3 rounded-full border border-line bg-white py-1 pl-1 pr-4 text-sm font-semibold text-muted">
           <input

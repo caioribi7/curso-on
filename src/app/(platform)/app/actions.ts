@@ -4,8 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireUser } from "@/lib/dal";
-import { publicEnv, isStripeConfigured } from "@/lib/env";
-import { getStripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionState } from "@/lib/types";
 
@@ -20,60 +18,6 @@ export async function enrollFree(formData: FormData) {
   if (error) redirect(`/cursos/${slug}?erro=matricula`);
   revalidatePath("/app");
   redirect(`/app/cursos/${slug}`);
-}
-
-/** Creates a Stripe Checkout Session. Price always comes from the database, never the form. */
-export async function startCheckout(formData: FormData) {
-  const courseId = uuid.parse(formData.get("courseId"));
-  const user = await requireUser();
-  const supabase = await createClient();
-  const { data: course } = await supabase
-    .from("courses")
-    .select("id, slug, title, subtitle, price_cents, currency, status")
-    .eq("id", courseId)
-    .eq("status", "published")
-    .maybeSingle();
-  if (!course) redirect("/cursos");
-  if (course.price_cents <= 0) redirect(`/cursos/${course.slug}`);
-  if (!isStripeConfigured()) redirect(`/cursos/${course.slug}?erro=pagamento`);
-
-  const { data: existing } = await supabase
-    .from("enrollments")
-    .select("id")
-    .eq("course_id", course.id)
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (existing) redirect(`/app/cursos/${course.slug}`);
-
-  const site = publicEnv.siteUrl();
-  let session: Awaited<ReturnType<ReturnType<typeof getStripe>["checkout"]["sessions"]["create"]>>;
-  try {
-    session = await getStripe().checkout.sessions.create({
-    mode: "payment",
-    customer_email: user.email || undefined,
-    client_reference_id: user.id,
-    line_items: [
-      {
-        quantity: 1,
-        price_data: {
-          currency: course.currency,
-          unit_amount: course.price_cents,
-          product_data: { name: course.title, description: course.subtitle || undefined },
-        },
-      },
-    ],
-    metadata: { course_id: course.id, user_id: user.id },
-    payment_intent_data: { metadata: { course_id: course.id, user_id: user.id } },
-    success_url: `${site}/checkout/sucesso?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${site}/cursos/${course.slug}?checkout=cancelado`,
-    locale: "pt-BR",
-    });
-  } catch (err) {
-    console.error("[checkout]", err instanceof Error ? err.message : err);
-    redirect(`/cursos/${course.slug}?erro=pagamento`);
-  }
-  if (!session.url) redirect(`/cursos/${course.slug}?erro=pagamento`);
-  redirect(session.url);
 }
 
 export async function completeLesson(formData: FormData) {

@@ -50,8 +50,6 @@ export type Course = {
   icon: CourseIcon;
   subject: string | null;
   level: number | null;
-  price_cents: number;
-  currency: string;
   status: CourseStatus;
   created_at: string;
   updated_at: string;

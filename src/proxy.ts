@@ -7,7 +7,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip static assets and the Stripe webhook (it authenticates by signature).
-    "/((?!_next/static|_next/image|favicon.ico|api/webhooks|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    // Skip static assets.
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

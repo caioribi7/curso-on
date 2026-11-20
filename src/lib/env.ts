@@ -29,5 +29,3 @@ export const isSupabaseConfigured = () =>
       (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
   );
-
-export const isStripeConfigured = () => Boolean(process.env.STRIPE_SECRET_KEY);

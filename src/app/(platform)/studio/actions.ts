@@ -27,14 +27,6 @@ async function ownerContext(courseId: string) {
   return { user, supabase, course: data as { id: string; status: string } };
 }
 
-function parsePrice(raw: FormDataEntryValue | null) {
-  const text = String(raw ?? "0").trim().replace(/\s|R\$/g, "");
-  const normalized = text.includes(",") ? text.replace(/\./g, "").replace(",", ".") : text;
-  const value = Number(normalized || "0");
-  if (!Number.isFinite(value) || value < 0 || value > 100000) return null;
-  return Math.round(value * 100);
-}
-
 // Legacy illustration kept in `icon` for courses without a subject.
 const FALLBACK_ICON: Record<string, CourseIcon> = {
   matematica: "abacus",
@@ -67,8 +59,6 @@ export async function createCourse(_prev: ActionState, formData: FormData): Prom
     themeColor: formData.get("themeColor"),
   });
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
-  const price = parsePrice(formData.get("price"));
-  if (price === null) return { fieldErrors: { price: ["Preço inválido."] } };
 
   const supabase = await createClient();
   const slug = `${slugify(parsed.data.title) || "curso"}-${randomSuffix()}`;
@@ -83,7 +73,6 @@ export async function createCourse(_prev: ActionState, formData: FormData): Prom
       subject: parsed.data.subject,
       level: parsed.data.level,
       theme_color: parsed.data.themeColor.toUpperCase(),
-      price_cents: price,
     })
     .select("id")
     .single();
@@ -110,8 +99,6 @@ export async function updateCourse(_prev: ActionState, formData: FormData): Prom
       description: formData.get("description") ?? "",
     });
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
-  const price = parsePrice(formData.get("price"));
-  if (price === null) return { fieldErrors: { price: ["Preço inválido."] } };
 
   const { supabase } = await ownerContext(id.data);
   const { error } = await supabase
@@ -124,7 +111,6 @@ export async function updateCourse(_prev: ActionState, formData: FormData): Prom
       subject: parsed.data.subject,
       level: parsed.data.level,
       theme_color: parsed.data.themeColor.toUpperCase(),
-      price_cents: price,
     })
     .eq("id", id.data);
   if (error) return { error: "Não foi possível salvar. Tente novamente." };

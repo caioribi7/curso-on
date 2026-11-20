@@ -4,14 +4,6 @@ export function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function formatPrice(cents: number, currency = "brl") {
-  if (cents === 0) return "Grátis";
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
-}
-
 export function slugify(input: string) {
   return input
     .normalize("NFD")

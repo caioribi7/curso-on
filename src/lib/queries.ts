@@ -7,7 +7,7 @@ import type { Course, Lesson, Module, ModuleWithLessons, Question, QuestionOptio
 // All reads go through the user-scoped client: RLS decides what is visible.
 
 const COURSE_COLS =
-  "id, owner_id, slug, title, subtitle, description, theme_color, icon, subject, level, price_cents, currency, status, created_at, updated_at";
+  "id, owner_id, slug, title, subtitle, description, theme_color, icon, subject, level, status, created_at, updated_at";
 const MODULE_COLS = "id, course_id, title, description, icon, position";
 const LESSON_COLS = "id, module_id, course_id, title, summary, duration_minutes, position, is_preview, xp_reward";
 

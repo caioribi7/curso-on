@@ -5,7 +5,7 @@ import { CourseBadge, SubjectIcon } from "@/components/icons/subject-icon";
 import { getPublishedCourses } from "@/lib/queries";
 import { AREAS, SUBJECTS, type AreaKey, type Level } from "@/lib/subjects";
 import type { Course } from "@/lib/types";
-import { cn, courseThemeVars, formatPrice } from "@/lib/utils";
+import { cn, courseThemeVars } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Cursos", description: "Preparatório para o ENEM por matéria, em dois níveis." };
 
@@ -21,7 +21,7 @@ function CourseCard({ course }: { course: Course }) {
         <span className="truncate font-display text-lg font-black leading-tight">{course.title}</span>
         <span className="line-clamp-1 text-sm text-muted">{course.subtitle}</span>
         <span className="w-fit rounded-full bg-course-soft px-2.5 py-0.5 font-display text-xs font-black text-course">
-          {formatPrice(course.price_cents, course.currency)}
+          Nível {course.level ?? "livre"}
         </span>
       </span>
     </Link>
