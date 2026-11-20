@@ -148,7 +148,7 @@ r.rows[0].n === 1 ? ok("visitante vê curso ENEM publicado") : fail("catálogo E
 // Conquistas
 const badges = async (uid) => (await db.query(`select achievement_slug s from public.user_achievements where user_id = $1`, [uid])).rows.map((x) => x.s);
 r = await as(null, `select count(*)::int n from public.achievements`);
-r.rows[0].n === 12 ? ok("visitante vê as 12 conquistas") : fail(`conquistas: ${r.rows[0].n}`);
+r.rows[0].n === 30 ? ok("visitante vê as 30 conquistas") : fail(`conquistas: ${r.rows[0].n}`);
 (await badges(STRANGER)).includes("calouro") ? ok("Calouro ao criar conta") : fail("calouro");
 {
   const b = await badges(STUDENT);

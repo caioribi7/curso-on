@@ -1,15 +1,17 @@
-/** Emblema da conquista (desenhos finais em public/achievements/<slug>.svg, viewBox 170x180). */
-export function AchievementBadge({ slug, unlocked, size = 64 }: { slug: string; icon?: string; unlocked: boolean; size?: number }) {
+/** Medalha da conquista (arte final em public/achievements/medalhas/<slug>.png, 256x256, fundo transparente). */
+export function AchievementBadge({ slug, unlocked, size = 72 }: { slug: string; icon?: string; unlocked: boolean; size?: number }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- SVG estático, sem ganho com next/image
+    // eslint-disable-next-line @next/next/no-img-element -- PNG estático já no tamanho certo, sem ganho com next/image
     <img
-      src={`/achievements/${slug}.svg`}
+      src={`/achievements/medalhas/${slug}.png`}
       alt=""
       aria-hidden
       width={size}
-      height={Math.round((size * 180) / 170)}
+      height={size}
       loading="lazy"
-      className={unlocked ? undefined : "opacity-40 grayscale"}
+      decoding="async"
+      draggable={false}
+      className={unlocked ? "drop-shadow-sm" : "opacity-35 grayscale"}
     />
   );
 }

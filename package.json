@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:db": "node supabase/tests/rls.test.mjs",
+    "test:db": "node supabase/tests/rls.test.mjs && node supabase/tests/achievements.test.mjs",
     "curso-on": "cargo run --release --quiet --manifest-path cli/Cargo.toml",
     "typecheck": "next typegen && tsc --noEmit"
   },
