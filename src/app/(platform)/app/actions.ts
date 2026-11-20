@@ -4,10 +4,69 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireUser } from "@/lib/dal";
+import { isSalesEnabled, publicEnv } from "@/lib/env";
+import { getStripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionState } from "@/lib/types";
 
 const uuid = z.string().uuid();
+
+/**
+ * Opens Stripe Checkout for a paid course. The price always comes from the
+ * database, never the form; access is granted only by the signed webhook.
+ */
+export async function startCheckout(formData: FormData) {
+  const courseId = uuid.parse(formData.get("courseId"));
+  const user = await requireUser();
+  const supabase = await createClient();
+  const { data: course } = await supabase
+    .from("courses")
+    .select("id, slug, title, subtitle, price_cents, currency")
+    .eq("id", courseId)
+    .eq("status", "published")
+    .maybeSingle();
+  if (!course) redirect("/cursos");
+  if (course.price_cents <= 0) redirect(`/cursos/${course.slug}`);
+  if (!isSalesEnabled()) redirect(`/cursos/${course.slug}?erro=pagamento`);
+
+  const { data: existing } = await supabase
+    .from("enrollments")
+    .select("id")
+    .eq("course_id", course.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (existing) redirect(`/app/cursos/${course.slug}`);
+
+  const site = publicEnv.siteUrl();
+  let url: string | null = null;
+  try {
+    const session = await getStripe().checkout.sessions.create({
+      mode: "payment",
+      customer_email: user.email || undefined,
+      client_reference_id: user.id,
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: course.currency,
+            unit_amount: course.price_cents,
+            product_data: { name: course.title, description: course.subtitle || undefined },
+          },
+        },
+      ],
+      metadata: { course_id: course.id, user_id: user.id },
+      payment_intent_data: { metadata: { course_id: course.id, user_id: user.id } },
+      success_url: `${site}/checkout/sucesso?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${site}/cursos/${course.slug}?checkout=cancelado`,
+      locale: "pt-BR",
+    });
+    url = session.url;
+  } catch (err) {
+    console.error("[checkout]", err instanceof Error ? err.message : err);
+  }
+  if (!url) redirect(`/cursos/${course.slug}?erro=pagamento`);
+  redirect(url);
+}
 
 export async function enrollFree(formData: FormData) {
   const courseId = uuid.parse(formData.get("courseId"));

@@ -27,7 +27,7 @@ const FEATURES = [
   },
   {
     title: "Grátis e open source",
-    text: "Sem pagamento, sem assinatura. Clone do GitHub, crie seus cursos e os alunos se matriculam com um clique.",
+    text: "Criar e publicar não custa nada. Deixe seu curso grátis ou venda pela Stripe, e o dinheiro vai direto para você.",
     icon: <BoltIcon size={48} />,
     bg: "bg-mint-soft",
   },

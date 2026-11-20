@@ -9,10 +9,11 @@ import { MathText } from "@/components/math/math-text";
 import { ButtonLink } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/field";
 import { requireUser } from "@/lib/dal";
+import { isSalesEnabled } from "@/lib/env";
 import { getAnswerKey, getCourseOutline, getCourseQuestions, getOwnedCourse } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { MODULE_ICONS, type ModuleWithLessons } from "@/lib/types";
-import { cn, courseThemeVars } from "@/lib/utils";
+import { cn, courseThemeVars, formatPrice } from "@/lib/utils";
 import { createLesson, createModule, deleteModule, deleteQuestion, moveLesson, moveModule, updateModule } from "../../actions";
 import { CourseForm } from "../../course-form";
 import { DeleteCourseForm, QuestionForm, StatusForm } from "../../editor-forms";
@@ -104,7 +105,7 @@ export default async function CourseEditorPage({ params, searchParams }: PagePro
       {tab === "simulados" ? <MockExamsTab courseId={course.id} /> : null}
       {tab === "configuracoes" ? (
         <div className="flex flex-col gap-8">
-          <CourseForm course={course} />
+          <CourseForm course={course} salesEnabled={isSalesEnabled()} />
           <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-card">
             <h2 className="text-xl font-black">Publicação</h2>
             <p className="text-muted">
@@ -312,9 +313,25 @@ async function StudentsTab({ courseId }: { courseId: string }) {
     .order("created_at", { ascending: false })
     .limit(200);
   const rows = (data as unknown as { created_at: string; source: string; profile: { full_name: string; xp: number } | null }[] | null) ?? [];
-  const sourceLabel: Record<string, string> = { free: "Matrícula", stripe: "Compra (antiga)", manual: "Manual" };
+  const sourceLabel: Record<string, string> = { free: "Matrícula grátis", stripe: "Compra", manual: "Manual" };
+  const { data: sales } = await supabase.from("payments").select("amount_cents, currency").eq("course_id", courseId).eq("status", "paid");
+  const revenue = (sales ?? []).reduce((sum, s) => sum + s.amount_cents, 0);
 
   return (
+    <div className="flex flex-col gap-6">
+    {sales?.length ? (
+      <section className="flex flex-wrap items-center gap-x-8 gap-y-2 rounded-card border border-line bg-surface p-card">
+        <p>
+          <span className="block font-display text-xs font-extrabold uppercase tracking-wide text-muted">Vendas</span>
+          <span className="font-display text-2xl font-black">{sales.length}</span>
+        </p>
+        <p>
+          <span className="block font-display text-xs font-extrabold uppercase tracking-wide text-muted">Recebido (bruto)</span>
+          <span className="font-display text-2xl font-black">{formatPrice(revenue, sales[0].currency)}</span>
+        </p>
+        <p className="text-sm text-muted">Taxas e saques ficam no painel da Stripe.</p>
+      </section>
+    ) : null}
     <section className="overflow-hidden rounded-card border border-line bg-surface">
       <h2 className="border-b border-line p-5 text-xl font-black">Alunos matriculados ({rows.length})</h2>
       {rows.length === 0 ? (
@@ -342,5 +359,6 @@ async function StudentsTab({ courseId }: { courseId: string }) {
         </table>
       )}
     </section>
+    </div>
   );
 }

@@ -9,7 +9,7 @@ import type { ActionState, Course } from "@/lib/types";
 import { cn, courseThemeVars } from "@/lib/utils";
 import { createCourse, updateCourse } from "./actions";
 
-export function CourseForm({ course }: { course?: Course }) {
+export function CourseForm({ course, salesEnabled = false }: { course?: Course; salesEnabled?: boolean }) {
   const editing = Boolean(course);
   const [state, action] = useActionState<ActionState, FormData>(editing ? updateCourse : createCourse, {});
   const [subject, setSubject] = useState(course?.subject ?? "matematica");
@@ -108,6 +108,27 @@ export function CourseForm({ course }: { course?: Course }) {
         {editing ? (
           <Field label="Descrição" htmlFor="description" hint="O que o aluno vai aprender? Aparece na página do curso." error={err("description")}>
             <Textarea id="description" name="description" rows={6} maxLength={5000} defaultValue={course?.description} />
+          </Field>
+        ) : null}
+        {editing ? (
+          <Field
+            label="Preço (R$)"
+            htmlFor="price"
+            error={err("price")}
+            hint={
+              salesEnabled
+                ? "0 = grátis. Com preço, o aluno paga pela Stripe (cartão ou Pix) e o acesso libera sozinho."
+                : "0 = grátis. Para vender, ligue a Stripe no painel curso-on (Integrações). Até lá, curso com preço fica com a compra pausada."
+            }
+          >
+            <Input
+              id="price"
+              name="price"
+              inputMode="decimal"
+              defaultValue={course ? (course.price_cents / 100).toFixed(2).replace(".", ",") : "0"}
+              aria-invalid={Boolean(err("price"))}
+              className="max-w-48"
+            />
           </Field>
         ) : null}
 

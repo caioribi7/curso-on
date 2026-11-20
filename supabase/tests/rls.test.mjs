@@ -128,8 +128,9 @@ r.rows.length === 1 ? ok("aluno se matricula direto em curso publicado") : fail(
 await expectError("matrícula em nome de outro", () => as(STRANGER, `insert into public.enrollments (user_id, course_id, source) values ($1,$2,'free')`, [STUDENT, pubId]));
 const draft = await as(OWNER, `insert into public.courses (owner_id, slug, title) values ($1,'rascunho-xyz12','Rascunho') returning id`, [OWNER]);
 await expectError("matrícula direta em rascunho", () => as(STRANGER, `insert into public.enrollments (user_id, course_id, source) values ($1,$2,'free')`, [STRANGER, draft.rows[0].id]));
-await expectError("tabela payments removida", () => db.query("select 1 from public.payments"));
-await expectError("coluna price_cents removida", () => db.query("select price_cents from public.courses"));
+// Venda é opcional: todo curso nasce grátis (detalhes em vendas.test.mjs).
+r = await db.query("select count(*)::int n from public.courses where price_cents <> 0");
+r.rows[0].n === 0 ? ok("cursos nascem grátis (price_cents = 0)") : fail("preço padrão");
 
 r = await as(STUDENT, `update public.profiles set full_name = 'Aluna Nova' where id = $1 returning full_name`, [STUDENT]);
 r.rows[0]?.full_name === "Aluna Nova" ? ok("aluno edita o próprio nome") : fail("nome");

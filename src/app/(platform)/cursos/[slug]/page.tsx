@@ -6,8 +6,9 @@ import { ButtonLink } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { getCurrentUser } from "@/lib/dal";
 import { getCourseBySlug, getCourseOutline, isEnrolled } from "@/lib/queries";
-import { cn, courseThemeVars } from "@/lib/utils";
-import { enrollFree } from "../../app/actions";
+import { isSalesEnabled } from "@/lib/env";
+import { cn, courseThemeVars, formatPrice } from "@/lib/utils";
+import { enrollFree, startCheckout } from "../../app/actions";
 
 export async function generateMetadata({ params }: PageProps<"/cursos/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -18,6 +19,7 @@ export async function generateMetadata({ params }: PageProps<"/cursos/[slug]">):
 
 const ERRORS: Record<string, string> = {
   matricula: "Não foi possível concluir a matrícula. Tente novamente.",
+  pagamento: "A compra não está disponível agora. Tente de novo em instantes.",
 };
 
 export default async function CourseSalesPage({ params, searchParams }: PageProps<"/cursos/[slug]">) {
@@ -33,6 +35,9 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
   const minutes = lessons.reduce((s, l) => s + l.duration_minutes, 0);
   const xp = lessons.reduce((s, l) => s + l.xp_reward, 0);
   const error = typeof sp.erro === "string" ? ERRORS[sp.erro] : undefined;
+  const cancelled = sp.checkout === "cancelado";
+  const paid = course.price_cents > 0;
+  const salesOn = isSalesEnabled();
 
   const cta = (() => {
     if (enrolled || isOwner) {
@@ -45,8 +50,19 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
     if (!user) {
       return (
         <ButtonLink href={`/cadastro?next=${encodeURIComponent(`/cursos/${course.slug}`)}`} size="lg" className="w-full">
-          Criar conta e começar
+          {paid ? "Criar conta para comprar" : "Criar conta e começar"}
         </ButtonLink>
+      );
+    }
+    if (paid) {
+      return (
+        <form action={startCheckout} className="flex flex-col gap-2">
+          <input type="hidden" name="courseId" value={course.id} />
+          <SubmitButton size="lg" className="w-full" pendingText="Abrindo pagamento…" disabled={!salesOn}>
+            Comprar por {formatPrice(course.price_cents, course.currency)}
+          </SubmitButton>
+          {!salesOn ? <p className="text-center text-sm text-muted">Vendas pausadas no momento.</p> : null}
+        </form>
       );
     }
     return (
@@ -68,6 +84,9 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
         </p>
       ) : null}
       {error ? <p role="alert" className="anim-in rounded-inner bg-coral-soft px-5 py-3 font-semibold text-coral">{error}</p> : null}
+      {cancelled ? (
+        <p role="status" className="anim-in rounded-inner bg-canvas px-5 py-3 font-semibold text-muted">Pagamento cancelado. Nada foi cobrado.</p>
+      ) : null}
 
       <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
         <div className="flex flex-col gap-8">
@@ -130,14 +149,14 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
               <CourseBadge course={course} size={128} />
             </div>
             <div className="flex flex-col gap-5 px-card pb-card">
-              <p className="font-display text-[36px] font-black leading-none">Grátis</p>
+              <p className="font-display text-[36px] font-black leading-none">{formatPrice(course.price_cents, course.currency)}</p>
               {cta}
               <ul className="flex flex-col gap-2.5 text-sm">
                 {[
                   "Acesso a todas as aulas e atualizações",
                   "Banco de questões com XP",
                   "Ranking da turma e sequência de estudos",
-                  "100% gratuito e open source",
+                  paid ? "Pagamento seguro pela Stripe (cartão ou Pix)" : "Grátis",
                 ].map((b) => (
                   <li key={b} className="flex items-center gap-2.5">
                     <span className="flex size-6 items-center justify-center rounded-full bg-mint text-white">

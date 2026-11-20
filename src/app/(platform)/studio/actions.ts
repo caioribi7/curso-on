@@ -41,6 +41,15 @@ const FALLBACK_ICON: Record<string, CourseIcon> = {
   espanhol: "globe",
 };
 
+/** "49,90", "R$ 1.299,00" or "49.9" → cents. Empty = 0 (free). Max R$ 100.000. */
+function parsePrice(raw: FormDataEntryValue | null) {
+  const text = String(raw ?? "0").trim().replace(/\s|R\$/g, "");
+  const normalized = text.includes(",") ? text.replace(/\./g, "").replace(",", ".") : text;
+  const value = Number(normalized || "0");
+  if (!Number.isFinite(value) || value < 0 || value > 100000) return null;
+  return Math.round(value * 100);
+}
+
 const courseFields = z.object({
   title: z.string().trim().min(3, "O título precisa de pelo menos 3 letras.").max(120),
   subtitle: z.string().trim().max(200).default(""),
@@ -99,11 +108,14 @@ export async function updateCourse(_prev: ActionState, formData: FormData): Prom
       description: formData.get("description") ?? "",
     });
   if (!parsed.success) return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
+  const price = parsePrice(formData.get("price"));
+  if (price === null) return { fieldErrors: { price: ["Preço inválido. Use algo como 49,90 (ou 0 para grátis)."] } };
 
   const { supabase } = await ownerContext(id.data);
   const { error } = await supabase
     .from("courses")
     .update({
+      price_cents: price,
       title: parsed.data.title,
       subtitle: parsed.data.subtitle,
       description: parsed.data.description,

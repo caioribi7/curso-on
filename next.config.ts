@@ -13,7 +13,7 @@ const csp = [
   "font-src 'self' data:",
   `connect-src 'self' ${supabaseOrigin} ${supabaseOrigin.replace("https://", "wss://")}`,
   "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com",
-  `form-action 'self' ${supabaseOrigin} https://accounts.google.com`,
+  `form-action 'self' ${supabaseOrigin} https://accounts.google.com https://checkout.stripe.com`, // Stripe Checkout (venda opcional)
   "base-uri 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",

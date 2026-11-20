@@ -51,6 +51,9 @@ export type Course = {
   subject: string | null;
   level: number | null;
   status: CourseStatus;
+  /** 0 = free (the default). Selling only works when the Stripe integration is on. */
+  price_cents: number;
+  currency: string;
   created_at: string;
   updated_at: string;
 };
