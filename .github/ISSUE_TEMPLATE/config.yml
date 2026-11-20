@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Guia para iniciantes
+    url: https://github.com/caioribi7/curso-on/blob/main/docs/primeiros-passos.md
+    about: Passo a passo da instalação ao primeiro curso. Muita dúvida já está respondida aqui.

@@ -1,0 +1,34 @@
+name: Algo deu errado
+description: Erro no site, no painel curso-on ou na instalação.
+labels: [bug]
+body:
+  - type: textarea
+    id: oque
+    attributes:
+      label: O que aconteceu?
+      description: Conte o que você fez e o que apareceu. Print ou texto do erro ajuda muito.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que você esperava?
+  - type: dropdown
+    id: onde
+    attributes:
+      label: Onde
+      options:
+        - Instalação (comando do README)
+        - Painel curso-on (terminal)
+        - Site (navegador)
+        - Outro
+    validations:
+      required: true
+  - type: input
+    id: sistema
+    attributes:
+      label: Sistema e versão
+      description: "Ex.: Windows 11, curso-on 0.2.0 (rode `curso-on --version`), Chrome."
+  - type: markdown
+    attributes:
+      value: "**Nunca cole chaves ou senhas aqui.** Falha de segurança? Use o aviso privado do SECURITY.md."

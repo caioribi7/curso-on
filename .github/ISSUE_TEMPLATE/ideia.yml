@@ -1,0 +1,21 @@
+name: Ideia ou melhoria
+description: Sugira algo novo para o Curso On.
+labels: [ideia]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Que problema isso resolve?
+      description: "Ex.: como professor, eu queria ..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Como você imagina?
+  - type: checkboxes
+    id: ajuda
+    attributes:
+      label: Quer ajudar?
+      options:
+        - label: Posso abrir um PR com isso

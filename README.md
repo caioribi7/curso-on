@@ -169,7 +169,7 @@ supabase/
 
 ## Contribuindo
 
-Contribuições são bem-vindas, principalmente aulas e questões novas para o `content/enem.json`. Veja o [CONTRIBUTING.md](CONTRIBUTING.md).
+Contribuições são bem-vindas, principalmente aulas e questões novas para o `content/enem.json`. Veja o [CONTRIBUTING.md](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Achou uma falha de segurança? Siga o [SECURITY.md](SECURITY.md), sem issue pública.
 
 ## Licença
 
