@@ -152,6 +152,16 @@ fn supabase_publishable(v: &str) -> Result<(), String> {
     prefixed(v, &["sb_publishable_"], 30)
 }
 
+fn supabase_secret(v: &str) -> Result<(), String> {
+    if v.starts_with("sb_publishable_") {
+        return Err("essa é a chave pública; aqui vai a secreta (sb_secret_…)".into());
+    }
+    if v.starts_with("eyJ") && v.matches('.').count() == 2 {
+        return Ok(()); // service_role antiga (JWT), ainda aceita
+    }
+    prefixed(v, &["sb_secret_"], 30)
+}
+
 fn postgres_url(v: &str) -> Result<(), String> {
     no_spaces(v)?;
     if !(v.starts_with("postgres://") || v.starts_with("postgresql://")) {
@@ -303,26 +313,31 @@ pub static ALL: &[Integration] = &[
     Integration {
         id: Id::Stripe,
         name: "Stripe",
-        summary: "Cobrança opcional para quem quer vender cursos. Sem chave, tudo continua grátis.",
+        summary: "Venda seus cursos (cartão e Pix). Criar continua grátis; sem as chaves, todo curso é grátis.",
         required: false,
         any_of: false,
         keys: &[
             key("STRIPE_SECRET_KEY", "Secret key", "sk_test_… (teste) ou sk_live_… (real)", Vis::Secret, true, stripe_secret),
             key("STRIPE_WEBHOOK_SECRET", "Webhook signing secret", "whsec_…", Vis::Secret, true, stripe_webhook),
+            key("SUPABASE_SECRET_KEY", "Supabase secret key", "sb_secret_… (Supabase local: já vem preenchida)", Vis::Secret, true, supabase_secret),
         ],
         tutorial: &[
-            "O Curso On é grátis e open source. A Stripe só serve se VOCÊ quiser cobrar.",
+            "Criar e publicar cursos é grátis. Com a Stripe, você põe preço no seu curso (Estúdio → Configurações → Preço) e o aluno paga com cartão ou Pix.",
+            "O dinheiro cai direto na SUA conta Stripe; o Curso On não fica com nada.",
             "1. Crie a conta em https://dashboard.stripe.com/register",
             "2. Ligue o “Modo de teste” (Test mode) no topo. Comece sempre por ele.",
             "3. Developers → API keys: https://dashboard.stripe.com/test/apikeys",
-            "   Copie a “Secret key” (sk_test_…). Melhor ainda: crie uma Restricted key.",
+            "   Copie a “Secret key” (sk_test_…).",
             "4. Webhook no seu computador: instale a Stripe CLI e rode",
             "   stripe listen --forward-to localhost:3000/api/webhooks/stripe",
             "   Ela mostra o “webhook signing secret” (whsec_…).",
-            "5. Em produção: Developers → Webhooks → Add endpoint → evento",
-            "   checkout.session.completed → copie o “Signing secret”.",
-            "Hoje o painel guarda e testa as chaves. O checkout no site",
-            "é o próximo passo (veja docs/integracoes.md).",
+            "5. Em produção: Developers → Webhooks → Add endpoint →",
+            "   https://SEU-SITE/api/webhooks/stripe com os eventos",
+            "   checkout.session.completed, checkout.session.async_payment_succeeded,",
+            "   checkout.session.async_payment_failed e charge.refunded → copie o “Signing secret”.",
+            "6. Supabase secret key: Project Settings → API Keys → Secret keys (sb_secret_…).",
+            "   Só o servidor usa, para liberar o curso depois do pagamento. Nunca compartilhe.",
+            "Pix: ative em Settings → Payment methods na Stripe.",
         ],
     },
     Integration {
@@ -504,7 +519,23 @@ pub fn test(id: Id, values: &HashMap<String, String>) -> Result<String, String> 
                 return Err(http_error("Stripe", res.status()));
             }
             let mode = if key.contains("_live_") { "modo REAL (cobra de verdade)" } else { "modo de teste" };
-            Ok(format!("Stripe aceitou a chave · {mode}. O webhook secret só é conferido quando chega um evento."))
+            // A chave secreta do Supabase: uma leitura de 1 usuário no admin do Auth.
+            let base = v("NEXT_PUBLIC_SUPABASE_URL");
+            let base = base.trim_end_matches('/');
+            if base.is_empty() {
+                return Err("Configure o Supabase primeiro (é ele que libera o curso pago).".into());
+            }
+            let secret = v("SUPABASE_SECRET_KEY");
+            let res = http
+                .get(format!("{base}/auth/v1/admin/users?per_page=1"))
+                .header("apikey", &secret)
+                .bearer_auth(&secret)
+                .send()
+                .map_err(|e| net_error("Supabase", &e))?;
+            if !res.status().is_success() {
+                return Err(format!("Stripe ok, mas a Supabase secret key falhou: {}", http_error("Supabase", res.status())));
+            }
+            Ok(format!("Stripe e Supabase aceitaram as chaves · {mode}. O webhook secret é conferido quando chega o primeiro evento."))
         }
         Id::Resend => {
             let res = http.get("https://api.resend.com/domains").bearer_auth(v("RESEND_API_KEY")).send().map_err(|e| net_error("Resend", &e))?;
@@ -702,6 +733,8 @@ mod tests {
         assert!(stripe_secret("sk_test_curta").unwrap_err().contains("cortada"));
         assert!(stripe_secret(&format!("sk_test_{long} x")).unwrap_err().contains("espaço"));
         assert!(stripe_webhook(&format!("whsec_{long}")).is_ok());
+        assert!(supabase_secret(&format!("sb_secret_{long}")).is_ok());
+        assert!(supabase_secret(&format!("sb_publishable_{long}")).unwrap_err().contains("pública"));
         assert!(resend_key("re_123456789_abcdefghij").is_ok());
         assert!(resend_key("123").is_err());
         assert!(supabase_publishable("sb_publishable_abcdefghijklmnopqrstuv").is_ok());

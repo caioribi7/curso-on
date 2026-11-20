@@ -1239,6 +1239,11 @@ impl App {
         if let Some(db) = get(&["DB_URL"]) {
             pairs.push(("CURSO_ON_DATABASE_URL", db));
         }
+        // Chave secreta do Supabase local (a mesma de qualquer instalação local):
+        // só o webhook da Stripe usa, para liberar o curso depois do pagamento.
+        if let Some(secret) = get(&["SECRET_KEY", "SERVICE_ROLE_KEY"]) {
+            pairs.push(("SUPABASE_SECRET_KEY", secret));
+        }
         self.write_env(&pairs)
     }
 

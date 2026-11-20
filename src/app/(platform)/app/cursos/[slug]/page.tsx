@@ -207,7 +207,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
           <section className="flex flex-col gap-4 rounded-card border border-line bg-surface p-card">
             <div className="flex items-center gap-2">
               <FlameIcon size={24} />
-              <p className="font-display text-lg font-black">{streak} dias de sequência</p>
+              <p className="font-display text-lg font-black">{streak} {streak === 1 ? "dia" : "dias"} de sequência</p>
             </div>
             <ol className="flex justify-between">
               {WEEK.map((d, i) => (

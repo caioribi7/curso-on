@@ -226,6 +226,8 @@ fn masterbase_info(app: &mut App) -> Vec<Line<'static>> {
 
 fn integrations_screen(f: &mut Frame, app: &mut App, area: Rect) {
     let [left, right] = Layout::horizontal([Constraint::Percentage(38), Constraint::Percentage(62)]).areas(area.inner(Margin::new(1, 0)));
+    // Largura útil de uma linha: tira as bordas (2), a seta de seleção (1) e a marca " ✓ " (3).
+    let row = usize::from(left.width).saturating_sub(6);
     let list: Vec<ListItem> = integrations::ALL
         .iter()
         .map(|i| {
@@ -241,9 +243,16 @@ fn integrations_screen(f: &mut Frame, app: &mut App, area: Rect) {
             } else {
                 ("○", MUTED, "opcional")
             };
+            // Status sempre inteiro, encostado à direita; o nome é que encurta se faltar espaço.
+            let name_w = row.saturating_sub(word.chars().count() + 1);
+            let name: String = if i.name.chars().count() > name_w {
+                i.name.chars().take(name_w.saturating_sub(1)).chain(std::iter::once('…')).collect()
+            } else {
+                i.name.to_owned()
+            };
             ListItem::new(Line::from(vec![
                 Span::styled(format!(" {mark} "), Style::new().fg(color).bold()),
-                Span::raw(format!("{:<30}", i.name)),
+                Span::raw(format!("{name:<name_w$} ")),
                 Span::styled(word, Style::new().fg(color)),
             ]))
         })
@@ -271,7 +280,8 @@ fn integrations_screen(f: &mut Frame, app: &mut App, area: Rect) {
                 ((if integ.required && k.required { "falta" } else { "vazia" }).to_owned(), MUTED)
             };
             lines.push(Line::from(vec![
-                Span::styled(format!(" {:<24}", k.env), Style::new().bold()),
+                // Espaço no fim: nomes longos (NEXT_PUBLIC_…) não grudam no valor.
+                Span::styled(format!(" {:<24} ", k.env), Style::new().bold()),
                 Span::styled(state, Style::new().fg(color)),
             ]));
         }
