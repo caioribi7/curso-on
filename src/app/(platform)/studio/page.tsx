@@ -23,9 +23,14 @@ export default async function StudioPage() {
           <h1 className="text-[40px] font-black leading-tight tracking-[-0.03em]">Seus cursos</h1>
           <p className="text-muted">Crie, organize em módulos e aulas, monte o banco de questões e publique.</p>
         </div>
-        <ButtonLink href="/studio/cursos/novo" size="lg">
-          + Novo curso
-        </ButtonLink>
+        <div className="flex flex-wrap gap-3">
+          <ButtonLink href="/studio/redacao" size="lg" variant="secondary">
+            Redações
+          </ButtonLink>
+          <ButtonLink href="/studio/cursos/novo" size="lg">
+            + Novo curso
+          </ButtonLink>
+        </div>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-3">

@@ -1,0 +1,23 @@
+/*
+ * Folha de redação: linhas pautadas que acompanham o texto (32px por linha).
+ * Usa só tokens do tema, então funciona no claro e no escuro.
+ */
+.essay-sheet {
+  --essay-line: 32px;
+  line-height: var(--essay-line);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(var(--essay-line) - 1px),
+    var(--line-strong) calc(var(--essay-line) - 1px) var(--essay-line)
+  );
+  background-attachment: local;
+  background-position: 0 6px;
+  padding-top: 6px;
+}
+
+/* Editor do aluno: cresce com o texto, largura perto de uma linha da folha do ENEM. */
+textarea.essay-sheet {
+  field-sizing: content;
+  min-height: calc(var(--essay-line) * 12 + 12px);
+  resize: vertical;
+}

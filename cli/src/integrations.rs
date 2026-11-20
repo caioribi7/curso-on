@@ -411,7 +411,7 @@ pub static ALL: &[Integration] = &[
     Integration {
         id: Id::Ai,
         name: "OpenAI / Anthropic",
-        summary: "Chave de IA para a pré-correção de redações (em breve). Preencha uma das duas.",
+        summary: "Chave de IA para a pré-correção de redações. Preencha uma das duas.",
         required: false,
         any_of: true,
         keys: &[

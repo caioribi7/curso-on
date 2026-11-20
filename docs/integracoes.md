@@ -11,7 +11,7 @@ O Curso On funciona só com o Supabase. Todo o resto é opcional. No painel, abr
 | **Cloudflare R2 / S3** | Arquivos e vídeos próprios | `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_URL` | `HEAD` no bucket, assinado com AWS Signature V4 |
 | **YouTube / Vimeo** | Vídeos das aulas | nenhuma | nada a testar: cole o link no editor da aula |
 | **Plausible / Google Analytics** | Visitas ao site | `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` ou `NEXT_PUBLIC_GA_ID` | Confere se o serviço responde |
-| **OpenAI / Anthropic** | Pré-correção de redações com IA (em breve) | `OPENAI_API_KEY` ou `ANTHROPIC_API_KEY` | `GET /v1/models` (não gasta créditos) |
+| **OpenAI / Anthropic** | Pré-correção de redações com IA | `OPENAI_API_KEY` ou `ANTHROPIC_API_KEY` | `GET /v1/models` (não gasta créditos) |
 
 Cada tela do painel traz o passo a passo, com links, de como conseguir cada chave. O mesmo texto fica em [`cli/src/integrations.rs`](../cli/src/integrations.rs).
 
