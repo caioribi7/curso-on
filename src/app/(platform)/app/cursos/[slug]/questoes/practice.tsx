@@ -1,6 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useState, ViewTransition } from "react";
+import { MathText } from "@/components/math/math-text";
 import { CountUp } from "@/components/motion/count-up";
 import { Indicator, vtLabel } from "@/components/motion/indicator";
 import { ProgressBar } from "@/components/ui/progress";
@@ -84,7 +85,9 @@ function QuestionCard({ q, number, total, onNext }: { q: Q; number: number; tota
         <span className="rounded-full bg-sun-soft px-3 py-1 font-display text-sm font-black text-sun-ink">+{q.xp_reward} XP</span>
       </div>
       <ProgressBar value={((number - 1) / total) * 100} className="h-2.5" label="Progresso da rodada" />
-      <h2 className="whitespace-pre-line text-2xl font-black leading-snug">{q.statement}</h2>
+      <h2 className="whitespace-pre-line text-2xl font-black leading-snug">
+        <MathText text={q.statement} />
+      </h2>
 
       <ul className="flex flex-col gap-3">
         {q.options.map((o, i) => {
@@ -121,7 +124,9 @@ function QuestionCard({ q, number, total, onNext }: { q: Q; number: number; tota
                   >
                     {String.fromCharCode(65 + i)}
                   </span>
-                  <span className="py-1.5 font-semibold">{o.body}</span>
+                  <span className="min-w-0 py-1.5 font-semibold">
+                    <MathText text={o.body} />
+                  </span>
                 </span>
               </button>
             </li>
@@ -143,7 +148,9 @@ function QuestionCard({ q, number, total, onNext }: { q: Q; number: number; tota
                 : "Acertou! (XP já ganho antes)"
               : "Quase! A correta está em verde."}
           </p>
-          {result.explanation ? <p className="whitespace-pre-line text-ink">{result.explanation}</p> : null}
+          {result.explanation ? <p className="whitespace-pre-line text-ink">
+              <MathText text={result.explanation} />
+            </p> : null}
           <button type="button" onClick={() => onNext(result)} className={primaryBtn}>
             {number < total ? "Próxima questão →" : "Ver resultado"}
           </button>

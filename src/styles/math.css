@@ -1,0 +1,31 @@
+/*
+ * Formulas rendered by KaTeX (src/components/math/math-text.tsx).
+ * Inline formulas follow the surrounding text size and color; block formulas
+ * get their own line and scroll sideways instead of overflowing on phones.
+ */
+.math-text .katex {
+  font-size: 1.06em;
+  color: inherit;
+}
+
+.math-inline {
+  white-space: nowrap;
+}
+
+.math-block {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.15em;
+  white-space: normal;
+}
+
+.math-block .katex-display {
+  margin: 0.35em 0;
+}
+
+/* KaTeX error (bad TeX): readable in both themes. */
+.math-text .katex-error {
+  color: var(--color-coral) !important;
+}

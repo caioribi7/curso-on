@@ -1,0 +1,105 @@
+/*
+ * A4 sheet for printed lists (and "Salvar como PDF").
+ * On screen the sheet is a white paper preview in both themes; in print the
+ * toolbar disappears and @page sets size, margins and the page counter.
+ */
+
+@page {
+  size: A4;
+  margin: 16mm 15mm 18mm;
+
+  @bottom-right {
+    content: "Página " counter(page) " de " counter(pages);
+    font: 600 8.5pt var(--font-nunito-sans), system-ui, sans-serif;
+    color: #8a8f9c;
+  }
+  @bottom-left {
+    content: "Curso On";
+    font: 800 8.5pt var(--font-nunito), system-ui, sans-serif;
+    color: #8a8f9c;
+  }
+}
+
+/* The paper is always light, even when the app is in dark mode. */
+.sheet {
+  --ink: #14161c;
+  --muted: #5b6170;
+  --line: #dde1ea;
+  --accent: var(--course-primary, #3b5bfd);
+  color-scheme: light;
+  background: #fff;
+  color: var(--ink);
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 16mm 15mm 18mm;
+  border-radius: var(--r-inner);
+  box-shadow:
+    0 1px 2px rgb(20 22 28 / 0.06),
+    0 18px 50px -24px rgb(20 22 28 / 0.35);
+  font-size: 11pt;
+  line-height: 1.5;
+  transition: box-shadow var(--dur-move) var(--ease-ui);
+}
+
+.sheet h1,
+.sheet h2 {
+  font-family: var(--font-nunito), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.sheet .q {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.sheet .page-break {
+  break-before: page;
+  page-break-before: always;
+}
+
+/* On screen, mark where the answer key page starts. */
+.sheet .page-break {
+  border-top: 1.5px dashed var(--line);
+  margin-top: 14mm;
+  padding-top: 12mm;
+}
+
+.sheet .katex {
+  font-size: 1.08em;
+}
+
+.sheet .math-block {
+  display: block;
+  overflow-x: auto;
+}
+
+@media print {
+  /* Dark theme must not leak into the page margins. */
+  :root {
+    color-scheme: light !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .sheet {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .sheet .page-break {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+}

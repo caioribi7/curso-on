@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito, Nunito_Sans } from "next/font/google";
 import { cookies } from "next/headers";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 const nunito = Nunito({

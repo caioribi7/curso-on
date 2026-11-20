@@ -1,6 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, type FormEvent } from "react";
+import { LessonBody } from "@/components/math/lesson-body";
+import { MathText } from "@/components/math/math-text";
 import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { ActionState, Lesson, LessonContent, Module } from "@/lib/types";
@@ -8,24 +10,43 @@ import { cn } from "@/lib/utils";
 import { createQuestion, deleteCourse, setCourseStatus, updateLesson } from "./actions";
 
 const LETTERS = ["A", "B", "C", "D", "E"];
+const EMPTY_DRAFT = { statement: "", options: LETTERS.map(() => ""), explanation: "" };
 
 export function QuestionForm({ courseId, modules }: { courseId: string; modules: Pick<Module, "id" | "title">[] }) {
   const [state, action] = useActionState<ActionState, FormData>(createQuestion, {});
   const [correct, setCorrect] = useState(0);
+  const [draft, setDraft] = useState(EMPTY_DRAFT);
+  const [seen, setSeen] = useState(state);
   const err = (k: string) => state.fieldErrors?.[k]?.[0];
 
-  // React 19 resets uncontrolled inputs after a form action completes.
+  // React 19 resets uncontrolled inputs after a form action completes, so the
+  // preview resets with them when the question is saved.
+  if (state !== seen) {
+    setSeen(state);
+    if (state.ok) setDraft(EMPTY_DRAFT);
+  }
+  const readDraft = (e: FormEvent<HTMLFormElement>) => {
+    const f = new FormData(e.currentTarget);
+    setDraft({
+      statement: String(f.get("statement") ?? ""),
+      options: LETTERS.map((_, i) => String(f.get(`option_${i}`) ?? "")),
+      explanation: String(f.get("explanation") ?? ""),
+    });
+  };
+  const hasDraft = draft.statement.trim() || draft.options.some((o) => o.trim());
+
   return (
     <form
       action={action}
+      onInput={readDraft}
       className="flex flex-col gap-5 rounded-card border border-line bg-surface p-card"
     >
       <input type="hidden" name="courseId" value={courseId} />
       <input type="hidden" name="correct" value={correct} />
       <h3 className="text-xl font-black">Nova questão</h3>
 
-      <Field label="Enunciado" htmlFor="statement" error={err("statement")}>
-        <Textarea id="statement" name="statement" rows={3} required placeholder="Quanto é 3/4 de 20?" />
+      <Field label="Enunciado" htmlFor="statement" error={err("statement")} hint="Fórmulas em LaTeX: $x^2$ no meio do texto, $$\frac{a}{b}$$ em destaque.">
+        <Textarea id="statement" name="statement" rows={3} required placeholder="Quanto é $\frac{3}{4}$ de 20?" />
       </Field>
 
       <fieldset className="flex flex-col gap-3">
@@ -74,6 +95,32 @@ export function QuestionForm({ courseId, modules }: { courseId: string; modules:
         <Textarea id="explanation" name="explanation" rows={2} />
       </Field>
 
+      {hasDraft ? (
+        <section aria-label="Pré-visualização" className="anim-in flex flex-col gap-3 rounded-panel bg-canvas p-panel">
+          <p className="px-2 pt-1 font-display text-xs font-extrabold uppercase tracking-wide text-muted">Pré-visualização</p>
+          <p className="whitespace-pre-line px-2 font-display text-lg font-black leading-snug">
+            <MathText text={draft.statement} />
+          </p>
+          <ul className="flex flex-col gap-1.5">
+            {draft.options.map((o, i) =>
+              o.trim() ? (
+                <li key={i} className={cn("flex items-center gap-3 rounded-inner bg-surface px-3 py-2 text-sm", correct === i && "ring-2 ring-mint ring-inset")}>
+                  <span className="font-display font-black text-muted">{LETTERS[i]}</span>
+                  <span className="min-w-0">
+                    <MathText text={o} />
+                  </span>
+                </li>
+              ) : null,
+            )}
+          </ul>
+          {draft.explanation.trim() ? (
+            <p className="whitespace-pre-line px-2 pb-1 text-sm text-muted">
+              <MathText text={draft.explanation} />
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
       <FormMessage state={state} />
       <div>
         <SubmitButton pendingText="Salvando…">Adicionar questão</SubmitButton>
@@ -119,6 +166,7 @@ export function DeleteCourseForm({ courseId }: { courseId: string }) {
 
 export function LessonForm({ lesson, content }: { lesson: Lesson; content: LessonContent | null }) {
   const [state, action] = useActionState<ActionState, FormData>(updateLesson, {});
+  const [body, setBody] = useState(content?.body ?? "");
   const err = (k: string) => state.fieldErrors?.[k]?.[0];
   return (
     <form action={action} className="flex flex-col gap-6">
@@ -133,9 +181,29 @@ export function LessonForm({ lesson, content }: { lesson: Lesson; content: Lesso
       <Field label="Vídeo (YouTube ou Vimeo)" htmlFor="videoUrl" error={err("videoUrl")} hint="Opcional. Ex.: https://youtu.be/…">
         <Input id="videoUrl" name="videoUrl" type="url" maxLength={500} defaultValue={content?.video_url ?? ""} placeholder="https://" />
       </Field>
-      <Field label="Conteúdo da aula" htmlFor="body" hint="Texto simples. Linhas em branco separam parágrafos; linhas começando com # viram títulos.">
-        <Textarea id="body" name="body" rows={14} maxLength={50000} defaultValue={content?.body ?? ""} className="font-mono text-sm" />
-      </Field>
+      <div className="grid gap-4 xl:grid-cols-2">
+        <Field
+          label="Conteúdo da aula"
+          htmlFor="body"
+          hint="Texto simples. Linhas em branco separam parágrafos; linhas começando com # viram títulos. Fórmulas: $x^2$ ou $$\sqrt{2}$$."
+        >
+          <Textarea
+            id="body"
+            name="body"
+            rows={14}
+            maxLength={50000}
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            className="font-mono text-sm"
+          />
+        </Field>
+        <section aria-label="Pré-visualização da aula" className="flex min-w-0 flex-col gap-2">
+          <p className="font-display text-sm font-bold">Pré-visualização</p>
+          <div className="max-h-[520px] min-h-28 overflow-y-auto rounded-inner border-[1.5px] border-dashed border-line-strong bg-surface px-4 py-3">
+            {body.trim() ? <LessonBody body={body} /> : <p className="text-subtle">O texto da aula aparece aqui como o aluno vai ver.</p>}
+          </div>
+        </section>
+      </div>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Duração (min)" htmlFor="duration" error={err("duration")}>
           <Input id="duration" name="duration" type="number" min={0} max={600} defaultValue={lesson.duration_minutes} />

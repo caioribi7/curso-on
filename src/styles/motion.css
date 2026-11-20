@@ -73,6 +73,19 @@
 .anim-icon {
   animation: icon-swap var(--dur-move) var(--ease-spring) both;
 }
+/* Simulado timer in the last 5 minutes: a soft heartbeat, once per second. */
+.timer-urgent {
+  animation: timer-beat 1s var(--ease-ui) infinite;
+}
+@keyframes timer-beat {
+  0%,
+  100% {
+    scale: 1;
+  }
+  12% {
+    scale: 1.04;
+  }
+}
 
 @keyframes rise-in {
   from {
@@ -337,6 +350,9 @@ html.theme-fade * {
   :where(a, button, summary, input, select, textarea, label, [role="button"]),
   .transition {
     transition-property: color, background-color, border-color, outline-color, box-shadow, opacity, filter !important;
+  }
+  .timer-urgent {
+    animation: none !important;
   }
   .anim-in,
   .anim-pop,

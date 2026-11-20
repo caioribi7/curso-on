@@ -1,6 +1,8 @@
 @import "tailwindcss";
 /* Motion tokens and every transition/animation rule (reusable as-is in other projects). */
 @import "../styles/motion.css";
+/* KaTeX formulas inside app text ($...$ and $$...$$). */
+@import "../styles/math.css";
 
 /*
  * Curso On design tokens.

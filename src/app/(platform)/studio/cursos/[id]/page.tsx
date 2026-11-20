@@ -5,6 +5,7 @@ import { Segmented } from "@/components/motion/segmented";
 import { notFound } from "next/navigation";
 import { CheckIcon, ModuleGlyph, moduleIconBg } from "@/components/icons/flat-icons";
 import { CourseBadge } from "@/components/icons/subject-icon";
+import { MathText } from "@/components/math/math-text";
 import { ButtonLink } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/field";
 import { requireUser } from "@/lib/dal";
@@ -15,12 +16,14 @@ import { cn, courseThemeVars } from "@/lib/utils";
 import { createLesson, createModule, deleteModule, deleteQuestion, moveLesson, moveModule, updateModule } from "../../actions";
 import { CourseForm } from "../../course-form";
 import { DeleteCourseForm, QuestionForm, StatusForm } from "../../editor-forms";
+import { MockExamsTab } from "../../mock-exams-tab";
 
 export const metadata: Metadata = { title: "Editar curso" };
 
 const TABS = [
   { id: "conteudo", label: "Conteúdo" },
   { id: "questoes", label: "Questões" },
+  { id: "simulados", label: "Simulados" },
   { id: "configuracoes", label: "Configurações" },
   { id: "alunos", label: "Alunos" },
 ] as const;
@@ -98,6 +101,7 @@ export default async function CourseEditorPage({ params, searchParams }: PagePro
 
       {tab === "conteudo" ? <ContentTab courseId={course.id} outline={outline} /> : null}
       {tab === "questoes" ? <QuestionsTab courseId={course.id} outline={outline} /> : null}
+      {tab === "simulados" ? <MockExamsTab courseId={course.id} /> : null}
       {tab === "configuracoes" ? (
         <div className="flex flex-col gap-8">
           <CourseForm course={course} />
@@ -266,8 +270,8 @@ async function QuestionsTab({ courseId, outline }: { courseId: string; outline: 
         {questions.map((q, qi) => (
           <article key={q.id} className="flex flex-col gap-3 rounded-card border border-line bg-surface p-card">
             <div className="flex items-start justify-between gap-4">
-              <p className="font-display font-extrabold">
-                {qi + 1}. {q.statement}
+              <p className="whitespace-pre-line font-display font-extrabold">
+                {qi + 1}. <MathText text={q.statement} />
               </p>
               <form action={deleteQuestion}>
                 <input type="hidden" name="courseId" value={courseId} />
@@ -280,7 +284,7 @@ async function QuestionsTab({ courseId, outline }: { courseId: string; outline: 
                 const ok = key.get(q.id) === o.id;
                 return (
                   <li key={o.id} className={cn("flex items-center gap-2 rounded-inner px-3 py-2 text-sm", ok ? "bg-mint-soft font-semibold text-mint-dark" : "bg-canvas")}>
-                    <span className="font-display font-black">{String.fromCharCode(65 + oi)}</span> {o.body}
+                    <span className="font-display font-black">{String.fromCharCode(65 + oi)}</span> <MathText text={o.body} />
                     {ok ? <CheckIcon className="ml-auto" /> : null}
                   </li>
                 );
