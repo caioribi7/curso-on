@@ -5,6 +5,8 @@
 # Variáveis opcionais:
 #   CURSO_ON_VERSION      versão (ex.: v0.1.0). Padrão: a mais recente.
 #   CURSO_ON_INSTALL_DIR  pasta de instalação. Padrão: ~/.local/bin
+#   CURSO_ON_NO_CLONE=1   não baixa o projeto (só instala o painel)
+#   CURSO_ON_NO_OPEN=1    não abre o painel no fim
 set -eu
 
 REPO="caioribi7/curso-on"
@@ -68,4 +70,30 @@ case ":$PATH:" in
     ;;
 esac
 
-printf '\n\033[1;32m✓ Pronto!\033[0m Rode: \033[1mcurso-on\033[0m\n'
+# Baixa o projeto em ./curso-on (se ainda não estiver aqui) e abre o painel.
+project=""
+if [ -f package.json ] && grep -q '"name": "curso-on"' package.json 2>/dev/null; then
+  project="."
+elif [ -d curso-on/.git ]; then
+  project="curso-on"
+elif [ -z "${CURSO_ON_NO_CLONE:-}" ]; then
+  if command -v git >/dev/null 2>&1; then
+    say "Baixando o projeto em $(pwd)/curso-on…"
+    git clone --quiet "https://github.com/$REPO.git" curso-on && project="curso-on"
+  else
+    say "Sem git: o painel baixa o projeto depois (Configurar → Baixar o Curso On)."
+  fi
+fi
+
+printf '\n\033[1;32m✓ Pronto!\033[0m'
+if [ -n "$project" ] && [ "$project" != "." ]; then
+  printf ' Projeto em \033[1m%s/%s\033[0m.' "$(pwd)" "$project"
+fi
+printf ' Para abrir o painel: \033[1mcurso-on\033[0m\n'
+
+# Abre o painel já (o script vem de um pipe, então o teclado vem do /dev/tty).
+if [ -z "${CURSO_ON_NO_OPEN:-}" ] && [ -t 1 ] && { : </dev/tty; } 2>/dev/null; then
+  say "Abrindo o painel…"
+  [ -n "$project" ] && cd "$project"
+  exec "$DIR/curso-on" </dev/tty
+fi

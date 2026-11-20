@@ -18,7 +18,7 @@ Sem Docker, você usa o Supabase na nuvem, que é grátis. Os dois caminhos est�
 
 ## 2. Pegue o painel `curso-on`
 
-Copie e cole no terminal um destes comandos (ele baixa, confere e instala):
+Abra o terminal na pasta onde quer guardar o projeto e cole um destes comandos. Ele instala o painel, baixa o projeto na pasta `curso-on` e já abre o painel:
 
 Linux e macOS:
 
@@ -38,13 +38,13 @@ Ou, se tiver Rust instalado:
 cargo install --git https://github.com/caioribi7/curso-on curso-on
 ```
 
-Abra o terminal, entre na pasta onde quer guardar o projeto e rode:
+Para abrir o painel de novo depois, entre na pasta e rode:
 
 ```
 curso-on
 ```
 
-Se o projeto ainda não estiver no computador, escolha **Configurar o Curso On → Baixar o Curso On**.
+Instalou pelo `cargo` ou sem o Git? Escolha **Configurar o Curso On → Baixar o Curso On** no painel.
 
 Use as setas para escolher, Enter para abrir e Esc para voltar. Para colar texto, use o atalho de colar do seu terminal (Ctrl+V ou Ctrl+Shift+V).
 

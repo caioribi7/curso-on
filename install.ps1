@@ -4,6 +4,8 @@
 # Variaveis opcionais:
 #   $env:CURSO_ON_VERSION      versao (ex.: v0.1.0). Padrao: a mais recente.
 #   $env:CURSO_ON_INSTALL_DIR  pasta de instalacao. Padrao: %LOCALAPPDATA%\curso-on\bin
+#   $env:CURSO_ON_NO_CLONE=1   nao baixa o projeto (so instala o painel)
+#   $env:CURSO_ON_NO_OPEN=1    nao abre o painel no fim
 $ErrorActionPreference = 'Stop'
 
 $Repo = 'caioribi7/curso-on'
@@ -41,9 +43,32 @@ try {
     Write-Host "> Adicionei $Dir ao seu PATH. Abra um terminal novo se o comando nao for encontrado." -ForegroundColor Cyan
   }
 
-  Write-Host ''
-  Write-Host 'OK Pronto! Rode: curso-on' -ForegroundColor Green
 }
 finally {
   Remove-Item -Recurse -Force $Tmp -ErrorAction SilentlyContinue
+}
+
+# Baixa o projeto em .\curso-on (se ainda nao estiver aqui) e abre o painel.
+$Project = $null
+if ((Test-Path 'package.json') -and ((Get-Content 'package.json' -Raw) -match '"name": "curso-on"')) {
+  $Project = '.'
+} elseif (Test-Path 'curso-on\.git') {
+  $Project = 'curso-on'
+} elseif (-not $env:CURSO_ON_NO_CLONE) {
+  if (Get-Command git -ErrorAction SilentlyContinue) {
+    Write-Host "> Baixando o projeto em $(Join-Path (Get-Location) 'curso-on')..." -ForegroundColor Cyan
+    git clone --quiet "https://github.com/$Repo.git" curso-on
+    if ($LASTEXITCODE -eq 0) { $Project = 'curso-on' }
+  } else {
+    Write-Host '> Sem git: o painel baixa o projeto depois (Configurar > Baixar o Curso On).' -ForegroundColor Cyan
+  }
+}
+
+Write-Host ''
+Write-Host 'OK Pronto! Para abrir o painel: curso-on' -ForegroundColor Green
+
+if (-not $env:CURSO_ON_NO_OPEN -and [Environment]::UserInteractive -and -not [Console]::IsOutputRedirected) {
+  Write-Host '> Abrindo o painel...' -ForegroundColor Cyan
+  if ($Project) { Push-Location $Project }
+  try { & (Join-Path $Dir 'curso-on.exe') } finally { if ($Project) { Pop-Location } }
 }

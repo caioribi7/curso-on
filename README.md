@@ -29,7 +29,7 @@ curl -fsSL https://raw.githubusercontent.com/caioribi7/curso-on/main/install.sh 
 irm https://raw.githubusercontent.com/caioribi7/curso-on/main/install.ps1 | iex
 ```
 
-Depois rode `curso-on` e siga o menu: **Configurar → Abrir a plataforma → Criar conta → Importar cursos ENEM**. O instalador baixa o painel da [última Release](https://github.com/caioribi7/curso-on/releases/latest), confere o SHA-256 e coloca no PATH. Você só precisa do [Node.js](https://nodejs.org) (LTS) e do [Git](https://git-scm.com); para rodar o banco no seu computador, do [Docker](https://www.docker.com/products/docker-desktop/).
+Esse comando faz tudo: baixa o painel da [última Release](https://github.com/caioribi7/curso-on/releases/latest) (conferindo o SHA-256), coloca no PATH, clona o projeto na pasta `./curso-on` e já abre o painel. Aí é seguir o menu: **Configurar → Abrir a plataforma → Criar conta → Importar cursos ENEM**. Para abrir de novo depois, rode `curso-on`. Você só precisa do [Node.js](https://nodejs.org) (LTS) e do [Git](https://git-scm.com); para rodar o banco no seu computador, do [Docker](https://www.docker.com/products/docker-desktop/).
 
 <img src="docs/imagens/00-painel-rust.webp" alt="Painel curso-on no terminal, tela de Integrações com a Stripe" width="100%">
 
