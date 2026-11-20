@@ -33,7 +33,7 @@ export function Segmented({
   className?: string;
 }) {
   return (
-    <nav aria-label={label} className={cn("max-w-full overflow-x-auto", className)}>
+    <nav aria-label={label} className={cn("max-w-full overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", className)}>
       <div className="inline-flex gap-1 rounded-panel bg-surface p-panel ring-1 ring-line ring-inset">
         {items.map((it) => {
           const on = it.key === active;
