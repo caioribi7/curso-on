@@ -16,7 +16,8 @@
 alter table public.xp_events drop constraint if exists xp_events_reason_check;
 alter table public.xp_events
   add constraint xp_events_reason_check
-  check (reason in ('lesson_completed', 'question_correct', 'redacao'));
+  -- Inclui o motivo dos simulados (20261123130000) para funcionar em qualquer ordem.
+  check (reason in ('lesson_completed', 'question_correct', 'redacao', 'mock_exam_completed'));
 
 -- -----------------------------------------------------------------------------
 -- Tabelas
