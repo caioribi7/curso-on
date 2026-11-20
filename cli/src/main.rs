@@ -5,8 +5,10 @@ mod app;
 mod content;
 mod form;
 mod import;
+mod integrations;
 mod masterbase;
 mod project;
+mod secrets;
 mod sys;
 mod ui;
 
