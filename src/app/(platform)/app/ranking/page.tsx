@@ -4,6 +4,9 @@ import { TrophyIcon } from "@/components/icons/flat-icons";
 import { requireUser } from "@/lib/dal";
 import { getGlobalRanking, type RankingRow } from "@/lib/queries";
 import { cn, initials } from "@/lib/utils";
+import { CountUp } from "@/components/motion/count-up";
+import { SwapTransition } from "@/components/motion/page-transition";
+import { Segmented } from "@/components/motion/segmented";
 
 export const metadata: Metadata = { title: "Ranking geral" };
 
@@ -13,13 +16,13 @@ function Row({ r }: { r: RankingRow }) {
   return (
     <li
       className={cn(
-        "flex items-center gap-4 rounded-2xl px-4 py-3",
-        r.is_me ? "bg-brand-soft ring-2 ring-brand" : "bg-surface",
+        "flex items-center gap-3 rounded-full p-2 pr-5 hover:-translate-y-px",
+        r.is_me ? "bg-brand-soft ring-2 ring-brand ring-inset" : "bg-surface",
       )}
     >
       <span
         className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-full font-display font-black",
+          "flex size-10 shrink-0 items-center justify-center rounded-full font-display font-black",
           r.pos <= 3 ? MEDALS[r.pos - 1] : "bg-canvas text-muted",
         )}
       >
@@ -31,7 +34,9 @@ function Row({ r }: { r: RankingRow }) {
       <Link href={`/u/${r.user_id}`} className="min-w-0 flex-1 truncate font-semibold hover:underline">
         {r.is_me ? "Você" : r.full_name || "Aluno"}
       </Link>
-      <span className="font-display font-black text-brand">{r.xp.toLocaleString("pt-BR")}&nbsp;XP</span>
+      <span className="font-display font-black text-brand">
+        <CountUp value={r.xp} />&nbsp;XP
+      </span>
     </li>
   );
 }
@@ -60,35 +65,22 @@ export default async function RankingPage({ searchParams }: PageProps<"/app/rank
             <p className="text-muted">XP de todos os cursos. A semana começa na segunda-feira.</p>
           </div>
         </div>
-        <nav aria-label="Período" className="flex gap-2">
-          {tabs.map((t) => (
-            <Link
-              key={t.key}
-              href={t.href}
-              aria-current={t.key === period ? "page" : undefined}
-              className={cn(
-                "rounded-2xl px-4 py-2.5 font-display font-extrabold",
-                t.key === period ? "bg-brand text-white" : "bg-surface text-muted hover:text-ink",
-              )}
-            >
-              {t.label}
-            </Link>
-          ))}
-        </nav>
+        <Segmented name="ranking-period" label="Período" active={period} items={tabs} />
       </header>
 
+      <SwapTransition id={period} className="flex flex-col gap-6">
       {me ? (
-        <p className="rounded-2xl bg-sun-soft px-5 py-3 font-display font-extrabold text-sun-ink">
+        <p className="rounded-inner bg-sun-soft px-5 py-3 font-display font-extrabold text-sun-ink">
           Você está em {me.pos}º lugar com {me.xp.toLocaleString("pt-BR")} XP{period === "week" ? " nesta semana" : ""}.
         </p>
       ) : (
-        <p className="rounded-2xl bg-canvas px-5 py-3 font-semibold text-muted">
+        <p className="rounded-inner bg-canvas px-5 py-3 font-semibold text-muted">
           Você ainda não pontuou{period === "week" ? " nesta semana" : ""}. Conclua uma aula para entrar no ranking.
         </p>
       )}
 
       {top.length === 0 ? (
-        <p className="rounded-[28px] border-2 border-dashed border-line-strong bg-surface p-8 text-center text-muted">
+        <p className="rounded-card border-2 border-dashed border-line-strong bg-surface p-8 text-center text-muted">
           Ninguém pontuou ainda. Seja o primeiro!
         </p>
       ) : (
@@ -104,6 +96,7 @@ export default async function RankingPage({ searchParams }: PageProps<"/app/rank
           <Row r={meOutside} />
         </ol>
       ) : null}
+      </SwapTransition>
     </div>
   );
 }

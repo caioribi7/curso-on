@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "sun";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-2xl font-display font-extrabold transition active:translate-y-[2px] disabled:pointer-events-none disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-inner font-display font-extrabold transition active:translate-y-[2px] active:scale-[0.99] disabled:pointer-events-none disabled:opacity-60";
 
 const variants: Record<ButtonVariant, string> = {
   primary:

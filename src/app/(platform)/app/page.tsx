@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BoltIcon, CourseIllustration, FlameIcon, TrophyIcon } from "@/components/icons/flat-icons";
 import { CourseBadge } from "@/components/icons/subject-icon";
+import { CountUp } from "@/components/motion/count-up";
 import { ButtonLink } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { effectiveStreak, getProfile, levelFromXp, requireUser } from "@/lib/dal";
@@ -51,27 +52,27 @@ export default async function DashboardPage() {
       </header>
 
       <div className="grid gap-5 lg:grid-cols-3">
-        <section className="flex flex-col gap-4 rounded-[28px] bg-brand p-6 text-white shadow-[0_8px_0_#2A44D4]">
+        <section className="flex flex-col gap-4 rounded-card bg-brand p-card text-white shadow-[0_8px_0_#2A44D4]">
           <div className="flex items-center justify-between">
             <span className="rounded-full bg-white/20 px-3 py-1 font-display text-sm font-extrabold">Nível {lvl.level}</span>
             <BoltIcon size={28} />
           </div>
-          <p className="font-display text-[44px] font-black leading-none">{xp.toLocaleString("pt-BR")} XP</p>
-          <div className="h-3 rounded-full bg-white/25">
-            <div className="h-3 rounded-full bg-sun text-on-sun" style={{ width: `${(lvl.current / lvl.next) * 100}%` }} />
-          </div>
+          <p className="font-display text-[44px] font-black leading-none">
+            <CountUp value={xp} /> XP
+          </p>
+          <ProgressBar value={(lvl.current / lvl.next) * 100} tone="sun" className="bg-white/25" label="Progresso do nível" />
           <p className="text-sm text-[#DCE3FF]">
             {lvl.next - lvl.current} XP para o nível {lvl.level + 1}
           </p>
         </section>
 
-        <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-surface p-6">
+        <section className="flex flex-col gap-4 rounded-card border border-line bg-surface p-card">
           <div className="flex items-center gap-3">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-coral-soft">
+            <span className="flex size-12 items-center justify-center rounded-inner bg-coral-soft">
               <FlameIcon size={28} />
             </span>
             <div>
-              <p className="font-display text-2xl font-black leading-none">{streak} dias</p>
+              <p className="font-display text-2xl font-black leading-none"><CountUp value={streak} /> {streak === 1 ? "dia" : "dias"}</p>
               <p className="text-sm text-muted">de sequência</p>
             </div>
           </div>
@@ -90,14 +91,14 @@ export default async function DashboardPage() {
           </ol>
         </section>
 
-        <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-surface p-6">
+        <section className="flex flex-col gap-4 rounded-card border border-line bg-surface p-card">
           <div className="flex items-center gap-3">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-sun-soft">
+            <span className="flex size-12 items-center justify-center rounded-inner bg-sun-soft">
               <TrophyIcon size={30} />
             </span>
             <div>
               <p className="font-display text-2xl font-black leading-none">
-                {Math.min(todayXp, DAILY_GOAL)}/{DAILY_GOAL} XP
+                <CountUp value={Math.min(todayXp, DAILY_GOAL)} />/{DAILY_GOAL} XP
               </p>
               <p className="text-sm text-muted">meta de hoje</p>
             </div>
@@ -114,7 +115,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
         {courses.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 rounded-[32px] border-2 border-dashed border-line-strong bg-surface px-6 py-14 text-center">
+          <div className="flex flex-col items-center gap-4 rounded-card border-2 border-dashed border-line-strong bg-surface px-6 py-14 text-center">
             <CourseIllustration icon="rocket" size={96} />
             <h3 className="text-xl font-black">Nenhum curso por aqui ainda</h3>
             <p className="max-w-md text-muted">Escolha um curso no catálogo — ou crie o seu no Estúdio.</p>
@@ -140,9 +141,9 @@ export default async function DashboardPage() {
                       <li key={course.id} style={courseThemeVars(course.theme_color)}>
                         <Link
                           href={`/app/cursos/${course.slug}`}
-                          className="flex h-full items-center gap-5 rounded-[28px] border border-line bg-surface p-5 transition hover:-translate-y-0.5 hover:shadow-lg"
+                          className="flex h-full items-center gap-5 rounded-card border border-line bg-surface p-card hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-none"
                         >
-                          <span className="flex size-20 shrink-0 items-center justify-center rounded-[20px] bg-course-soft">
+                          <span className="flex size-20 shrink-0 items-center justify-center rounded-inner bg-course-soft">
                             <CourseBadge course={course} size={60} />
                           </span>
                           <span className="flex min-w-0 flex-1 flex-col gap-2">

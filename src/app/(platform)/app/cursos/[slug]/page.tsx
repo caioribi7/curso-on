@@ -9,11 +9,13 @@ import {
   TrophyIcon,
   moduleIconBg,
 } from "@/components/icons/flat-icons";
+import { AchievementBadge } from "@/components/achievements/achievement-badge";
 import { CourseBadge } from "@/components/icons/subject-icon";
+import { Toast } from "@/components/motion/toast";
 import { ButtonLink } from "@/components/ui/button";
 import { ProgressBar, Ring } from "@/components/ui/progress";
 import { effectiveStreak, getProfile } from "@/lib/dal";
-import { getCompletedLessonIds, getCourseBySlug, getCourseOutline, getLeaderboard, getStudyDaysThisWeek, getTodayXp } from "@/lib/queries";
+import { getCompletedLessonIds, getFreshAchievements, getCourseBySlug, getCourseOutline, getLeaderboard, getStudyDaysThisWeek, getTodayXp } from "@/lib/queries";
 import { cn, courseThemeVars, initials } from "@/lib/utils";
 import { requireCourseAccess } from "./access";
 
@@ -48,16 +50,30 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
   const todayIndex = (new Date().getDay() + 6) % 7;
   const justCompleted = sp.concluida === "1";
   const gained = Number(sp.xp ?? 0);
+  // Achievements the lesson just unlocked (granted by the database trigger a moment ago).
+  const fresh = justCompleted
+    ? await getFreshAchievements(user.id)
+    : [];
 
   return (
     <div className="flex flex-col gap-8" style={courseThemeVars(course.theme_color)}>
       {justCompleted ? (
-        <p role="status" className="rounded-2xl bg-mint-soft px-5 py-4 font-display font-extrabold text-mint-dark">
-          🎉 Aula concluída{gained > 0 ? ` · +${gained} XP` : ""}!
-        </p>
+        <Toast clearParams tone={fresh.length ? "sun" : "mint"}>
+          <span className="block">🎉 Aula concluída{gained > 0 ? ` · +${gained} XP` : ""}!</span>
+          {fresh.map((a) => (
+            <span key={a.slug} className="mt-2 flex items-center gap-3">
+              <span className="anim-pop shrink-0">
+                <AchievementBadge slug={a.slug} unlocked size={40} />
+              </span>
+              <span className="text-sm">
+                Conquista desbloqueada: <strong>{a.name}</strong>
+              </span>
+            </span>
+          ))}
+        </Toast>
       ) : null}
       {isOwner ? (
-        <p className="rounded-2xl bg-sun-soft px-5 py-3 text-sm font-semibold text-sun-ink">
+        <p className="rounded-inner bg-sun-soft px-5 py-3 text-sm font-semibold text-sun-ink">
           Você está vendo o curso como aluno.{" "}
           <Link href={`/studio/cursos/${course.id}`} className="underline">
             Voltar ao Estúdio
@@ -66,10 +82,10 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
       ) : null}
 
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-[32px] bg-course p-8 text-white shadow-[0_8px_0_var(--course-primary-dark)] sm:p-10">
+      <section className="relative overflow-hidden rounded-hero bg-course p-8 text-white shadow-[0_8px_0_var(--course-primary-dark)] sm:p-10">
         <div className="absolute -right-16 -top-24 size-80 rounded-full bg-white/10" />
         <div className="relative flex flex-wrap items-center gap-8">
-          <div className="flex size-36 shrink-0 items-center justify-center rounded-[32px] bg-surface">
+          <div className="flex size-36 shrink-0 items-center justify-center rounded-card bg-surface">
             <CourseBadge course={course} size={108} />
           </div>
           <div className="flex min-w-0 flex-1 flex-col gap-3">
@@ -79,9 +95,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             <h1 className="text-[40px] font-black leading-[1.05] tracking-[-0.03em] sm:text-[48px]">{course.title}</h1>
             {course.subtitle ? <p className="text-lg text-white/85">{course.subtitle}</p> : null}
             <div className="flex max-w-md items-center gap-3">
-              <div className="h-3 flex-1 rounded-full bg-white/25">
-                <div className="h-3 rounded-full bg-sun text-on-sun" style={{ width: `${total ? (completed / total) * 100 : 0}%` }} />
-              </div>
+              <ProgressBar value={total ? (completed / total) * 100 : 0} tone="sun" className="flex-1 bg-white/25" label="Progresso no curso" />
               <span className="font-display font-black">
                 {completed}/{total}
               </span>
@@ -92,7 +106,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
               <PlayIcon /> {completed === 0 ? "Começar" : "Continuar"}
             </ButtonLink>
           ) : total > 0 ? (
-            <span className="rounded-2xl bg-surface px-5 py-3 font-display font-black text-course">Curso concluído! 🏆</span>
+            <span className="anim-pop rounded-inner bg-surface px-5 py-3 font-display font-black text-course">Curso concluído! 🏆</span>
           ) : null}
         </div>
       </section>
@@ -107,7 +121,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             </ButtonLink>
           </div>
           {outline.length === 0 ? (
-            <p className="rounded-[28px] border-2 border-dashed border-line-strong bg-surface p-8 text-center text-muted">
+            <p className="rounded-card border-2 border-dashed border-line-strong bg-surface p-8 text-center text-muted">
               Este curso ainda não tem aulas.
             </p>
           ) : null}
@@ -115,9 +129,9 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             const mDone = m.lessons.filter((l) => done.has(l.id)).length;
             const complete = m.lessons.length > 0 && mDone === m.lessons.length;
             return (
-              <article key={m.id} className="rounded-[28px] border border-line bg-surface">
+              <article key={m.id} className="rounded-card border border-line bg-surface">
                 <header className="flex items-center gap-4 p-5">
-                  <span className={cn("flex size-16 shrink-0 items-center justify-center rounded-[20px]", moduleIconBg(m.icon))}>
+                  <span className={cn("flex size-16 shrink-0 items-center justify-center rounded-inner", moduleIconBg(m.icon))}>
                     <ModuleGlyph icon={m.icon} size={44} />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -143,7 +157,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
                         <Link
                           href={`/app/cursos/${slug}/aulas/${l.id}`}
                           className={cn(
-                            "flex items-center gap-4 border-b border-line px-5 py-3.5 transition last:border-b-0 hover:bg-canvas",
+                            "flex items-center gap-4 border-b border-line px-5 py-3.5 last:border-b-0 hover:bg-canvas active:bg-line",
                             isCurrent && "bg-course-soft hover:bg-course-soft",
                           )}
                         >
@@ -178,7 +192,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
 
         {/* Side column */}
         <aside className="flex flex-col gap-5">
-          <section className="flex items-center gap-5 rounded-[28px] border border-line bg-surface p-5">
+          <section className="flex items-center gap-5 rounded-card border border-line bg-surface p-card">
             <Ring value={todayXp / DAILY_GOAL} size={104} stroke={12}>
               <span className="font-display text-xl font-black leading-none">{Math.min(todayXp, DAILY_GOAL)}</span>
               <span className="text-xs font-semibold text-muted">/{DAILY_GOAL} XP</span>
@@ -189,7 +203,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             </div>
           </section>
 
-          <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-surface p-5">
+          <section className="flex flex-col gap-4 rounded-card border border-line bg-surface p-card">
             <div className="flex items-center gap-2">
               <FlameIcon size={24} />
               <p className="font-display text-lg font-black">{streak} dias de sequência</p>
@@ -209,7 +223,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             </ol>
           </section>
 
-          <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-surface p-5">
+          <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-card">
             <div className="flex items-center gap-2">
               <TrophyIcon size={26} />
               <p className="font-display text-lg font-black">Ranking da turma</p>
@@ -221,9 +235,9 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
                 {leaderboard.map((r, i) => (
                   <li
                     key={r.user_id}
-                    className={cn("flex items-center gap-3 rounded-2xl px-3 py-2.5", r.user_id === user.id ? "bg-course-soft" : "bg-canvas")}
+                    className={cn("flex items-center gap-3 rounded-full p-1.5 pr-4", r.user_id === user.id ? "bg-course-soft" : "bg-canvas")}
                   >
-                    <span className="w-5 font-display font-black text-muted">{i + 1}</span>
+                    <span className="w-7 text-center font-display font-black text-muted">{i + 1}</span>
                     <span className="flex size-9 items-center justify-center rounded-full bg-sun font-display text-sm font-black text-on-sun">
                       {initials(r.full_name || "?")}
                     </span>
@@ -235,7 +249,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             )}
           </section>
 
-          <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-surface p-5">
+          <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-card">
             <p className="font-display text-lg font-black">Seu progresso</p>
             <ProgressBar value={total ? (completed / total) * 100 : 0} />
             <p className="text-sm text-muted">

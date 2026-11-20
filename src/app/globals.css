@@ -28,6 +28,26 @@
   --course-primary: #3b5bfd;
   --course-primary-dark: #2a44d4;
   --course-primary-soft: #eef1ff;
+
+  /*
+   * Concentric radii (Apple style): an element nested in a corner has
+   * radius = parent radius − the gap between them, so both curves share a center.
+   * Change --r-card or --pad-card and everything inside follows.
+   */
+  --r-card: 34px; /* cards, panels with p-card */
+  --pad-card: 20px; /* standard card padding */
+  --r-inner: calc(var(--r-card) - var(--pad-card)); /* 14px: buttons, inputs, rows, tiles */
+  --pad-panel: 6px; /* segmented controls, menus, picker chips */
+  --r-panel: calc(var(--r-inner) + var(--pad-panel)); /* 20px: what wraps an --r-inner element at 6px */
+  --r-hero: 40px; /* large brand blocks; their children never sit in the corners */
+
+  /* Motion: fast ease-out for interface responses, a little longer for movement. */
+  --ease-ui: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 150ms;
+  --dur: 200ms;
+  --dur-move: 320ms;
+  --dur-fill: 700ms;
 }
 
 :root[data-theme="dark"] {
@@ -99,7 +119,16 @@
   --color-course-dark: var(--course-primary-dark);
   --color-course-soft: var(--course-primary-soft);
 
-  --radius-card: 24px;
+  --radius-card: var(--r-card);
+  --radius-inner: var(--r-inner);
+  --radius-panel: var(--r-panel);
+  --radius-hero: var(--r-hero);
+  --spacing-card: var(--pad-card);
+  --spacing-panel: var(--pad-panel);
+
+  /* Every `transition` utility uses the app's curve and duration. */
+  --default-transition-duration: var(--dur);
+  --default-transition-timing-function: var(--ease-ui);
 }
 
 /*
@@ -130,7 +159,375 @@ h4 {
   font-family: var(--font-display), system-ui, sans-serif;
 }
 
+/* ---------- Interaction: every control eases between states ---------- */
+
+/*
+ * Base transition for anything interactive. In a low-priority layer (:where),
+ * so a `transition-*` utility on the element still wins.
+ */
+:where(a, button, summary, input, select, textarea, label, [role="button"]) {
+  transition-property: color, background-color, border-color, outline-color, outline-offset, box-shadow, opacity, translate, scale,
+    rotate, transform, filter;
+  transition-duration: var(--dur);
+  transition-timing-function: var(--ease-ui);
+}
+
+/* The focus ring fades and tightens instead of popping in. */
+:where(a, button, summary, [tabindex]) {
+  outline: 3px solid transparent;
+  outline-offset: 5px;
+}
 :focus-visible {
   outline: 3px solid color-mix(in oklab, var(--course-primary) 45%, transparent);
   outline-offset: 2px;
+}
+
+/* ---------- Bars, rings and things that appear ---------- */
+
+/* Progress fills grow from zero when they appear and slide when the value changes. */
+.bar-fill {
+  transition: width var(--dur-fill) var(--ease-ui);
+}
+@starting-style {
+  .bar-fill {
+    width: 0 !important;
+  }
+}
+.ring-fill {
+  transition: stroke-dashoffset 900ms var(--ease-ui);
+}
+@starting-style {
+  .ring-fill {
+    stroke-dashoffset: var(--ring-c) !important;
+  }
+}
+
+/* Appears with a short rise; for banners, feedback and toasts. */
+.anim-in {
+  animation: rise-in 260ms var(--ease-ui) both;
+}
+.anim-pop {
+  animation: pop-in 420ms var(--ease-spring) both;
+}
+.anim-correct {
+  animation: correct-bump 420ms var(--ease-spring);
+}
+.anim-wrong {
+  animation: wrong-shake 380ms var(--ease-ui);
+}
+.anim-icon {
+  animation: icon-swap var(--dur-move) var(--ease-spring) both;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    scale: 0.6;
+  }
+  60% {
+    opacity: 1;
+    scale: 1.12;
+  }
+}
+@keyframes correct-bump {
+  40% {
+    scale: 1.025;
+  }
+}
+@keyframes wrong-shake {
+  20%,
+  60% {
+    translate: -5px 0;
+  }
+  40%,
+  80% {
+    translate: 5px 0;
+  }
+}
+@keyframes icon-swap {
+  from {
+    opacity: 0;
+    rotate: -90deg;
+    scale: 0.5;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes slide-up-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+@keyframes slide-left-in {
+  from {
+    opacity: 0;
+    translate: 24px 0;
+  }
+}
+@keyframes slide-left-out {
+  to {
+    opacity: 0;
+    translate: -24px 0;
+  }
+}
+
+/* Unlocked badge that the student has not seen yet: pops and glows once. */
+.badge-new {
+  animation: pop-in 520ms var(--ease-spring) 150ms both;
+}
+.badge-new::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--color-sun) 55%, transparent), transparent);
+  animation: fade-out 1.6s var(--ease-ui) 500ms both;
+  z-index: -1;
+}
+
+/* ---------- <details>: menus fade, accordions open smoothly ---------- */
+
+:root {
+  interpolate-size: allow-keywords;
+}
+details.accordion::details-content {
+  block-size: 0;
+  overflow: clip;
+  opacity: 0;
+  transition:
+    block-size var(--dur-move) var(--ease-ui),
+    opacity var(--dur) var(--ease-ui),
+    content-visibility var(--dur-move) allow-discrete;
+}
+details.accordion[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+}
+details .chevron {
+  transition: rotate var(--dur) var(--ease-ui);
+}
+details[open] > summary .chevron {
+  rotate: 90deg;
+}
+
+/* Floating panels (account menu): fade and drop in, fade out on close. */
+.popover-panel {
+  transition:
+    opacity var(--dur-fast) var(--ease-ui),
+    translate var(--dur-fast) var(--ease-ui),
+    scale var(--dur-fast) var(--ease-ui),
+    display var(--dur-fast) allow-discrete;
+  transform-origin: top right;
+}
+.popover-panel[data-open="false"] {
+  display: none;
+  opacity: 0;
+  translate: 0 -6px;
+  scale: 0.97;
+}
+@starting-style {
+  .popover-panel[data-open="true"] {
+    opacity: 0;
+    translate: 0 -6px;
+    scale: 0.97;
+  }
+}
+
+/* Toasts: rise in, slide out. */
+.toast {
+  transition:
+    opacity var(--dur) var(--ease-ui),
+    translate var(--dur) var(--ease-ui),
+    display var(--dur) allow-discrete;
+}
+.toast[data-leaving="true"] {
+  opacity: 0;
+  translate: 0 12px;
+}
+@starting-style {
+  .toast {
+    opacity: 0;
+    translate: 0 16px;
+  }
+}
+
+/* ---------- View Transitions (navigation, tabs, theme) ---------- */
+
+/* Clicks keep working while an animation runs. */
+::view-transition {
+  pointer-events: none;
+}
+
+/*
+ * The whole page (root) does not cross-fade on navigation: only the content area
+ * (page-*) and the moving indicators animate, so the header stays put.
+ * The theme switch is the exception: it cross-fades everything.
+ */
+html:not(.vt-theme)::view-transition-old(root) {
+  animation: none;
+  display: none;
+}
+html:not(.vt-theme)::view-transition-new(root) {
+  animation: none;
+}
+html.vt-theme::view-transition-group(root) {
+  animation-duration: 320ms;
+  animation-timing-function: var(--ease-ui);
+}
+
+/* Shared moving indicator (navbar, tabs, segmented controls, answer options). */
+::view-transition-group(.indicator) {
+  animation-duration: var(--dur-move);
+  animation-timing-function: var(--ease-ui);
+  z-index: 1;
+}
+::view-transition-image-pair(.indicator) {
+  isolation: auto;
+}
+::view-transition-old(.indicator),
+::view-transition-new(.indicator) {
+  height: 100%;
+  animation-duration: var(--dur-move);
+  animation-timing-function: var(--ease-ui);
+}
+
+/*
+ * Labels sitting on an indicator get their own view-transition-name (see
+ * vtLabel in components/motion/indicator.tsx), so during the slide they stay
+ * above the moving highlight instead of being covered by it, and their color
+ * cross-fades (muted → white) as the highlight arrives.
+ */
+.vt-label {
+  view-transition-class: vt-label;
+}
+::view-transition-group(.vt-label) {
+  z-index: 2;
+  animation-duration: var(--dur-move);
+  animation-timing-function: var(--ease-ui);
+}
+::view-transition-old(.vt-label),
+::view-transition-new(.vt-label) {
+  animation-duration: var(--dur-move);
+  animation-timing-function: var(--ease-ui);
+}
+/* A label with no pair (its page is arriving or leaving) moves with the page. */
+::view-transition-new(.vt-label):only-child {
+  animation: 260ms var(--ease-ui) 60ms both slide-up-in;
+}
+::view-transition-old(.vt-label):only-child {
+  animation: var(--dur-fast) var(--ease-ui) both fade-out;
+}
+
+/* Page change: the old content fades fast, the new one rises in. */
+::view-transition-old(.page-exit) {
+  animation: var(--dur-fast) var(--ease-ui) both fade-out;
+}
+::view-transition-new(.page-enter) {
+  animation: 260ms var(--ease-ui) 60ms both slide-up-in;
+}
+
+/* Same place, different content (tab panels, filters). */
+::view-transition-old(.swap-exit) {
+  animation: 120ms var(--ease-ui) both fade-out;
+}
+::view-transition-new(.swap-enter) {
+  animation: 220ms var(--ease-ui) 60ms both fade-in;
+}
+
+/* Next question: the card slides to the left. */
+::view-transition-old(.q-exit) {
+  animation: 180ms var(--ease-ui) both slide-left-out;
+}
+::view-transition-new(.q-enter) {
+  animation: 280ms var(--ease-ui) 80ms both slide-left-in;
+}
+
+/* Fallback for browsers without View Transitions: colors ease during a theme switch. */
+html.theme-fade,
+html.theme-fade * {
+  transition:
+    background-color 300ms var(--ease-ui),
+    border-color 300ms var(--ease-ui),
+    color 300ms var(--ease-ui),
+    fill 300ms var(--ease-ui) !important;
+}
+
+/* ---------- Reduced motion: keep fades, drop movement ---------- */
+
+/*
+ * With "reduce motion" on (on Windows, turning off "Show animations" does this),
+ * nothing slides, scales or shakes: changes of position are instant and
+ * appearances become plain fades. Color, opacity, cross-fades (theme, page,
+ * tabs), progress fills and counters stay, since they don't move anything.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  :where(a, button, summary, input, select, textarea, label, [role="button"]),
+  .transition {
+    transition-property: color, background-color, border-color, outline-color, box-shadow, opacity, filter !important;
+  }
+  .anim-in,
+  .anim-pop,
+  .anim-icon,
+  .badge-new {
+    animation: fade-in var(--dur) var(--ease-ui) both !important;
+  }
+  .anim-correct,
+  .anim-wrong,
+  .badge-new::after {
+    animation: none !important;
+  }
+  .popover-panel,
+  .toast {
+    translate: none !important;
+    scale: none !important;
+  }
+  details.accordion::details-content {
+    transition: opacity var(--dur) var(--ease-ui), content-visibility var(--dur) allow-discrete;
+  }
+  details .chevron {
+    transition: none;
+  }
+
+  /* View transitions: groups (position, size) jump; snapshots only fade. */
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+  }
+  ::view-transition-old(.indicator),
+  ::view-transition-new(.indicator) {
+    animation-duration: 0s !important;
+  }
+  /* The theme cross-fade is opacity only, so it stays. */
+  html.vt-theme::view-transition-old(root),
+  html.vt-theme::view-transition-new(root) {
+    animation-duration: 320ms !important;
+  }
+  ::view-transition-new(.page-enter),
+  ::view-transition-new(.q-enter),
+  ::view-transition-new(.swap-enter),
+  ::view-transition-new(.vt-label):only-child {
+    animation: 200ms var(--ease-ui) both fade-in !important;
+  }
+  ::view-transition-old(.page-exit),
+  ::view-transition-old(.q-exit),
+  ::view-transition-old(.swap-exit) {
+    animation: 120ms var(--ease-ui) both fade-out !important;
+  }
 }

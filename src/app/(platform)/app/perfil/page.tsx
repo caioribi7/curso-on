@@ -27,8 +27,9 @@ export default async function ProfilePage() {
           last_study_date: profile?.last_study_date ?? null,
         }}
         achievements={achievements}
+        celebrateFor={user.id}
       />
-      <section className="flex flex-col gap-6 rounded-[28px] border border-line bg-surface p-6">
+      <section className="flex flex-col gap-6 rounded-card border border-line bg-surface p-card">
         <ProfileForm fullName={profile?.full_name ?? ""} email={user.email} />
       </section>
     </div>

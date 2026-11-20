@@ -228,6 +228,12 @@ export async function getAchievements(userId: string): Promise<AchievementView[]
   return ((all as Omit<AchievementView, "unlockedAt">[] | null) ?? []).map((a) => ({ ...a, unlockedAt: unlocked.get(a.slug) ?? null }));
 }
 
+/** Achievements unlocked in the last `withinMs` (to celebrate right after a lesson). */
+export async function getFreshAchievements(userId: string, withinMs = 120_000): Promise<AchievementView[]> {
+  const now = Date.now();
+  return (await getAchievements(userId)).filter((a) => a.unlockedAt && now - Date.parse(a.unlockedAt) < withinMs);
+}
+
 export type PublicProfile = {
   id: string;
   full_name: string;

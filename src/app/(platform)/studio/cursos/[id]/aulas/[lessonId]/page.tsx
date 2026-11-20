@@ -40,7 +40,7 @@ export default async function LessonEditorPage({ params }: PageProps<"/studio/cu
         </Link>
         <h1 className="text-[36px] font-black leading-tight tracking-[-0.02em]">Editar aula</h1>
       </header>
-      <div className="rounded-[28px] border border-line bg-surface p-6">
+      <div className="rounded-card border border-line bg-surface p-card">
         <LessonForm lesson={lesson as Lesson} content={(content as LessonContent | null) ?? null} />
       </div>
       <form action={deleteLesson} className="flex justify-end">

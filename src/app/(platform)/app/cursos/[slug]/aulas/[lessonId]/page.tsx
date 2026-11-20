@@ -70,7 +70,7 @@ export default async function LessonPage({ params, searchParams }: PageProps<"/a
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6" style={courseThemeVars(course.theme_color)}>
       {gained > 0 ? (
-        <p role="status" className="rounded-2xl bg-mint-soft px-5 py-3 font-display font-extrabold text-mint-dark">
+        <p role="status" className="anim-in rounded-inner bg-mint-soft px-5 py-3 font-display font-extrabold text-mint-dark">
           +{gained} XP pela aula anterior. Segue o ritmo!
         </p>
       ) : null}
@@ -88,7 +88,7 @@ export default async function LessonPage({ params, searchParams }: PageProps<"/a
       </header>
 
       {embed ? (
-        <div className="aspect-video overflow-hidden rounded-[24px] bg-ink">
+        <div className="aspect-video overflow-hidden rounded-card bg-ink">
           <iframe
             src={embed}
             title={lesson.title}
@@ -100,7 +100,7 @@ export default async function LessonPage({ params, searchParams }: PageProps<"/a
         </div>
       ) : null}
 
-      <article className="rounded-[28px] border border-line bg-surface p-6 sm:p-10">
+      <article className="rounded-card border border-line bg-surface p-6 sm:p-10">
         {content?.body ? (
           <LessonBody body={content.body} />
         ) : (
@@ -108,7 +108,7 @@ export default async function LessonPage({ params, searchParams }: PageProps<"/a
         )}
       </article>
 
-      <footer className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-line bg-surface p-5">
+      <footer className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-line bg-surface p-card">
         {prev ? (
           <ButtonLink href={`/app/cursos/${slug}/aulas/${prev.id}`} variant="ghost">
             ← Anterior

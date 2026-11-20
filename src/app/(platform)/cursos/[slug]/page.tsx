@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CheckIcon, LockIcon, ModuleGlyph, PlayIcon, moduleIconBg } from "@/components/icons/flat-icons";
+import { CheckIcon, ChevronRight, LockIcon, ModuleGlyph, PlayIcon, moduleIconBg } from "@/components/icons/flat-icons";
 import { CourseBadge } from "@/components/icons/subject-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -63,15 +63,15 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
   return (
     <div className="flex flex-col gap-8" style={courseThemeVars(course.theme_color)}>
       {course.status !== "published" ? (
-        <p className="rounded-2xl bg-sun-soft px-5 py-3 text-sm font-semibold text-sun-ink">
+        <p className="rounded-inner bg-sun-soft px-5 py-3 text-sm font-semibold text-sun-ink">
           Rascunho: só você vê esta página. Publique o curso no Estúdio.
         </p>
       ) : null}
-      {error ? <p role="alert" className="rounded-2xl bg-coral-soft px-5 py-3 font-semibold text-coral">{error}</p> : null}
+      {error ? <p role="alert" className="anim-in rounded-inner bg-coral-soft px-5 py-3 font-semibold text-coral">{error}</p> : null}
 
       <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
         <div className="flex flex-col gap-8">
-          <section className="relative overflow-hidden rounded-[32px] bg-course p-8 text-white shadow-[0_8px_0_var(--course-primary-dark)] sm:p-10">
+          <section className="relative overflow-hidden rounded-hero bg-course p-8 text-white shadow-[0_8px_0_var(--course-primary-dark)] sm:p-10">
             <div className="absolute -right-20 -top-24 size-80 rounded-full bg-white/10" />
             <div className="relative flex flex-col gap-4">
               <h1 className="text-[40px] font-black leading-[1.05] tracking-[-0.03em] sm:text-[52px]">{course.title}</h1>
@@ -86,7 +86,7 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
           </section>
 
           {course.description ? (
-            <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-surface p-6 sm:p-8">
+            <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-6 sm:p-8">
               <h2 className="text-2xl font-black">Sobre o curso</h2>
               <p className="whitespace-pre-line text-[17px] leading-[1.7] text-ink">{course.description}</p>
             </section>
@@ -95,9 +95,9 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
           <section className="flex flex-col gap-4">
             <h2 className="text-2xl font-black">O que você vai estudar</h2>
             {outline.map((m, mi) => (
-              <details key={m.id} open={mi === 0} className="group rounded-[24px] border border-line bg-surface">
-                <summary className="flex cursor-pointer list-none items-center gap-4 p-5">
-                  <span className={cn("flex size-14 shrink-0 items-center justify-center rounded-2xl", moduleIconBg(m.icon))}>
+              <details key={m.id} open={mi === 0} className="accordion group rounded-card border border-line bg-surface">
+                <summary className="flex cursor-pointer list-none items-center gap-4 rounded-card p-card hover:bg-canvas/60 group-open:rounded-b-none">
+                  <span className={cn("flex size-14 shrink-0 items-center justify-center rounded-inner", moduleIconBg(m.icon))}>
                     <ModuleGlyph icon={m.icon} size={38} />
                   </span>
                   <span className="min-w-0 flex-1">
@@ -105,6 +105,7 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
                     <span className="block truncate text-lg font-black">{m.title}</span>
                   </span>
                   <span className="text-sm font-semibold text-muted">{m.lessons.length} aulas</span>
+                  <ChevronRight className="chevron text-subtle" />
                 </summary>
                 <ul className="border-t border-line">
                   {m.lessons.map((l) => (
@@ -124,11 +125,11 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
         </div>
 
         <aside className="lg:sticky lg:top-28 lg:self-start">
-          <div className="flex flex-col gap-5 overflow-hidden rounded-[28px] border border-line bg-surface">
+          <div className="flex flex-col gap-5 overflow-hidden rounded-card border border-line bg-surface">
             <div className="flex h-48 items-center justify-center bg-course-soft">
               <CourseBadge course={course} size={128} />
             </div>
-            <div className="flex flex-col gap-5 px-6 pb-6">
+            <div className="flex flex-col gap-5 px-card pb-card">
               <p className="font-display text-[36px] font-black leading-none">Grátis</p>
               {cta}
               <ul className="flex flex-col gap-2.5 text-sm">

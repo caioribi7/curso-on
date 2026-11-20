@@ -1,6 +1,23 @@
 import { cn } from "@/lib/utils";
 
-export function ProgressBar({ value, className, tone = "course" }: { value: number; className?: string; tone?: "course" | "sun" }) {
+/**
+ * Progress bar. The fill grows from zero when it appears and slides to the new
+ * value when it changes (.bar-fill in globals.css). Track and fill are both
+ * rounded-full, so they stay concentric at any height.
+ */
+export function ProgressBar({
+  value,
+  className,
+  tone = "course",
+  fillClassName,
+  label,
+}: {
+  value: number;
+  className?: string;
+  tone?: "course" | "sun";
+  fillClassName?: string;
+  label?: string;
+}) {
   const pct = Math.max(0, Math.min(100, Math.round(value)));
   return (
     <div
@@ -8,10 +25,11 @@ export function ProgressBar({ value, className, tone = "course" }: { value: numb
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}
+      aria-label={label}
       className={cn("h-3 w-full overflow-hidden rounded-full bg-course-soft", className)}
     >
       <div
-        className={cn("h-full rounded-full transition-[width]", tone === "sun" ? "bg-sun" : "bg-course")}
+        className={cn("bar-fill h-full rounded-full", tone === "sun" ? "bg-sun" : "bg-course", fillClassName)}
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -27,6 +45,7 @@ export function Ring({ value, size = 112, stroke = 14, children }: { value: numb
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--course-primary-soft)" strokeWidth={stroke} />
         <circle
+          className="ring-fill"
           cx={size / 2}
           cy={size / 2}
           r={r}
@@ -35,7 +54,7 @@ export function Ring({ value, size = 112, stroke = 14, children }: { value: numb
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={c}
-          strokeDashoffset={c * (1 - pct)}
+          style={{ strokeDashoffset: c * (1 - pct), ["--ring-c" as string]: `${c}` }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">{children}</div>
@@ -44,5 +63,5 @@ export function Ring({ value, size = 112, stroke = 14, children }: { value: numb
 }
 
 export function Card({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn("rounded-[28px] border border-line bg-surface", className)}>{children}</div>;
+  return <div className={cn("rounded-card border border-line bg-surface", className)}>{children}</div>;
 }

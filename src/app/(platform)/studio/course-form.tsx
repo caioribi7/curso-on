@@ -49,8 +49,8 @@ export function CourseForm({ course }: { course?: Course }) {
                     onClick={() => pick(s.key, level)}
                     aria-pressed={subject === s.key}
                     className={cn(
-                      "flex items-center gap-2 rounded-2xl border-2 bg-surface py-1.5 pl-1.5 pr-4 font-display text-sm font-extrabold transition",
-                      subject === s.key ? "border-ink" : "border-line hover:border-line-strong",
+                      "flex items-center gap-2 rounded-panel bg-surface p-panel pr-4 font-display text-sm font-extrabold ring-2 ring-inset active:scale-[0.97]",
+                      subject === s.key ? "bg-canvas ring-ink" : "ring-line hover:ring-line-strong",
                     )}
                   >
                     <SubjectIcon subject={s.key} level={level} size={34} showLevel={false} />
@@ -72,8 +72,8 @@ export function CourseForm({ course }: { course?: Course }) {
                 onClick={() => pick(subject, l)}
                 aria-pressed={level === l}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl border-2 bg-surface p-2 pr-5 text-left transition",
-                  level === l ? "border-ink" : "border-line hover:border-line-strong",
+                  "flex items-center gap-3 rounded-panel bg-surface p-panel pr-5 text-left ring-2 ring-inset active:scale-[0.98]",
+                  level === l ? "bg-canvas ring-ink" : "ring-line hover:ring-line-strong",
                 )}
               >
                 <SubjectIcon subject={subject} level={l} size={48} />
@@ -133,11 +133,11 @@ export function CourseForm({ course }: { course?: Course }) {
       {/* Live preview — the course palette re-themes the whole card. */}
       <aside className="lg:sticky lg:top-28 lg:self-start" style={courseThemeVars(color)}>
         <p className="mb-3 font-display text-sm font-bold text-muted">Pré-visualização</p>
-        <div className="overflow-hidden rounded-[28px] border border-line bg-surface">
+        <div className="overflow-hidden rounded-card border border-line bg-surface [&_*]:transition-colors [&_*]:duration-300">
           <div className="flex h-40 items-center justify-center bg-course-soft">
             <SubjectIcon subject={subject} level={level} size={112} />
           </div>
-          <div className="flex flex-col gap-3 p-6">
+          <div className="flex flex-col gap-3 p-card">
             <span className="w-fit rounded-full bg-course-soft px-3 py-1 font-display text-xs font-extrabold uppercase tracking-wide text-course">
               ENEM · {AREAS.find((a) => a.key === getSubject(subject)?.area)?.name}
             </span>
@@ -145,7 +145,7 @@ export function CourseForm({ course }: { course?: Course }) {
             <div className="h-3 rounded-full bg-course-soft">
               <div className="h-3 w-2/5 rounded-full bg-course" />
             </div>
-            <span className="mt-1 inline-flex h-11 items-center justify-center rounded-2xl bg-course font-display font-extrabold text-white shadow-[0_4px_0_var(--course-primary-dark)]">
+            <span className="mt-1 inline-flex h-11 items-center justify-center rounded-inner bg-course font-display font-extrabold text-white shadow-[0_4px_0_var(--course-primary-dark)]">
               Continuar
             </span>
           </div>

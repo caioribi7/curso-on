@@ -22,12 +22,12 @@ function AuthPanel() {
   return (
     <aside
       aria-hidden
-      className="relative hidden flex-1 overflow-hidden rounded-[32px] bg-brand lg:block"
+      className="relative hidden flex-1 overflow-hidden rounded-hero bg-brand lg:block"
     >
       <div className="absolute -top-40 left-[55%] size-[520px] rounded-full bg-[#4A68FF]" />
       <div className="absolute -left-36 top-[60%] size-[360px] rounded-full bg-[#3352F0]" />
 
-      <div className="absolute left-[8%] top-[15%] w-[260px] -rotate-[5deg] rounded-[20px] bg-surface px-5 py-4 shadow-[0_8px_0_#2A44D4]">
+      <div className="absolute left-[8%] top-[15%] w-[260px] -rotate-[5deg] rounded-[calc(var(--r-inner)+12px)] bg-surface px-5 py-4 shadow-[0_8px_0_#2A44D4]">
         <div className="flex items-center justify-between">
           <span className="rounded-full bg-brand px-2.5 py-1 font-display text-[13px] font-extrabold text-white">Nível 6</span>
           <span className="font-display text-sm font-extrabold">63/130 XP</span>
@@ -37,8 +37,8 @@ function AuthPanel() {
         </div>
       </div>
 
-      <div className="absolute right-[8%] top-[17%] flex rotate-6 items-center gap-3 rounded-[20px] bg-surface py-3.5 pl-3.5 pr-5 shadow-[0_8px_0_#2A44D4]">
-        <div className="flex size-12 items-center justify-center rounded-[14px] bg-coral-soft">
+      <div className="absolute right-[8%] top-[17%] flex rotate-6 items-center gap-3 rounded-[calc(var(--r-inner)+12px)] bg-surface py-3 pl-3 pr-5 shadow-[0_8px_0_#2A44D4]">
+        <div className="flex size-12 items-center justify-center rounded-inner bg-coral-soft">
           <FlameIcon size={30} />
         </div>
         <div>

@@ -42,7 +42,7 @@ export default async function Home() {
         <Logo size="sm" href="/" />
         <nav className="flex items-center gap-2">
           <ThemeToggle />
-          <Link href="/cursos" className="hidden rounded-xl px-4 py-2.5 font-display font-bold text-muted hover:text-ink sm:block">
+          <Link href="/cursos" className="hidden rounded-inner px-4 py-2.5 font-display font-bold text-muted hover:text-ink sm:block">
             Cursos
           </Link>
           {user ? (
@@ -51,7 +51,7 @@ export default async function Home() {
             </ButtonLink>
           ) : (
             <>
-              <Link href="/login" className="rounded-xl px-4 py-2.5 font-display font-bold text-muted hover:text-ink">
+              <Link href="/login" className="rounded-inner px-4 py-2.5 font-display font-bold text-muted hover:text-ink">
                 Entrar
               </Link>
               <ButtonLink href="/cadastro" size="sm">
@@ -84,10 +84,10 @@ export default async function Home() {
             </div>
           </div>
 
-          <div aria-hidden className="relative h-[460px] overflow-hidden rounded-[40px] bg-brand">
+          <div aria-hidden className="relative h-[460px] overflow-hidden rounded-hero bg-brand">
             <div className="absolute -right-24 -top-32 size-[420px] rounded-full bg-[#4A68FF]" />
             <div className="absolute -bottom-24 -left-20 size-72 rounded-full bg-[#3352F0]" />
-            <div className="absolute left-[8%] top-[12%] w-60 -rotate-[5deg] rounded-[20px] bg-surface px-5 py-4 shadow-[0_8px_0_#2A44D4]">
+            <div className="absolute left-[8%] top-[12%] w-60 -rotate-[5deg] rounded-[calc(var(--r-inner)+12px)] bg-surface px-5 py-4 shadow-[0_8px_0_#2A44D4]">
               <div className="flex items-center justify-between">
                 <span className="rounded-full bg-brand px-2.5 py-1 font-display text-xs font-extrabold text-white">Nível 6</span>
                 <span className="font-display text-sm font-extrabold">63/130 XP</span>
@@ -96,8 +96,8 @@ export default async function Home() {
                 <div className="h-full w-[48%] rounded-full bg-sun text-on-sun" />
               </div>
             </div>
-            <div className="absolute right-[8%] top-[16%] flex rotate-6 items-center gap-3 rounded-[20px] bg-surface py-3 pl-3 pr-5 shadow-[0_8px_0_#2A44D4]">
-              <span className="flex size-11 items-center justify-center rounded-[14px] bg-coral-soft">
+            <div className="absolute right-[8%] top-[16%] flex rotate-6 items-center gap-3 rounded-[calc(var(--r-inner)+12px)] bg-surface py-3 pl-3 pr-5 shadow-[0_8px_0_#2A44D4]">
+              <span className="flex size-11 items-center justify-center rounded-inner bg-coral-soft">
                 <FlameIcon size={26} />
               </span>
               <span>
@@ -120,8 +120,8 @@ export default async function Home() {
             <h2 className="max-w-2xl text-[40px] font-black leading-tight tracking-[-0.03em]">Tudo para criar e organizar seu curso.</h2>
             <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
               {FEATURES.map((f) => (
-                <li key={f.title} className="flex flex-col gap-4 rounded-[28px] border border-line bg-surface p-6">
-                  <span className={`flex size-20 items-center justify-center rounded-[22px] ${f.bg}`}>{f.icon}</span>
+                <li key={f.title} className="flex flex-col gap-4 rounded-card border border-line bg-surface p-card">
+                  <span className={`flex size-20 items-center justify-center rounded-inner ${f.bg}`}>{f.icon}</span>
                   <h3 className="text-xl font-black">{f.title}</h3>
                   <p className="text-muted">{f.text}</p>
                 </li>
@@ -131,7 +131,7 @@ export default async function Home() {
         </section>
 
         <section className="mx-auto max-w-[1280px] px-4 py-20 sm:px-8">
-          <div className="flex flex-col items-start gap-6 rounded-[40px] bg-sun p-10 shadow-[0_8px_0_#F2A818] sm:p-14 lg:flex-row lg:items-center lg:justify-between text-on-sun">
+          <div className="flex flex-col items-start gap-6 rounded-hero bg-sun p-10 shadow-[0_8px_0_#F2A818] sm:p-14 lg:flex-row lg:items-center lg:justify-between text-on-sun">
             <div className="flex flex-col gap-3">
               <h2 className="text-[36px] font-black leading-tight tracking-[-0.03em]">Ligue o modo estudo.</h2>
               <p className="max-w-lg text-lg text-on-sun/75">Crie sua conta grátis e publique seu primeiro curso hoje.</p>

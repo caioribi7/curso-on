@@ -18,7 +18,7 @@ export function QuestionForm({ courseId, modules }: { courseId: string; modules:
   return (
     <form
       action={action}
-      className="flex flex-col gap-5 rounded-[28px] border border-line bg-surface p-6"
+      className="flex flex-col gap-5 rounded-card border border-line bg-surface p-card"
     >
       <input type="hidden" name="courseId" value={courseId} />
       <input type="hidden" name="correct" value={correct} />
@@ -38,7 +38,7 @@ export function QuestionForm({ courseId, modules }: { courseId: string; modules:
               aria-pressed={correct === i}
               aria-label={`Marcar ${letter} como correta`}
               className={cn(
-                "flex size-11 shrink-0 items-center justify-center rounded-xl border-2 font-display font-black transition",
+                "flex size-11 shrink-0 items-center justify-center rounded-inner border-2 font-display font-black active:scale-90",
                 correct === i ? "border-mint bg-mint text-white" : "border-line-strong bg-surface text-muted hover:border-mint",
               )}
             >
@@ -143,7 +143,7 @@ export function LessonForm({ lesson, content }: { lesson: Lesson; content: Lesso
         <Field label="XP ao concluir" htmlFor="xpReward" error={err("xpReward")}>
           <Input id="xpReward" name="xpReward" type="number" min={0} max={500} defaultValue={lesson.xp_reward} />
         </Field>
-        <label className="flex items-center gap-3 self-end rounded-2xl border border-line bg-surface px-4 py-3.5 text-sm font-semibold">
+        <label className="flex items-center gap-3 self-end rounded-inner border border-line bg-surface px-4 py-3.5 text-sm font-semibold">
           <input type="checkbox" name="isPreview" defaultChecked={lesson.is_preview} className="size-5 accent-[var(--course-primary)]" />
           Aula grátis (prévia)
         </label>

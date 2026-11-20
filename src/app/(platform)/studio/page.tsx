@@ -34,15 +34,15 @@ export default async function StudioPage() {
           { label: "Publicados", value: published, tone: "bg-mint-soft text-mint-dark" },
           { label: "Alunos", value: totalStudents, tone: "bg-sun-soft text-sun-ink" },
         ].map((s) => (
-          <div key={s.label} className="flex items-center gap-4 rounded-[24px] border border-line bg-surface p-5">
-            <span className={`flex size-14 items-center justify-center rounded-2xl font-display text-2xl font-black ${s.tone}`}>{s.value}</span>
+          <div key={s.label} className="flex items-center gap-4 rounded-card border border-line bg-surface p-card">
+            <span className={`flex size-14 items-center justify-center rounded-inner font-display text-2xl font-black ${s.tone}`}>{s.value}</span>
             <span className="font-display text-lg font-extrabold">{s.label}</span>
           </div>
         ))}
       </div>
 
       {rows.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-[32px] border-2 border-dashed border-line-strong bg-surface px-6 py-16 text-center">
+        <div className="flex flex-col items-center gap-4 rounded-card border-2 border-dashed border-line-strong bg-surface px-6 py-16 text-center">
           <PencilIcon size={96} />
           <h2 className="text-2xl font-black">Seu primeiro curso começa aqui</h2>
           <p className="max-w-md text-muted">Dê um nome, escolha um ícone e uma cor. Depois é só adicionar módulos, aulas e questões.</p>
@@ -54,7 +54,7 @@ export default async function StudioPage() {
             <li key={course.id} style={courseThemeVars(course.theme_color)}>
               <Link
                 href={`/studio/cursos/${course.id}`}
-                className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-line bg-surface transition hover:-translate-y-0.5 hover:shadow-lg"
+                className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-none"
               >
                 <div className="relative flex h-36 items-center justify-center bg-course-soft">
                   <CourseBadge course={course} size={96} />
