@@ -88,7 +88,8 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
           <div className="flex size-36 shrink-0 items-center justify-center rounded-card bg-surface">
             <CourseBadge course={course} size={108} />
           </div>
-          <div className="flex min-w-0 flex-1 flex-col gap-3">
+          {/* basis-72: without a base width the title shrinks under the button instead of the button wrapping. */}
+          <div className="flex min-w-0 flex-1 basis-72 flex-col gap-3">
             <p className="font-display text-sm font-extrabold uppercase tracking-wide text-white/80">
               {outline.length} módulos · {total} aulas
             </p>
