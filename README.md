@@ -104,6 +104,8 @@ O painel fala com o Supabase só com a chave pública e o login do professor, en
 
 O [Masterbase](https://github.com/caioribi7/masterbase) é outro projeto open source do mesmo autor: um Postgres com tela visual, para quem não sabe SQL. Em **Integrações → Masterbase** você instala o Masterbase, abre o banco do Curso On numa porta livre (com configuração própria em `.masterbase/`) e troca a conexão para o banco na nuvem. Atenção: com o usuário `postgres` o Masterbase ignora o RLS, então evite editar XP, matrículas e pagamentos à mão.
 
+Do mesmo ecossistema, o [alltheani](https://github.com/caioribi7/alltheani) acha todos os pontos de transição de um projeto Next.js e deixa tudo suave num painel de terminal. Serve para o Curso On e para qualquer outro app Next.js.
+
 ## Segurança
 
 - **RLS em todas as tabelas.** Rascunhos só aparecem para o dono. Conteúdo das aulas, gabaritos e pagamentos ficam em tabelas separadas e protegidas.
