@@ -4,11 +4,14 @@ use crate::api::Api;
 use crate::content;
 use crate::form::{Field, Form, Kind, Outcome};
 use crate::import::{self, Progress};
+use crate::integrations::{self, Vis};
 use crate::masterbase::{self, Masterbase};
 use crate::project::{self, EnvFile};
+use crate::secrets::{self, Storage};
 use crate::sys;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use serde_json::{json, Value};
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::mpsc::Receiver;
 
@@ -26,6 +29,7 @@ pub enum Screen {
     Course,
     Import,
     Masterbase,
+    Integrations,
     Guide,
 }
 
@@ -40,6 +44,7 @@ pub enum FormKind {
     Lesson { id: Option<String>, module_id: String },
     Question,
     MasterbaseUrl,
+    Integration(integrations::Id),
 }
 
 #[derive(Clone)]
@@ -58,7 +63,7 @@ pub enum Action {
     MyCourses,
     Logout,
     Import,
-    Masterbase,
+    Integrations,
     Guide,
     Quit,
     // configuração
@@ -98,6 +103,8 @@ pub struct Job {
     pub title: String,
     pub steps: Vec<(String, Vec<String>)>,
     pub after: After,
+    /// Variáveis extras (chaves do chaveiro). Nunca são impressas.
+    pub env: Vec<(String, String)>,
 }
 
 pub enum After {
@@ -130,6 +137,7 @@ pub struct App {
     pub import_total: usize,
     pub import_done: bool,
     pub mb: Masterbase,
+    pub test_rx: Option<Receiver<Result<String, String>>>,
     pub scroll: u16,
     pub job: Option<Job>,
     pub quit: bool,
@@ -155,6 +163,7 @@ impl App {
             import_total: content::pack().courses.len(),
             import_done: false,
             mb: Masterbase::new(),
+            test_rx: None,
             scroll: 0,
             job: None,
             quit: false,
@@ -223,7 +232,7 @@ impl App {
                     v.push(item(Action::Login, "Entrar como professor", "Use o e-mail e a senha da sua conta no Curso On."));
                     v.push(item(Action::Signup, "Criar conta de professor", "Não tem conta? Crie em 10 segundos. Qualquer conta pode criar cursos."));
                 }
-                v.push(item(Action::Masterbase, "Masterbase", "Integração opcional: veja e edite o banco do Curso On numa tela visual, sem SQL."));
+                v.push(item(Action::Integrations, "Integrações", "Supabase, Masterbase, Stripe, e-mail, arquivos, vídeo, analytics e IA. Cole as chaves com segurança e teste a conexão."));
                 v.push(item(Action::Guide, "Guia para iniciantes", "Passo a passo do zero: contas, configuração e seu primeiro curso."));
                 v.push(item(Action::Quit, "Sair", "Fecha o painel. Nada é perdido."));
                 v
@@ -238,6 +247,7 @@ impl App {
                     item(Action::CloudSupabase, "Supabase na nuvem (grátis)", "Para colocar no ar. Mostra como criar a conta em supabase.com e onde copiar as chaves."),
                     item(Action::PushMigrations, "Criar as tabelas na nuvem", "Depois de configurar a nuvem: envia as tabelas e regras de segurança para o seu projeto Supabase."),
                     item(Action::NpmInstall, "Instalar dependências do site", "Roda `npm install`. Necessário uma vez, ou depois de atualizar o projeto."),
+                    item(Action::Integrations, "Integrações (opcional)", "Stripe, e-mail, arquivos, analytics, IA e Masterbase. Cada uma com passo a passo e “Testar conexão”."),
                     item(Action::Back, "Voltar", ""),
                 ]);
                 v
@@ -263,10 +273,23 @@ impl App {
     }
 
     pub fn mb_database_url(&self) -> String {
-        self.env
-            .as_ref()
-            .and_then(|e| e.real("MASTERBASE_DATABASE_URL").or_else(|| e.real("CURSO_ON_DATABASE_URL")))
+        self.secret("MASTERBASE_DATABASE_URL")
+            .or_else(|| self.env.as_ref().and_then(|e| e.real("CURSO_ON_DATABASE_URL")))
             .unwrap_or_else(|| project::LOCAL_DB_URL.into())
+    }
+
+    /// Valor salvo de uma chave, do `.env.local` ou do chaveiro.
+    pub fn secret(&self, key: &str) -> Option<String> {
+        secrets::read(self.root.as_deref()?, self.env.as_ref()?, key)
+    }
+
+    /// A chave existe (sem ler o chaveiro, que pode pedir senha ao sistema).
+    pub fn has_key(&self, key: &str) -> bool {
+        self.env.as_ref().is_some_and(|e| e.in_keychain(key) || e.real(key).is_some())
+    }
+
+    pub fn in_keychain(&self, key: &str) -> bool {
+        self.env.as_ref().is_some_and(|e| e.in_keychain(key))
     }
 
     fn ok(&mut self, msg: impl Into<String>) {
@@ -299,6 +322,7 @@ impl App {
             match form.handle(key) {
                 Outcome::Cancel => self.form = None,
                 Outcome::Submit => self.submit_form(),
+                Outcome::Button(b) => self.form_button(b),
                 Outcome::None => {}
             }
             return;
@@ -320,6 +344,7 @@ impl App {
         let len = match self.screen {
             Screen::Courses => self.courses.len(),
             Screen::Course => self.rows.len(),
+            Screen::Integrations => integrations::ALL.len(),
             Screen::Import | Screen::Guide => 0,
             _ => self.items().len(),
         };
@@ -343,6 +368,7 @@ impl App {
                 self.load_courses();
             }
             Screen::Import if !self.import_done && self.import_rx.is_some() => self.err("Espere a importação terminar."),
+            Screen::Masterbase => self.go(Screen::Integrations),
             _ => self.go(Screen::Home),
         }
     }
@@ -356,6 +382,7 @@ impl App {
                 }
             }
             Screen::Courses => self.open_course(),
+            Screen::Integrations => self.integration_form(self.selected),
             Screen::Course => self.edit_row(),
             Screen::Import if self.import_done => self.go(Screen::Home),
             _ => {}
@@ -391,13 +418,14 @@ impl App {
                     sys::open_browser(&format!("{SITE}/cursos/{}", c["slug"].as_str().unwrap_or("")));
                 }
             }
+            (Screen::Integrations, 't') => self.test_saved(),
             (Screen::Import, 'v') if self.import_done => sys::open_browser(&format!("{SITE}/cursos")),
             _ => {}
         }
     }
 
     fn act(&mut self, action: Action) {
-        let needs_root = !matches!(action, Action::Setup | Action::Guide | Action::Quit | Action::Back | Action::Clone | Action::Masterbase | Action::MbInstall);
+        let needs_root = !matches!(action, Action::Setup | Action::Guide | Action::Quit | Action::Back | Action::Clone | Action::MbInstall | Action::Integrations);
         let Some(root) = self.root.clone() else {
             if needs_root {
                 self.go(Screen::Setup);
@@ -427,6 +455,8 @@ impl App {
                     steps.push(("npm".into(), vec!["install".into()]));
                 }
                 steps.push(("npm".into(), vec!["run".into(), "dev".into()]));
+                // Chaves guardadas no chaveiro entram como variáveis de ambiente.
+                let env = self.env.as_ref().map(|e| secrets::keychain_env(&root, e)).unwrap_or_default();
                 // Abre o navegador assim que o site responder.
                 std::thread::spawn(|| {
                     for _ in 0..180 {
@@ -438,7 +468,7 @@ impl App {
                         }
                     }
                 });
-                self.job = Some(Job { title: "Plataforma ligada em http://localhost:3000 · Ctrl+C desliga e volta ao painel".into(), steps, after: After::Nothing });
+                self.job = Some(Job { title: "Plataforma ligada em http://localhost:3000 · Ctrl+C desliga e volta ao painel".into(), steps, after: After::Nothing, env });
             }
             Action::Login => {
                 self.form = Some((
@@ -478,7 +508,7 @@ impl App {
                     Confirm::Import,
                 ))
             }
-            Action::Masterbase => self.go(Screen::Masterbase),
+            Action::Integrations => self.go(Screen::Integrations),
             Action::Guide => self.go(Screen::Guide),
             Action::Quit => self.quit = true,
             Action::Back => self.go(Screen::Home),
@@ -490,7 +520,7 @@ impl App {
                 self.job = Some(Job {
                     title: "Ligando o Supabase local (a primeira vez baixa as imagens e demora alguns minutos)".into(),
                     steps: vec![("npx".into(), vec!["--yes".into(), "supabase".into(), "start".into()])],
-                    after: After::SyncLocalSupabase,
+                    after: After::SyncLocalSupabase, env: vec![]
                 });
             }
             Action::CloudSupabase => {
@@ -528,7 +558,7 @@ impl App {
                 ))
             }
             Action::NpmInstall => {
-                self.job = Some(Job { title: "Instalando dependências do site".into(), steps: vec![("npm".into(), vec!["install".into()])], after: After::Nothing })
+                self.job = Some(Job { title: "Instalando dependências do site".into(), steps: vec![("npm".into(), vec!["install".into()])], after: After::Nothing, env: vec![] })
             }
             Action::MbStart => match self.mb.start(&root, &self.mb_database_url()) {
                 Ok(url) => {
@@ -571,7 +601,7 @@ impl App {
         match action {
             Action::Setup => self.go(Screen::Setup),
             Action::Guide => self.go(Screen::Guide),
-            Action::Masterbase => self.go(Screen::Masterbase),
+            Action::Integrations => self.go(Screen::Integrations),
             Action::Back => self.go(Screen::Home),
             Action::Quit => self.quit = true,
             Action::Clone => {
@@ -581,7 +611,7 @@ impl App {
                 self.job = Some(Job {
                     title: "Baixando o Curso On do GitHub".into(),
                     steps: vec![("git".into(), vec!["clone".into(), "https://github.com/caioribi7/curso-on".into()])],
-                    after: After::Cloned,
+                    after: After::Cloned, env: vec![]
                 });
             }
             Action::MbInstall => {
@@ -592,7 +622,7 @@ impl App {
                     self.job = Some(Job {
                         title: "Instalando o Masterbase (script oficial)".into(),
                         steps: vec![("sh".into(), vec!["-c".into(), masterbase::INSTALL_SH.into()])],
-                        after: After::Nothing,
+                        after: After::Nothing, env: vec![]
                     });
                 }
             }
@@ -894,7 +924,7 @@ impl App {
                 self.job = Some(Job {
                     title: "Criando as tabelas no Supabase na nuvem".into(),
                     steps: vec![npx(&["login"]), npx(&["link", "--project-ref", &r]), npx(&["db", "push"])],
-                    after: After::Nothing,
+                    after: After::Nothing, env: vec![]
                 });
                 Ok("Pronto. Se tudo deu certo, as tabelas já estão no seu projeto.".into())
             }
@@ -905,6 +935,19 @@ impl App {
                 }
                 self.write_env(&[("MASTERBASE_DATABASE_URL", url)])?;
                 Ok("Conexão salva. Se o Masterbase estiver ligado, desligue e ligue de novo.".into())
+            }
+            FormKind::Integration(id) => {
+                let integ = integrations::get(*id);
+                integ.check(|k| f.get(k)).map_err(anyhow::Error::msg)?;
+                let root = self.root.clone().ok_or_else(|| anyhow::anyhow!("Projeto não encontrado. Use Configurar → “Baixar o Curso On”."))?;
+                let storage = Storage::from_key(&f.get("__storage"));
+                let values: Vec<String> = integ.keys.iter().map(|k| f.get(k.env)).collect();
+                let changes: Vec<secrets::Change> =
+                    integ.keys.iter().zip(&values).map(|(k, v)| secrets::Change { key: k.env, value: v, secret: k.vis == Vis::Secret }).collect();
+                secrets::write(&root, &changes, storage)?;
+                self.reload_env();
+                let place = if storage == Storage::Keychain && integ.has_secrets() { "no chaveiro do sistema" } else { "no .env.local" };
+                Ok(format!("{} salvo {place}. Reinicie a plataforma para o site usar as chaves novas.", integ.name))
             }
             FormKind::NewCourse => {
                 let api = self.api.clone().ok_or_else(|| anyhow::anyhow!("Configure o Supabase primeiro."))?;
@@ -1013,6 +1056,101 @@ impl App {
         }
     }
 
+    // ---------- integrações ----------
+
+    fn integration_form(&mut self, index: usize) {
+        let Some(integ) = integrations::ALL.get(index) else { return };
+        if integ.keys.is_empty() {
+            return self.ok(format!("{}: nada para configurar. O passo a passo está à direita.", integ.name));
+        }
+        if self.root.is_none() {
+            self.go(Screen::Setup);
+            return self.err("Não achei a pasta do Curso On. Rode o painel dentro dela ou use “Baixar o Curso On”.");
+        }
+        let mut unreadable = vec![];
+        let mut fields: Vec<Field> = integ
+            .keys
+            .iter()
+            .map(|k| {
+                let value = self.secret(k.env).unwrap_or_default();
+                if value.is_empty() && self.in_keychain(k.env) {
+                    unreadable.push(k.label);
+                }
+                let kind = if k.vis == Vis::Plain { Kind::Text } else { Kind::Secret };
+                let optional = !k.required || integ.any_of;
+                let label = if optional && !k.label.contains("opcional") { format!("{} (opcional)", k.label) } else { k.label.to_owned() };
+                Field::new(k.env, &label, kind).hint(k.hint).value(value).check(k.validate)
+            })
+            .collect();
+        if integ.has_secrets() {
+            let keychain = integ.keys.iter().any(|k| self.in_keychain(k.env));
+            fields.push(
+                Field::new(
+                    "__storage",
+                    "Onde guardar os segredos",
+                    Kind::Choice(vec![
+                        ("env".into(), ".env.local (arquivo local, fora do git)".into()),
+                        ("keychain".into(), "Chaveiro do sistema (mais seguro)".into()),
+                    ]),
+                )
+                .pick(if keychain { "keychain" } else { "env" }),
+            );
+        }
+        if integ.testable() {
+            fields.push(Field::new("test", "[ Testar conexão ]  Ctrl+T", Kind::Button));
+        }
+        if integ.id == integrations::Id::Masterbase {
+            fields.push(Field::new("open", "[ Abrir a tela do Masterbase ]  Ctrl+O", Kind::Button));
+        }
+        fields.push(Field::new("save", "[ Salvar ]  Ctrl+S", Kind::Button));
+        let mut form = Form::new(&format!("Integração · {}", integ.name), fields).help(integ.tutorial).wide();
+        if !unreadable.is_empty() {
+            form.error = Some(format!("Não consegui ler do chaveiro: {}. Cole de novo.", unreadable.join(", ")));
+        }
+        self.form = Some((FormKind::Integration(integ.id), form));
+    }
+
+    fn form_button(&mut self, button: &str) {
+        let Some((FormKind::Integration(id), form)) = &mut self.form else { return };
+        let id = *id;
+        match button {
+            "save" => self.submit_form(),
+            "open" if id == integrations::Id::Masterbase => {
+                self.form = None;
+                self.go(Screen::Masterbase);
+            }
+            "test" => {
+                let values: HashMap<String, String> = integrations::get(id).keys.iter().map(|k| (k.env.to_owned(), form.get(k.env))).collect();
+                form.notice = Some(("Testando a conexão…".into(), false));
+                form.error = None;
+                self.start_test(id, values);
+            }
+            _ => {}
+        }
+    }
+
+    /// Testa com as chaves já salvas (tecla t na lista).
+    fn test_saved(&mut self) {
+        let Some(integ) = integrations::ALL.get(self.selected) else { return };
+        if !integ.keys.iter().any(|k| self.has_key(k.env)) && integ.id != integrations::Id::Masterbase {
+            return self.err(format!("{}: nenhuma chave salva ainda. Enter para configurar.", integ.name));
+        }
+        let values: HashMap<String, String> = integ.keys.iter().map(|k| (k.env.to_owned(), self.secret(k.env).unwrap_or_default())).collect();
+        self.ok(format!("Testando {}…", integ.name));
+        self.start_test(integ.id, values);
+    }
+
+    fn start_test(&mut self, id: integrations::Id, mut values: HashMap<String, String>) {
+        if id == integrations::Id::Masterbase && values.values().all(String::is_empty) {
+            values.insert("MASTERBASE_DATABASE_URL".into(), project::LOCAL_DB_URL.into());
+        }
+        let (tx, rx) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let _ = tx.send(integrations::test(id, &values));
+        });
+        self.test_rx = Some(rx);
+    }
+
     fn write_env(&mut self, pairs: &[(&str, String)]) -> anyhow::Result<()> {
         let root = self.root.clone().ok_or_else(|| anyhow::anyhow!("Projeto não encontrado."))?;
         let mut env = EnvFile::load(&root);
@@ -1039,6 +1177,7 @@ impl App {
                 ok = false;
                 break;
             };
+            cmd.envs(job.env.iter().map(|(k, v)| (k, v)));
             match cmd.status() {
                 Ok(s) if s.success() => {}
                 Ok(_) if prog == "npm" && args == ["run", "dev"] => {} // Ctrl+C para o site
@@ -1119,6 +1258,19 @@ impl App {
             }
             if self.import_done {
                 self.import_rx = None;
+            }
+        }
+        if let Some(rx) = &self.test_rx {
+            if let Ok(res) = rx.try_recv() {
+                self.test_rx = None;
+                let (msg, err) = match res {
+                    Ok(m) => (m, false),
+                    Err(e) => (e, true),
+                };
+                match &mut self.form {
+                    Some((FormKind::Integration(_), form)) => form.notice = Some((msg, err)),
+                    _ => self.status = Some((msg, err)),
+                }
             }
         }
         if self.screen == Screen::Masterbase && self.mb.url.is_some() && !self.mb.running() {

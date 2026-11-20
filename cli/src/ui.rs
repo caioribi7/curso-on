@@ -3,6 +3,7 @@
 use crate::app::{App, Row, Screen};
 use crate::content::{self, rgb};
 use crate::form::{Form, Kind};
+use crate::integrations::{self, Vis};
 use crate::masterbase::{self, Masterbase};
 use crate::project;
 use ratatui::layout::{Alignment, Constraint, Layout, Margin, Rect};
@@ -81,6 +82,7 @@ pub fn draw(f: &mut Frame, app: &mut App) {
         Screen::Course => course(f, app, body),
         Screen::Import => import(f, app, body),
         Screen::Guide => guide(f, app, body),
+        Screen::Integrations => integrations_screen(f, app, body),
     }
 
     if let Some((msg, err)) = &app.status {
@@ -109,17 +111,22 @@ fn screen_name(s: Screen) -> &'static str {
         Screen::Course => "Editor do curso",
         Screen::Import => "Importar cursos ENEM",
         Screen::Masterbase => "Masterbase",
+        Screen::Integrations => "Integrações",
         Screen::Guide => "Guia para iniciantes",
     }
 }
 
 fn hints(app: &App) -> String {
-    if app.form.is_some() {
+    if let Some((kind, _)) = &app.form {
+        if matches!(kind, crate::app::FormKind::Integration(_)) {
+            return "  Tab/↑↓ campos · Ctrl+V cola (substitui) · Ctrl+U apaga · Ctrl+T testa · Ctrl+S salva · Esc cancela".into();
+        }
         return "  Tab/↑↓ campos · ← → escolhe · Enter próximo · Ctrl+S salva · Esc cancela".into();
     }
     match app.screen {
         Screen::Home => "  ↑↓ escolhe · Enter abre · q sai",
         Screen::Setup | Screen::Masterbase => "  ↑↓ escolhe · Enter abre · Esc volta",
+        Screen::Integrations => "  ↑↓ escolhe · Enter configura · t testa as chaves salvas · Esc volta",
         Screen::Courses => "  Enter abre · n novo curso · p publica · v vê no site · x exclui · r atualiza · Esc volta",
         Screen::Course => "  m módulo · a aula · q questão · Enter edita · x exclui · p publica · v vê no site · Esc volta",
         Screen::Import => "  v abre o catálogo · Enter/Esc volta",
@@ -215,6 +222,70 @@ fn masterbase_info(app: &mut App) -> Vec<Line<'static>> {
         v.push(Line::from(format!("Windows: baixe em {}/releases", masterbase::REPO)).fg(Color::White));
     }
     v
+}
+
+fn integrations_screen(f: &mut Frame, app: &mut App, area: Rect) {
+    let [left, right] = Layout::horizontal([Constraint::Percentage(38), Constraint::Percentage(62)]).areas(area.inner(Margin::new(1, 0)));
+    let list: Vec<ListItem> = integrations::ALL
+        .iter()
+        .map(|i| {
+            let any = i.keys.iter().any(|k| app.has_key(k.env));
+            let (mark, color, word) = if i.keys.is_empty() {
+                ("○", MUTED, "sem chave")
+            } else if any && i.configured(|k| app.has_key(k)) {
+                ("✓", MINT, "pronta")
+            } else if any {
+                ("!", SUN, "incompleta")
+            } else if i.required {
+                ("✗", CORAL, "obrigatória")
+            } else {
+                ("○", MUTED, "opcional")
+            };
+            ListItem::new(Line::from(vec![
+                Span::styled(format!(" {mark} "), Style::new().fg(color).bold()),
+                Span::raw(format!("{:<30}", i.name)),
+                Span::styled(word, Style::new().fg(color)),
+            ]))
+        })
+        .collect();
+    let selected = app.selected.min(integrations::ALL.len() - 1);
+    let mut state = ListState::default().with_selected(Some(selected));
+    f.render_stateful_widget(
+        List::new(list).block(panel("Integrações")).highlight_style(Style::new().bg(BRAND).fg(Color::White).bold()).highlight_symbol("▶"),
+        left,
+        &mut state,
+    );
+
+    let integ = &integrations::ALL[selected];
+    let mut lines = vec![Line::from(integ.summary).fg(Color::White), Line::from("")];
+    if !integ.keys.is_empty() {
+        lines.push(Line::from("Chaves").bold().fg(SUN));
+        for k in integ.keys {
+            let (state, color) = if app.in_keychain(k.env) {
+                ("no chaveiro do sistema".to_owned(), MINT)
+            } else if app.has_key(k.env) {
+                // Só mostra o valor das chaves que são públicas por natureza.
+                let v = app.env.as_ref().and_then(|e| e.real(k.env)).unwrap_or_default();
+                if k.vis == Vis::Plain { (v, MINT) } else { (format!("{} no .env.local", integrations::mask(&v)), MINT) }
+            } else {
+                ((if integ.required && k.required { "falta" } else { "vazia" }).to_owned(), MUTED)
+            };
+            lines.push(Line::from(vec![
+                Span::styled(format!(" {:<24}", k.env), Style::new().bold()),
+                Span::styled(state, Style::new().fg(color)),
+            ]));
+        }
+        lines.push(Line::from(""));
+    }
+    lines.push(Line::from("Como conseguir").bold().fg(SUN));
+    for t in integ.tutorial {
+        lines.push(Line::from(*t).fg(Color::Rgb(220, 222, 228)));
+    }
+    if integ.has_secrets() {
+        lines.push(Line::from(""));
+        lines.push(Line::from("Os segredos ficam no .env.local (fora do git) ou no chaveiro do sistema. Nunca aparecem na tela.").fg(MUTED));
+    }
+    f.render_widget(Paragraph::new(lines).block(panel(integ.name)).wrap(Wrap { trim: false }), right);
 }
 
 fn courses(f: &mut Frame, app: &App, area: Rect) {
@@ -356,9 +427,14 @@ fn guide(f: &mut Frame, app: &App, area: Rect) {
 fn draw_form(f: &mut Frame, form: &Form) {
     let multiline = form.fields.iter().any(|x| matches!(x.kind, Kind::Multiline));
     let help_h = if form.help.is_empty() { 0 } else { form.help.len() as u16 + 1 };
-    let fields_h: u16 = form.fields.iter().map(|x| if matches!(x.kind, Kind::Multiline) { 6 } else { 2 }).sum();
-    let height = (fields_h + help_h + 4 + u16::from(form.error.is_some())).min(f.area().height.saturating_sub(2));
-    let area = centered(f.area(), if multiline { 90 } else { 76 }, height);
+    let fields_h: u16 = form.fields.iter().map(|x| match x.kind {
+        Kind::Multiline => 6,
+        Kind::Button => 1,
+        _ => 2,
+    }).sum();
+    let extra = u16::from(form.error.is_some()) + u16::from(form.notice.is_some());
+    let height = (fields_h + help_h + 4 + extra).min(f.area().height.saturating_sub(2));
+    let area = centered(f.area(), if multiline || form.wide { 96 } else { 76 }, height);
     f.render_widget(Clear, area);
     let block = Block::bordered()
         .border_type(BorderType::Rounded)
@@ -375,10 +451,21 @@ fn draw_form(f: &mut Frame, form: &Form) {
     let mut cursor_line = 0usize;
     for (i, field) in form.fields.iter().enumerate() {
         let focused = i == form.focus;
+        if matches!(field.kind, Kind::Button) {
+            let style = if focused { Style::new().bg(BRAND).fg(Color::White).bold() } else { Style::new().fg(BRAND).bold() };
+            lines.push(Line::from(vec![Span::raw(if focused { "▶ " } else { "  " }), Span::styled(format!(" {} ", field.label), style)]));
+            if focused {
+                cursor_line = lines.len();
+            }
+            continue;
+        }
         let label_style = if focused { Style::new().fg(SUN).bold() } else { Style::new().bold() };
         let mut label = vec![Span::styled(format!("{} ", field.label), label_style)];
-        if !field.hint.is_empty() {
-            label.push(Span::styled(format!(" {}", field.hint), Style::new().fg(MUTED)));
+        match field.status() {
+            Some(Ok(())) if field.check.is_some() => label.push(Span::styled(" ✓ formato ok", Style::new().fg(MINT))),
+            Some(Err(e)) => label.push(Span::styled(format!(" ✗ {e}"), Style::new().fg(CORAL))),
+            _ if !field.hint.is_empty() => label.push(Span::styled(format!(" {}", field.hint), Style::new().fg(MUTED))),
+            _ => {}
         }
         lines.push(Line::from(label));
         if focused {
@@ -396,9 +483,12 @@ fn draw_form(f: &mut Frame, form: &Form) {
                 ]));
             }
             Kind::Secret => {
-                let shown = if field.value.is_empty() { String::new() } else { "•".repeat(field.value.chars().count().min(40)) };
-                lines.push(Line::from(Span::styled(format!(" {shown}{caret} "), value_style)));
+                // Nunca mostra o valor, nem o tamanho dele.
+                let shown = integrations::mask(&field.value);
+                let empty = if field.value.is_empty() && focused { "cole aqui (Ctrl+V)" } else { "" };
+                lines.push(Line::from(vec![Span::styled(format!(" {shown}{caret} "), value_style), Span::styled(empty, Style::new().fg(MUTED))]));
             }
+            Kind::Button => {}
             Kind::Multiline => {
                 let all: Vec<&str> = field.value.split('\n').collect();
                 let start = all.len().saturating_sub(5);
@@ -412,6 +502,9 @@ fn draw_form(f: &mut Frame, form: &Form) {
             }
             _ => lines.push(Line::from(Span::styled(format!(" {}{caret} ", field.value), value_style))),
         }
+    }
+    if let Some((msg, err)) = &form.notice {
+        lines.push(Line::from(format!("{} {msg}", if *err { "✗" } else { "✓" })).fg(if *err { CORAL } else { MINT }).bold());
     }
     if let Some(e) = &form.error {
         lines.push(Line::from(format!("✗ {e}")).fg(CORAL).bold());
@@ -447,7 +540,7 @@ mod tests {
     #[test]
     fn every_screen_renders_at_any_size() {
         let mut app = App::new();
-        for screen in [Screen::Home, Screen::Setup, Screen::Masterbase, Screen::Guide, Screen::Courses, Screen::Import] {
+        for screen in [Screen::Home, Screen::Setup, Screen::Masterbase, Screen::Guide, Screen::Courses, Screen::Import, Screen::Integrations] {
             app.screen = screen;
             for (w, h) in [(120, 40), (80, 24), (40, 12), (10, 5)] {
                 render(&mut app, w, h);
@@ -455,6 +548,31 @@ mod tests {
         }
         app.screen = Screen::Home;
         assert!(render(&mut app, 120, 40).contains("Configurar o Curso On"));
+    }
+
+    #[test]
+    fn integration_form_never_shows_a_secret() {
+        let mut app = App::new();
+        app.screen = Screen::Integrations;
+        app.selected = integrations::ALL.iter().position(|i| i.id == integrations::Id::Stripe).unwrap();
+        assert!(render(&mut app, 120, 40).contains("dashboard.stripe.com"));
+        app.on_key(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
+        if app.root.is_none() {
+            return;
+        }
+        let secret = "sk_test_51NAOPODEAPARECERNATELA0123456789abcdef";
+        app.on_paste(secret);
+        let screen = render(&mut app, 120, 40);
+        assert!(screen.contains("Testar conexão"));
+        assert!(screen.contains("formato ok"));
+        assert!(!screen.contains("NAOPODE"));
+        app.on_paste("pk_test_errado");
+        assert!(render(&mut app, 120, 40).contains("publicável"));
+        app.on_key(KeyEvent::new(KeyCode::Tab, KeyModifiers::NONE));
+        app.on_paste("whsec_curta");
+        assert!(render(&mut app, 120, 40).contains("cortada"));
+        app.on_key(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE));
+        assert!(app.form.is_none());
     }
 
     #[test]

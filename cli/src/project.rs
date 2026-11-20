@@ -5,6 +5,9 @@ use std::path::{Path, PathBuf};
 
 pub const LOCAL_DB_URL: &str = "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
 
+/// Linha que marca uma chave guardada no chaveiro do sistema (sem o valor).
+pub const KEYCHAIN_MARK: &str = "# curso-on:chaveiro ";
+
 /// Procura a pasta do Curso On: `CURSO_ON_DIR`, depois a pasta atual e as de cima,
 /// depois `./curso-on` (onde o assistente clona o projeto).
 pub fn find_root() -> Option<PathBuf> {
@@ -45,11 +48,18 @@ impl EnvFile {
         Self { path, lines: text.lines().map(str::to_owned).collect() }
     }
 
+    #[cfg(test)]
+    pub fn from_text(text: &str) -> Self {
+        Self { path: PathBuf::from("x"), lines: text.lines().map(str::to_owned).collect() }
+    }
+
+    fn is_key(line: &str, key: &str) -> bool {
+        !line.trim_start().starts_with('#') && line.split_once('=').is_some_and(|(k, _)| k.trim() == key)
+    }
+
     pub fn get(&self, key: &str) -> Option<String> {
-        self.lines.iter().find_map(|l| {
-            let (k, v) = l.split_once('=')?;
-            (k.trim() == key).then(|| v.trim().trim_matches('"').to_owned())
-        })
+        let line = self.lines.iter().find(|l| Self::is_key(l, key))?;
+        Some(unquote(line.split_once('=')?.1))
     }
 
     /// Valor preenchido de verdade (não o exemplo `xxx` do `.env.example`).
@@ -58,18 +68,88 @@ impl EnvFile {
     }
 
     pub fn set(&mut self, key: &str, value: &str) {
-        let line = format!("{key}={value}");
-        match self.lines.iter_mut().find(|l| l.split_once('=').is_some_and(|(k, _)| k.trim() == key)) {
+        let line = format!("{key}={}", quote(value));
+        match self.lines.iter_mut().find(|l| Self::is_key(l, key)) {
             Some(l) => *l = line,
             None => self.lines.push(line),
         }
     }
 
+    pub fn remove(&mut self, key: &str) {
+        self.lines.retain(|l| !Self::is_key(l, key));
+    }
+
+    /// A chave está no chaveiro do sistema (o arquivo só guarda o nome dela).
+    pub fn in_keychain(&self, key: &str) -> bool {
+        self.lines.iter().any(|l| l.strip_prefix(KEYCHAIN_MARK).is_some_and(|k| k.trim() == key))
+    }
+
+    pub fn keychain_keys(&self) -> Vec<String> {
+        self.lines.iter().filter_map(|l| l.strip_prefix(KEYCHAIN_MARK)).map(|k| k.trim().to_owned()).collect()
+    }
+
+    pub fn mark_keychain(&mut self, key: &str, on: bool) {
+        self.lines.retain(|l| !l.strip_prefix(KEYCHAIN_MARK).is_some_and(|k| k.trim() == key));
+        if on {
+            self.lines.push(format!("{KEYCHAIN_MARK}{key}"));
+        }
+    }
+
+    /// Grava num arquivo temporário e troca de uma vez, para não deixar o
+    /// `.env.local` pela metade. No Linux/macOS só o dono lê (0600).
     pub fn save(&self) -> std::io::Result<()> {
         let mut text = self.lines.join("\n");
         text.push('\n');
-        fs::write(&self.path, text)
+        let tmp = self.path.with_extension("local.tmp");
+        write_private(&tmp, text.as_bytes())?;
+        fs::rename(&tmp, &self.path).inspect_err(|_| {
+            let _ = fs::remove_file(&tmp);
+        })
     }
+}
+
+#[cfg(unix)]
+fn write_private(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+    use std::io::Write;
+    use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+    let mut f = fs::OpenOptions::new().write(true).create(true).truncate(true).mode(0o600).open(path)?;
+    f.set_permissions(fs::Permissions::from_mode(0o600))?;
+    f.write_all(bytes)
+}
+
+/// No Windows o arquivo fica dentro da pasta do usuário, que já é só dele.
+#[cfg(not(unix))]
+fn write_private(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+    fs::write(path, bytes)
+}
+
+/// Aspas só quando o valor precisa (espaço, `#`, aspas, `<`…), no formato do dotenv.
+fn quote(v: &str) -> String {
+    if v.chars().all(|c| c.is_ascii_alphanumeric() || "_-.:/@+=,%~?&".contains(c)) {
+        v.to_owned()
+    } else {
+        format!("\"{}\"", v.replace('\\', "\\\\").replace('"', "\\\""))
+    }
+}
+
+fn unquote(v: &str) -> String {
+    let v = v.trim();
+    let Some(inner) = v.strip_prefix('"').and_then(|x| x.strip_suffix('"')) else {
+        return v.trim_matches('\'').to_owned();
+    };
+    let mut out = String::new();
+    let mut chars = inner.chars();
+    while let Some(c) = chars.next() {
+        match (c, c == '\\') {
+            (_, true) => match chars.next() {
+                Some('n') => out.push('\n'),
+                Some(n) => out.push(n),
+                None => {}
+            },
+            (c, false) => out.push(c),
+        }
+    }
+    out
 }
 
 /// Lê a saída de `supabase status -o env` (linhas `NOME="valor"`).
@@ -100,7 +180,7 @@ mod tests {
 
     #[test]
     fn env_set_replaces_and_appends() {
-        let mut env = EnvFile { path: PathBuf::from("x"), lines: vec!["# c".into(), "A=1".into()] };
+        let mut env = EnvFile::from_text("# c\nA=1");
         env.set("A", "2");
         env.set("B", "3");
         assert_eq!(env.lines, vec!["# c", "A=2", "B=3"]);
@@ -108,8 +188,57 @@ mod tests {
     }
 
     #[test]
+    fn quotes_round_trip_and_comments_are_not_keys() {
+        let mut env = EnvFile::from_text("# A=comentario");
+        env.set("FROM", "Curso On <oi@curso.com>");
+        env.set("Q", r#"a"b\c"#);
+        env.set("PLAIN", "sk_test_123");
+        assert_eq!(env.lines[1], r#"FROM="Curso On <oi@curso.com>""#);
+        assert_eq!(env.lines[3], "PLAIN=sk_test_123");
+        assert_eq!(env.get("FROM").as_deref(), Some("Curso On <oi@curso.com>"));
+        assert_eq!(env.get("Q").as_deref(), Some(r#"a"b\c"#));
+        assert_eq!(env.get("A"), None);
+        env.remove("Q");
+        assert_eq!(env.get("Q"), None);
+        assert_eq!(env.lines.len(), 3);
+    }
+
+    #[test]
+    fn keychain_marks_hold_only_the_name() {
+        let mut env = EnvFile::from_text("A=1");
+        env.mark_keychain("STRIPE_SECRET_KEY", true);
+        env.mark_keychain("STRIPE_SECRET_KEY", true);
+        assert!(env.in_keychain("STRIPE_SECRET_KEY"));
+        assert_eq!(env.keychain_keys(), vec!["STRIPE_SECRET_KEY"]);
+        assert_eq!(env.get("STRIPE_SECRET_KEY"), None);
+        env.mark_keychain("STRIPE_SECRET_KEY", false);
+        assert!(!env.in_keychain("STRIPE_SECRET_KEY"));
+        assert_eq!(env.lines, vec!["A=1"]);
+    }
+
+    #[test]
+    fn save_replaces_the_whole_file_privately() {
+        let dir = std::env::temp_dir().join(format!("curso-on-env-{}", std::process::id()));
+        fs::create_dir_all(&dir).unwrap();
+        let mut env = EnvFile::load(&dir);
+        env.set("RESEND_API_KEY", "re_abc");
+        env.save().unwrap();
+        env.set("RESEND_API_KEY", "re_def");
+        env.save().unwrap();
+        assert_eq!(fs::read_to_string(dir.join(".env.local")).unwrap(), "RESEND_API_KEY=re_def\n");
+        assert!(!dir.join(".env.local.tmp").exists());
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let mode = fs::metadata(dir.join(".env.local")).unwrap().permissions().mode();
+            assert_eq!(mode & 0o777, 0o600);
+        }
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
     fn real_ignores_placeholders() {
-        let env = EnvFile { path: PathBuf::from("x"), lines: vec!["K=sb_publishable_xxx".into(), "U=https://a.supabase.co".into()] };
+        let env = EnvFile::from_text("K=sb_publishable_xxx\nU=https://a.supabase.co");
         assert!(env.real("K").is_none());
         assert!(env.real("U").is_some());
     }

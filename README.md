@@ -35,13 +35,21 @@ Nunca usou nada disso? O [guia para iniciantes](docs/primeiros-passos.md) explic
 | **Criar conta / Entrar** | Conta de professor no seu Supabase. |
 | **Meus cursos** | Editor completo: curso (matéria + nível), módulos, aulas em Markdown, questões de múltipla escolha com explicação, publicar e excluir. |
 | **Importar cursos ENEM** | Cria 26 cursos prontos (13 matérias × 2 níveis) a partir de [`content/enem.json`](content/enem.json). |
-| **Masterbase** | Integração opcional, veja abaixo. |
+| **Integrações** | Supabase, Masterbase, Stripe, Resend, Cloudflare R2/S3, YouTube/Vimeo, Plausible/Google Analytics e OpenAI/Anthropic. Cada uma com passo a passo, campos mascarados, conferência do formato e **Testar conexão**. Veja abaixo. |
 
 O painel fala com o Supabase só com a chave pública e o login do professor, então passa pelas mesmas regras de segurança (RLS) do site.
 
+## Integrações
+
+Só o Supabase é obrigatório. No menu **Integrações** você escolhe o que ligar, cola as chaves em campos que nunca mostram o valor e testa a conexão com uma chamada real e barata (listar modelos, ver o saldo da Stripe, um `HEAD` no bucket…). Os segredos ficam no `.env.local` (fora do git, permissão `600` no Linux/macOS) ou no chaveiro do sistema, você escolhe.
+
+A Stripe é opcional e o Curso On continua grátis: sem `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET`, nenhum preço aparece. Hoje o painel guarda e testa as chaves; o checkout no site é o próximo passo.
+
+Detalhes, lista de variáveis e o plano do checkout: [docs/integracoes.md](docs/integracoes.md).
+
 ## Integra com Masterbase
 
-O [Masterbase](https://github.com/caioribi7/masterbase) é outro projeto open source do mesmo autor: um Postgres com tela visual, para quem não sabe SQL. No menu **Masterbase** do painel você:
+O [Masterbase](https://github.com/caioribi7/masterbase) é outro projeto open source do mesmo autor: um Postgres com tela visual, para quem não sabe SQL. Em **Integrações → Masterbase** no painel você:
 
 - instala o Masterbase (um comando no Linux/macOS; download no Windows);
 - abre o banco do Curso On numa porta livre, com configuração própria em `.masterbase/` (não mexe na sua);
