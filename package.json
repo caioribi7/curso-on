@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:db": "node supabase/tests/rls.test.mjs && node supabase/tests/achievements.test.mjs && node supabase/tests/redacao.test.mjs",
+    "test:db": "node supabase/tests/rls.test.mjs && node supabase/tests/achievements.test.mjs && node supabase/tests/redacao.test.mjs && node supabase/tests/simulados.test.mjs",
     "curso-on": "cargo run --release --quiet --manifest-path cli/Cargo.toml",
     "typecheck": "next typegen && tsc --noEmit"
   },
@@ -15,6 +15,7 @@
     "@anthropic-ai/sdk": "^1.12.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.1",
+    "katex": "^0.16.22",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",

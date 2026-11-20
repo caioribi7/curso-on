@@ -14,6 +14,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Plain-node SQL test harness (assertion-style ternaries).
     "supabase/tests/**",
+    // Agent worktrees and scratch files are not part of the app.
+    ".claude/**",
+    "cli/target/**",
   ]),
 ]);
 

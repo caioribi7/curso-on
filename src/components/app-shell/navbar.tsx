@@ -13,6 +13,7 @@ const LINKS = [
   { href: "/app", label: "Início", icon: "home" as const, exact: true },
   { href: "/cursos", label: "Explorar", icon: "lessons" as const },
   { href: "/app/redacao", label: "Redação", icon: "essay" as const },
+  { href: "/app/simulados", label: "Simulados", icon: "questions" as const },
   { href: "/app/ranking", label: "Ranking", icon: "ranking" as const },
   { href: "/studio", label: "Estúdio", icon: "studio" as const },
 ];
@@ -31,7 +32,7 @@ export async function Navbar() {
           {LINKS.map((l) => (
             <NavLink key={l.href} href={l.href} exact={l.exact}>
               <NavIcon name={l.icon} />
-              {/* Between md and xl only the icons fit; the label stays for screen readers. */}
+              {/* Icons only until xl, so all items fit; the label stays for screen readers. */}
               <span className="max-xl:sr-only">{l.label}</span>
             </NavLink>
           ))}
@@ -56,7 +57,7 @@ export async function Navbar() {
             <span className="flex items-center gap-1.5 rounded-full bg-coral-soft px-3.5 py-2 font-display text-[15px] font-black text-coral" title="Dias seguidos estudando">
               <FlameIcon /> <CountUp value={streak} />
             </span>
-            <span className="hidden items-center gap-1.5 rounded-full bg-sun-soft px-3.5 py-2 font-display text-[15px] font-black text-sun-ink sm:flex" title="XP total">
+            <span className="hidden items-center gap-1.5 rounded-full bg-sun-soft px-3.5 py-2 font-display text-[15px] font-black text-sun-ink sm:flex md:hidden xl:flex" title="XP total">
               <BoltIcon /> <CountUp value={profile?.xp ?? 0} /> XP
             </span>
             <AccountMenu label={initials(profile?.full_name || "Você")}>
