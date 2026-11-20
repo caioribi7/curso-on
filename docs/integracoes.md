@@ -6,7 +6,7 @@ O Curso On funciona só com o Supabase. Todo o resto é opcional. No painel, abr
 |---|---|---|---|
 | **Supabase** (obrigatória) | Banco e login | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `GET /auth/v1/settings` |
 | **Masterbase** | Ver e editar o banco numa tela visual | `MASTERBASE_DATABASE_URL` (vazio = Supabase local) | Conecta na porta do Postgres e confere se o Masterbase está instalado |
-| **Stripe** | Cobrar por cursos, se você quiser | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | `GET /v1/balance` (não cobra nada) |
+| **Stripe** | Vender seus cursos (cartão e Pix), se você quiser | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SECRET_KEY` | `GET /v1/balance` (não cobra nada) e uma leitura no admin do Supabase |
 | **Resend** | E-mails do site | `RESEND_API_KEY`, `EMAIL_FROM` | `GET /domains` e confere o domínio do remetente |
 | **Cloudflare R2 / S3** | Arquivos e vídeos próprios | `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_URL` | `HEAD` no bucket, assinado com AWS Signature V4 |
 | **YouTube / Vimeo** | Vídeos das aulas | nenhuma | nada a testar: cole o link no editor da aula |
@@ -34,19 +34,22 @@ Para colocar o site no ar (Vercel, por exemplo), copie as mesmas variáveis para
 | Supabase | Em uso. |
 | YouTube / Vimeo | Em uso (editor da aula, embed `youtube-nocookie.com`). |
 | Masterbase | Em uso pelo painel. |
-| Stripe | Chaves e teste prontos; checkout no site é o próximo passo (abaixo). |
-| Resend, R2/S3, Analytics, IA | Chaves e teste prontos; o site ainda não lê essas variáveis. |
+| Stripe | Em uso: preço por curso, checkout, webhook, reembolso e vendas no estúdio (abaixo). |
+| OpenAI / Anthropic | Em uso na pré-correção de redações (o botão só aparece com a chave). |
+| Resend, R2/S3, Analytics | Chaves e teste prontos; o site ainda não lê essas variáveis. |
 
-## Próximo passo: checkout com Stripe
+## Vender cursos com a Stripe
 
-O Curso On é grátis e open source, e continua assim por padrão. A ideia é que a cobrança só exista quando `STRIPE_SECRET_KEY` **e** `STRIPE_WEBHOOK_SECRET` estiverem definidas: sem elas, nenhum preço aparece e tudo segue grátis.
+Criar e publicar continua grátis. A venda é por curso e só funciona com as três chaves (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SECRET_KEY`); sem elas, curso com preço fica com a compra pausada e nada é cobrado.
 
-Os pagamentos foram removidos no commit `77b8b79` (junto com as colunas `price_cents`/`currency` e a tabela `payments`, pela migration `20261120000000_free_open_source.sql`). Para voltar com eles atrás da chave, falta:
+1. **Ligue a integração** no painel: **Integrações → Stripe**. No Supabase local a `SUPABASE_SECRET_KEY` já vem preenchida pelo **Configurar**.
+2. **Ponha o preço** em **Estúdio → curso → Configurações → Preço** (`0` = grátis).
+3. **Webhook.** No computador: `stripe listen --forward-to localhost:3000/api/webhooks/stripe` (a Stripe CLI mostra o `whsec_…`). Em produção: **Developers → Webhooks → Add endpoint** em `https://SEU-SITE/api/webhooks/stripe` com os eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` e `charge.refunded`.
+4. **Pix:** ative em **Settings → Payment methods** na Stripe.
 
-1. Uma migration nova recriando `courses.price_cents` (padrão `0`) e a tabela `payments`, com RLS e a função que matricula depois do pagamento.
-2. `src/lib/stripe.ts` que só cria o cliente quando as duas variáveis existem, e um `isPaidEnabled()` usado pelas telas.
-3. Preço no formulário do estúdio e botão "Comprar" na página do curso, só quando `isPaidEnabled()` e `price_cents > 0`.
-4. `src/app/api/webhooks/stripe/route.ts` validando a assinatura com `STRIPE_WEBHOOK_SECRET` e tratando `checkout.session.completed`. O webhook antigo gravava com um cliente admin (`SUPABASE_SECRET_KEY`); prefira uma função `SECURITY DEFINER` para não precisar dessa chave, ou adicione-a como segredo na integração Stripe.
-5. Testes de RLS para a tabela `payments` em `supabase/tests/rls.test.mjs`.
+Como funciona por dentro:
 
-O código antigo está em `git show 77b8b79^:src/app/api/webhooks/stripe/route.ts` e arquivos vizinhos, e serve de ponto de partida.
+- O botão **Comprar** abre o Stripe Checkout com o preço lido do banco (nunca do formulário). A confirmação em `/checkout/sucesso` só mostra o status; quem libera o acesso é o webhook.
+- O webhook confere a assinatura, grava em `payments` e cria a matrícula `stripe`. Eventos repetidos não duplicam nada. `charge.refunded` marca o pagamento como reembolsado e tira a matrícula que veio dele.
+- No banco (`20261124000000_venda_de_cursos.sql`): `enroll_free` e a matrícula direta pela API só valem para curso com `price_cents = 0`; o envio de redação não matricula de graça em curso pago; `payments` não aceita escrita do cliente. Tudo coberto por `supabase/tests/vendas.test.mjs`.
+- Para testar sem cartão: `node --env-file=.env.local scripts/webhook-test.mjs <id-do-curso> <id-do-aluno>` manda um evento assinado igual ao da Stripe.

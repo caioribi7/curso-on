@@ -89,7 +89,7 @@ No Supabase na nuvem, ele pode pedir para confirmar o e-mail. Abra o e-mail, con
 
 ### Criar do zero
 
-1. **Meus cursos → n** (novo curso). Escolha a matéria com as setas ← →, e o nível. Todo curso é gratuito.
+1. **Meus cursos → n** (novo curso). Escolha a matéria com as setas ← →, e o nível. Todo curso nasce grátis; se quiser vender, ponha um preço no site (Estúdio → Configurações) depois de ligar a Stripe em Integrações.
 2. Dentro do curso, aperte **m** para criar um módulo (um capítulo, como “Funções”).
 3. Com o módulo selecionado, aperte **a** para criar uma aula. O conteúdo aceita Markdown:
    - `# Título` para títulos

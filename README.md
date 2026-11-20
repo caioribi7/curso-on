@@ -1,10 +1,19 @@
+<div align="center">
+
 # Curso On
 
-Plataforma **open source e 100% gratuita** de cursos preparatórios para o **ENEM**. Sem pagamento, sem assinatura: clone, crie seu curso e compartilhe. Cada matéria tem dois níveis (Matemática 1 e Matemática 2, Física 1 e Física 2…), com aulas curtas, banco de questões e gamificação: XP, níveis, sequência de dias e ranking da turma.
+**A plataforma open source para criar cursos preparatórios para o ENEM.**
+Grátis para criar, publicar e estudar. Se quiser, venda o seu curso, e o dinheiro vai direto para você.
 
-Você não precisa saber programar: o painel **`curso-on`**, feito em Rust, roda no terminal e configura tudo pelo menu, do banco de dados ao seu primeiro curso.
+[![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-3B5BFD)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/caioribi7/curso-on?color=1DB27A&label=release)](https://github.com/caioribi7/curso-on/releases/latest)
+[![CI](https://github.com/caioribi7/curso-on/actions/workflows/ci.yml/badge.svg)](https://github.com/caioribi7/curso-on/actions/workflows/ci.yml)
 
-**Stack:** Next.js 16 (App Router, Server Actions), Supabase (Auth + Postgres com RLS), Tailwind CSS v4, Zod, e o painel em Rust (ratatui).
+<img src="docs/imagens/01-inicio.webp" alt="Página inicial do Curso On" width="100%">
+
+</div>
+
+Aulas curtas separadas por matéria do ENEM, banco de questões com LaTeX, simulados com tempo, correção de redação, XP, ranking e 30 conquistas para colecionar. Você não precisa saber programar: um comando instala o painel **`curso-on`**, feito em Rust, e ele configura tudo pelo terminal, do banco de dados ao seu primeiro curso.
 
 ## Instalação em 1 comando
 
@@ -20,110 +29,101 @@ curl -fsSL https://raw.githubusercontent.com/caioribi7/curso-on/main/install.sh 
 irm https://raw.githubusercontent.com/caioribi7/curso-on/main/install.ps1 | iex
 ```
 
-O instalador baixa o painel `curso-on` da [última Release](https://github.com/caioribi7/curso-on/releases/latest), confere o SHA-256 e coloca no PATH. Depois, rode `curso-on` e siga o menu: **Configurar → Abrir a plataforma → Criar conta → Importar cursos ENEM**. Você vai precisar do [Node.js](https://nodejs.org) (LTS) e do [Git](https://git-scm.com).
+Depois rode `curso-on` e siga o menu: **Configurar → Abrir a plataforma → Criar conta → Importar cursos ENEM**. O instalador baixa o painel da [última Release](https://github.com/caioribi7/curso-on/releases/latest), confere o SHA-256 e coloca no PATH. Você só precisa do [Node.js](https://nodejs.org) (LTS) e do [Git](https://git-scm.com); para rodar o banco no seu computador, do [Docker](https://www.docker.com/products/docker-desktop/).
 
-Prefere compilar? `cargo install --git https://github.com/caioribi7/curso-on curso-on`
+<img src="docs/imagens/00-painel-rust.webp" alt="Painel curso-on no terminal, tela de Integrações com a Stripe" width="100%">
 
-Nunca usou nada disso? O [guia para iniciantes](docs/primeiros-passos.md) explica cada passo, inclusive como criar a conta no Supabase. O mesmo guia abre dentro do painel.
+Nunca usou nada disso? O [guia para iniciantes](docs/primeiros-passos.md) explica cada passo, inclusive como criar a conta no Supabase. O mesmo guia abre dentro do painel. Prefere compilar? `cargo install --git https://github.com/caioribi7/curso-on curso-on`
 
-## O painel `curso-on`
+## Grátis para criar. Venda se quiser.
 
-| Menu | O que faz |
-|---|---|
-| **Configurar** | Baixa o projeto, liga o Supabase local (Docker) ou guia a criação do Supabase na nuvem, cria as tabelas e instala as dependências. Escreve o `.env.local` por você. |
-| **Abrir a plataforma** | Roda o site e abre o navegador em `localhost:3000`. |
-| **Criar conta / Entrar** | Conta de professor no seu Supabase. |
-| **Meus cursos** | Editor completo: curso (matéria + nível), módulos, aulas em Markdown, questões de múltipla escolha com explicação, publicar e excluir. |
-| **Importar cursos ENEM** | Cria 26 cursos prontos (13 matérias × 2 níveis) a partir de [`content/enem.json`](content/enem.json). |
-| **Integrações** | Supabase, Masterbase, Stripe, Resend, Cloudflare R2/S3, YouTube/Vimeo, Plausible/Google Analytics e OpenAI/Anthropic. Cada uma com passo a passo, campos mascarados, conferência do formato e **Testar conexão**. Veja abaixo. |
+Criar conta, montar cursos, publicar e estudar não custa nada, e o código é seu (MIT). Quem quiser cobrar liga a **Stripe** no painel (**Integrações → Stripe**) e põe preço no curso em **Estúdio → Configurações → Preço**. O aluno paga com cartão ou Pix, o acesso libera sozinho e o dinheiro cai na sua conta Stripe. O Curso On não fica com nenhuma parte.
 
-O painel fala com o Supabase só com a chave pública e o login do professor, então passa pelas mesmas regras de segurança (RLS) do site.
+- **Preço 0 = grátis.** É o padrão de todo curso. Cursos grátis e pagos convivem na mesma plataforma.
+- **Sem a Stripe ligada, ninguém consegue comprar** e nada é cobrado. Curso com preço fica com a compra pausada.
+- **O acesso só nasce do webhook assinado da Stripe.** Nenhum truque no navegador abre um curso pago: o banco recusa (veja `supabase/tests/vendas.test.mjs`).
+- **Reembolso tira o acesso** que veio da compra; o progresso do aluno continua guardado.
+- O criador vê as vendas e o total recebido na aba **Alunos** do curso.
 
-## Integrações
+## Por dentro
 
-Só o Supabase é obrigatório. No menu **Integrações** você escolhe o que ligar, cola as chaves em campos que nunca mostram o valor e testa a conexão com uma chamada real e barata (listar modelos, ver o saldo da Stripe, um `HEAD` no bucket…). Os segredos ficam no `.env.local` (fora do git, permissão `600` no Linux/macOS) ou no chaveiro do sistema, você escolhe.
+<table>
+  <tr>
+    <td width="50%"><img src="docs/imagens/03-painel-aluno.webp" alt="Painel do aluno"><br><b>Painel do aluno.</b> Nível, XP, sequência de dias e meta diária, com os cursos agrupados por área do ENEM.</td>
+    <td width="50%"><img src="docs/imagens/04-trilha-do-curso.webp" alt="Trilha do curso"><br><b>Trilha do curso.</b> Módulos e aulas em ordem, progresso, meta do dia e ranking da turma.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/imagens/06-perfil-conquistas.webp" alt="Card do aluno com conquistas"><br><b>Card do aluno.</b> 30 medalhas que o banco libera sozinho (Calouro, Na Mosca, Curso Zerado, Coruja…). O card também tem versão pública.</td>
+    <td><img src="docs/imagens/07-ranking.webp" alt="Ranking geral"><br><b>Ranking.</b> Geral e da semana, além do ranking de cada turma.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/imagens/05-aula.webp" alt="Aula"><br><b>Aula.</b> Texto em Markdown, vídeo do YouTube/Vimeo e fórmulas em LaTeX. Concluir dá XP.</td>
+    <td><img src="docs/imagens/08-simulados.webp" alt="Simulados"><br><b>Simulados e listas.</b> Prova com tempo, no ritmo do ENEM, e listas de questões prontas para imprimir em A4.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/imagens/02-catalogo.webp" alt="Catálogo de cursos"><br><b>Catálogo.</b> As 13 matérias do ENEM por área, cada uma com nível 1 (base) e nível 2 (aprofundamento).</td>
+    <td><img src="docs/imagens/11-estudio.webp" alt="Estúdio do criador"><br><b>Estúdio.</b> Crie cursos, módulos, aulas, questões e simulados, corrija redações e acompanhe alunos e vendas.</td>
+  </tr>
+</table>
 
-A Stripe é opcional e o Curso On continua grátis: sem `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET`, nenhum preço aparece. Hoje o painel guarda e testa as chaves; o checkout no site é o próximo passo.
-
-Detalhes, lista de variáveis e o plano do checkout: [docs/integracoes.md](docs/integracoes.md).
-
-## Integra com Masterbase
-
-O [Masterbase](https://github.com/caioribi7/masterbase) é outro projeto open source do mesmo autor: um Postgres com tela visual, para quem não sabe SQL. Em **Integrações → Masterbase** no painel você:
-
-- instala o Masterbase (um comando no Linux/macOS; download no Windows);
-- abre o banco do Curso On numa porta livre, com configuração própria em `.masterbase/` (não mexe na sua);
-- troca a conexão (`MASTERBASE_DATABASE_URL` no `.env.local`) para usar o banco na nuvem.
-
-Por padrão ele usa o Supabase local (`postgresql://postgres:postgres@127.0.0.1:54322/postgres`). Atenção: com o usuário `postgres` o Masterbase ignora o RLS. Evite editar XP e matrículas à mão e, em produção, use um usuário com menos permissões.
-
-## Matérias e níveis
-
-As 13 matérias do ENEM, por área, ficam em [`content/subjects.json`](content/subjects.json), a fonte única usada pelo site e pelo painel. Cada matéria tem um ícone flat próprio e uma cor para o nível 1 e outra para o nível 2.
-
-| Área | Matérias |
-|---|---|
-| Linguagens | Português, Literatura, Redação, Inglês, Espanhol |
-| Ciências Humanas | História, Geografia, Filosofia, Sociologia |
-| Ciências da Natureza | Biologia, Química, Física |
-| Matemática | Matemática |
+<p align="center">
+  <img src="docs/imagens/09-celular-painel.webp" alt="Painel no celular, tema escuro" width="32%">
+  &nbsp;
+  <img src="docs/imagens/10-celular-perfil.webp" alt="Perfil no celular, tema claro" width="32%">
+  <br><sub>Feito para o celular, com tema claro e escuro.</sub>
+</p>
 
 ## Funcionalidades
 
 | Área | O que tem |
 |---|---|
-| **Auth** | Cadastro, login, Google OAuth, confirmação por e-mail, recuperação e troca de senha, rotas protegidas no `proxy.ts` |
-| **Estúdio** (`/studio`) | Criar curso (matéria do ENEM, nível 1 ou 2, título), módulos e aulas com reordenação, editor de aula (texto + vídeo YouTube/Vimeo, prévia grátis, XP), banco de questões com gabarito, publicar/despublicar, lista de alunos |
-| **Aluno** (`/app`) | Painel com nível, XP, sequência e meta diária; trilha do curso; aula com "Concluir"; prática de questões com feedback; ranking do curso e ranking geral (`/app/ranking`) |
-| **Conquistas** | 12 emblemas liberados pelo banco (Calouro, Primeira Aula, Gabarito, Polímata…) e card do aluno em `/app/perfil` e público em `/u/[id]` |
-| **Tema** | Claro e escuro: segue o sistema e tem botão para trocar (salvo em cookie) |
-| **Vitrine** (`/cursos`) | Catálogo por área do ENEM, com os níveis 1 e 2 lado a lado, e página do curso com currículo e botão “Começar curso” (matrícula grátis) |
+| **Cursos por matéria** | As 13 matérias do ENEM em 4 áreas, cada uma em dois níveis. Módulos e aulas com ordem, vídeo, texto, prévia grátis e XP. O painel importa 26 cursos prontos (156 aulas, 55 questões). |
+| **Banco de questões** | Múltipla escolha com explicação, dificuldade e XP. Enunciados e alternativas aceitam LaTeX (`$x^2$`, `$$\frac{a}{b}$$`), renderizado com KaTeX. |
+| **Simulados** | Monte um simulado sorteando do banco (área, matéria, quantidade, tempo) ou faça os simulados publicados pelo professor. As respostas ficam salvas e o gabarito aparece na entrega. |
+| **Listas imprimíveis** | Junte questões, reordene e imprima (ou salve em PDF) com cabeçalho de nome, turma e data e gabarito opcional. |
+| **Redação** | O professor abre temas, o aluno envia texto ou foto/PDF, e a correção sai nas 5 competências do ENEM. Pré-correção por IA opcional (OpenAI ou Anthropic); a nota final é sempre do professor. |
+| **Gamificação** | XP, níveis, sequência de dias, meta diária, ranking geral, semanal e da turma, e 30 conquistas com medalhas próprias. |
+| **Venda (opcional)** | Preço por curso, Stripe Checkout (cartão e Pix), liberação automática por webhook, reembolso e painel de vendas. |
+| **Tema** | Claro e escuro, seguindo o sistema, com botão para trocar. Transições suaves em todo o app (veja [docs/transicoes.md](docs/transicoes.md)). |
+| **Auth** | Cadastro, login, Google OAuth, confirmação por e-mail e recuperação de senha. |
+
+## O painel `curso-on`
+
+| Menu | O que faz |
+|---|---|
+| **Configurar** | Baixa o projeto (`git clone`), liga o Supabase local (Docker) ou guia a criação do Supabase na nuvem, cria as tabelas e instala as dependências. Escreve o `.env.local` por você. |
+| **Abrir a plataforma** | Roda o site e abre o navegador em `localhost:3000`. |
+| **Criar conta / Entrar** | Conta de professor no seu Supabase. |
+| **Meus cursos** | Editor completo: curso (matéria + nível), módulos, aulas em Markdown, questões com explicação, publicar e excluir. |
+| **Importar cursos ENEM** | Cria os 26 cursos prontos de [`content/enem.json`](content/enem.json). |
+| **Integrações** | Supabase, Masterbase, Stripe, Resend, Cloudflare R2/S3, YouTube/Vimeo, Plausible/Google Analytics e OpenAI/Anthropic. Cada uma com passo a passo, campos mascarados, conferência do formato e **Testar conexão**. |
+
+O painel fala com o Supabase só com a chave pública e o login do professor, então passa pelas mesmas regras de segurança (RLS) do site. Os segredos ficam no `.env.local` (fora do git, permissão `600` no Linux/macOS) ou no chaveiro do sistema, você escolhe. Lista de variáveis e detalhes: [docs/integracoes.md](docs/integracoes.md).
+
+## Integra com Masterbase
+
+O [Masterbase](https://github.com/caioribi7/masterbase) é outro projeto open source do mesmo autor: um Postgres com tela visual, para quem não sabe SQL. Em **Integrações → Masterbase** você instala o Masterbase, abre o banco do Curso On numa porta livre (com configuração própria em `.masterbase/`) e troca a conexão para o banco na nuvem. Atenção: com o usuário `postgres` o Masterbase ignora o RLS, então evite editar XP, matrículas e pagamentos à mão.
 
 ## Segurança
 
-- **RLS em todas as tabelas.** Cursos em rascunho só aparecem para o dono. Conteúdo das aulas (`lesson_contents`) e gabarito (`question_answers`) ficam em tabelas separadas e protegidas.
-- **XP, matrículas e progresso** só mudam por funções `SECURITY DEFINER` (`complete_lesson`, `answer_question`, `enroll_free`). O aluno também pode se matricular direto pela API, mas só em nome próprio e em curso publicado. `award_xp` não pode ser chamada pelo cliente, e um *column grant* impede o aluno de editar `xp`/`streak` no próprio perfil.
-- **No servidor, a sessão é lida com `getClaims()`** (JWT verificado) e não com `getSession()`.
-- **Proteções extras:**
-  - todo Server Action revalida o usuário e checa a posse do recurso;
-  - os redirects pós-login são sanitizados, o que evita *open redirect*;
-  - as mensagens de erro de login são genéricas, para não revelar quais e-mails têm conta.
-- **Headers de segurança:** CSP, HSTS, `X-Frame-Options: DENY`, `nosniff` e `Referrer-Policy` (ver `next.config.ts`).
-- **Testes de RLS:** `npm run test:db` roda as migrations num Postgres embutido (PGlite) e cobre 29 cenários de permissão.
+- **RLS em todas as tabelas.** Rascunhos só aparecem para o dono. Conteúdo das aulas, gabaritos e pagamentos ficam em tabelas separadas e protegidas.
+- **XP, matrículas e progresso** só mudam por funções `SECURITY DEFINER` (`complete_lesson`, `answer_question`, `enroll_free`…). Matrícula grátis só existe em curso publicado e sem preço; matrícula paga só pelo webhook da Stripe, com a assinatura conferida.
+- **No servidor, a sessão é lida com `getClaims()`** (JWT verificado). Todo Server Action revalida o usuário e checa a posse do recurso. Os redirects pós-login são sanitizados.
+- **Headers:** CSP, HSTS, `X-Frame-Options: DENY`, `nosniff` e `Referrer-Policy` (ver `next.config.ts`).
+- **Testes:** `npm run test:db` roda todas as migrations num Postgres embutido (PGlite, sem Docker) e confere mais de 200 regras de permissão, conquistas, redação, simulados e vendas.
 
 ## Rodando sem o painel (manual)
-
-O painel faz tudo isto por você. Se preferir os comandos:
 
 ```bash
 npm install
 cp .env.example .env.local   # preencha as chaves
+npx supabase start           # Supabase local (Docker) com as migrations
 npm run dev
 ```
 
-### Opção rápida: Supabase local (Docker)
+Copie a URL e as chaves que o `supabase start` mostra para o `.env.local`. Contas de teste locais: `scripts/test-accounts.md`.
 
-```bash
-npx supabase start        # sobe Postgres + Auth + API e aplica a migration
-```
-
-Copie a URL e a chave pública que o comando mostra para `.env.local`. Contas de teste locais: `scripts/test-accounts.md`.
-
-### 1. Supabase (produção)
-
-1. Crie um projeto em [supabase.com](https://supabase.com).
-2. Copie **Project URL** e **Publishable key** (Project Settings → API) para `.env.local`.
-3. Aplique as migrations usando a CLI:
-   ```bash
-   npx supabase login
-   npx supabase link --project-ref SEU_REF
-   npx supabase db push
-   ```
-   Se preferir, cole os arquivos de `supabase/migrations/` no SQL Editor, em ordem.
-4. Em **Authentication → URL Configuration**, configure:
-   - **Site URL**: `http://localhost:3000` (em produção, o seu domínio);
-   - **Redirect URLs**: `http://localhost:3000/auth/callback` e `https://SEU-DOMINIO/auth/callback`.
-5. (Opcional) Para habilitar Google em **Authentication → Providers → Google**, informe o Client ID/Secret do Google Cloud. A *redirect URI* do Google é a callback do Supabase mostrada nessa tela.
+**Supabase na nuvem:** crie o projeto em [supabase.com](https://supabase.com), copie a **Project URL** e a **Publishable key** (Project Settings → API), rode `npx supabase link --project-ref SEU_REF` e `npx supabase db push`, e em **Authentication → URL Configuration** coloque a Site URL e a Redirect URL `https://SEU-DOMINIO/auth/callback`.
 
 ## Scripts
 
@@ -131,10 +131,10 @@ Copie a URL e a chave pública que o comando mostra para `.env.local`. Contas de
 |---|---|
 | `npm run dev` | Servidor de desenvolvimento |
 | `npm run build` | Build de produção |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | Gera os tipos de rota e roda `tsc` |
-| `npm run test:db` | Testes de RLS/RPC das migrations (PGlite, sem Docker) |
+| `npm run lint` / `npm run typecheck` | ESLint / tipos de rota + `tsc` |
+| `npm run test:db` | Testes de RLS/RPC das migrations (PGlite) |
 | `npm run curso-on` | Compila e abre o painel (precisa de Rust) |
+| `node --env-file=.env.local scripts/webhook-test.mjs <curso> <usuario>` | Simula um pagamento aprovado no webhook local |
 | `cargo test --manifest-path cli/Cargo.toml` | Testes do painel |
 
 ## Estrutura
@@ -142,18 +142,18 @@ Copie a URL e a chave pública que o comando mostra para `.env.local`. Contas de
 ```
 cli/                   painel `curso-on` em Rust (ratatui)
 content/               matérias do ENEM e pacote de cursos (JSON)
-docs/                  guias para iniciantes
+docs/                  guias, integrações, transições e imagens
 src/
   app/
-    (auth)/            login, cadastro, recuperar/nova senha + server actions
+    (auth)/            login, cadastro, recuperar/nova senha
     (platform)/
-      app/             área do aluno (painel, curso, aula, questões, perfil)
-      studio/          estúdio do criador (cursos, módulos, aulas, questões)
-      cursos/          catálogo e página de venda (públicos)
-    auth/callback/     troca do código OAuth / confirmação de e-mail
-  components/          logo, ícones flat, UI (botões, campos, progresso)
-  lib/                 supabase (server/proxy), dal, queries, utils
-  proxy.ts             refresh de sessão + proteção de rotas
+      app/             área do aluno: cursos, aulas, questões, simulados, listas, redação, ranking, perfil
+      studio/          estúdio do criador: cursos, questões, simulados, redações, alunos e vendas
+      cursos/          catálogo e página do curso (públicos)
+      checkout/        confirmação de compra
+    api/webhooks/      webhook da Stripe
+  components/          ícones, medalhas, UI, motion (transições)
+  lib/                 supabase, dal, queries, stripe, utils
 supabase/
   migrations/          schema, RLS, funções e grants
   tests/               testes de permissão
@@ -163,7 +163,7 @@ supabase/
 
 1. Importe o repositório na Vercel.
 2. Configure as variáveis do `.env.example`, com `NEXT_PUBLIC_SITE_URL` apontando para o domínio final.
-3. Atualize as Redirect URLs no Supabase.
+3. Atualize as Redirect URLs no Supabase e, se vender, crie o webhook da Stripe para `https://SEU-DOMINIO/api/webhooks/stripe`.
 
 ## Contribuindo
 
@@ -171,4 +171,4 @@ Contribuições são bem-vindas, principalmente aulas e questões novas para o `
 
 ## Licença
 
-[MIT](LICENSE)
+[MIT](LICENSE). Use, modifique e venda seus cursos à vontade.
