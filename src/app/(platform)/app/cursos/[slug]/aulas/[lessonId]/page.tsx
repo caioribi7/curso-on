@@ -100,7 +100,7 @@ export default async function LessonPage({ params, searchParams }: PageProps<"/a
         </div>
       ) : null}
 
-      <article className="rounded-[28px] border border-line bg-white p-6 sm:p-10">
+      <article className="rounded-[28px] border border-line bg-surface p-6 sm:p-10">
         {content?.body ? (
           <LessonBody body={content.body} />
         ) : (
@@ -108,7 +108,7 @@ export default async function LessonPage({ params, searchParams }: PageProps<"/a
         )}
       </article>
 
-      <footer className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-line bg-white p-5">
+      <footer className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-line bg-surface p-5">
         {prev ? (
           <ButtonLink href={`/app/cursos/${slug}/aulas/${prev.id}`} variant="ghost">
             ← Anterior

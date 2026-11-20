@@ -145,4 +145,42 @@ await expectError("matéria sem nível", () => as(OWNER, `insert into public.cou
 r = await as(null, `select count(*)::int n from public.courses where subject = 'matematica' and level = 2`);
 r.rows[0].n === 1 ? ok("visitante vê curso ENEM publicado") : fail("catálogo ENEM");
 
+// Conquistas
+const badges = async (uid) => (await db.query(`select achievement_slug s from public.user_achievements where user_id = $1`, [uid])).rows.map((x) => x.s);
+r = await as(null, `select count(*)::int n from public.achievements`);
+r.rows[0].n === 12 ? ok("visitante vê as 12 conquistas") : fail(`conquistas: ${r.rows[0].n}`);
+(await badges(STRANGER)).includes("calouro") ? ok("Calouro ao criar conta") : fail("calouro");
+{
+  const b = await badges(STUDENT);
+  b.includes("primeira-aula") && b.includes("na-mosca") ? ok("Primeira Aula e Na Mosca liberadas") : fail(`aluno: ${b}`);
+  b.includes("curso-zerado") ? ok("Curso Zerado ao concluir todas as aulas") : fail(`curso zerado: ${b}`);
+}
+(await badges(STRANGER)).includes("primeira-aula") ? fail("estranho ganhou Primeira Aula") : ok("sem aula, sem Primeira Aula");
+await expectError("aluno não se dá conquista", () => as(STUDENT, `insert into public.user_achievements (user_id, achievement_slug) values ($1,'imparavel')`, [STUDENT]));
+await expectError("aluno não chama check_achievements", () => as(STUDENT, `select public.check_achievements($1)`, [STUDENT]));
+await expectError("aluno não cria conquista", () => as(STUDENT, `insert into public.achievements (slug, name, description) values ('hack','Hack','x')`));
+
+// Sobe de Nível: zera Física 1 e se matricula em Física 2
+const f1 = await as(OWNER, `insert into public.courses (owner_id, slug, title, subject, level, status) values ($1,'fis-1-t','Física 1','fisica',1,'published') returning id`, [OWNER]);
+const f2 = await as(OWNER, `insert into public.courses (owner_id, slug, title, subject, level, status) values ($1,'fis-2-t','Física 2','fisica',2,'published') returning id`, [OWNER]);
+const fm = await as(OWNER, `insert into public.modules (course_id, title) values ($1,'M') returning id`, [f1.rows[0].id]);
+const fl = await as(OWNER, `insert into public.lessons (course_id, module_id, title, xp_reward) values ($1,$2,'A',10) returning id`, [f1.rows[0].id, fm.rows[0].id]);
+await as(STRANGER, `select public.enroll_free($1)`, [f1.rows[0].id]);
+await as(STRANGER, `select public.complete_lesson($1)`, [fl.rows[0].id]);
+(await badges(STRANGER)).includes("sobe-de-nivel") ? fail("Sobe de Nível antes do nível 2") : ok("sem nível 2, sem Sobe de Nível");
+await as(STRANGER, `select public.enroll_free($1)`, [f2.rows[0].id]);
+(await badges(STRANGER)).includes("sobe-de-nivel") ? ok("Sobe de Nível ao começar o nível 2") : fail("sobe de nível");
+r = await db.query(`select public.subject_area('fisica') a, public.subject_area('redacao') b`);
+r.rows[0].a === "natureza" && r.rows[0].b === "linguagens" ? ok("matéria → área do ENEM") : fail("subject_area");
+
+// Perfil público e ranking geral
+r = await as(null, `select * from public.public_profile($1)`, [STUDENT]);
+r.rows[0]?.full_name && !("email" in r.rows[0]) ? ok("perfil público para visitante, sem e-mail") : fail("perfil público");
+r = await as(STUDENT, `select * from public.global_ranking('all')`);
+r.rows.some((x) => x.is_me && Number(x.pos) >= 1) ? ok("ranking geral mostra a posição do aluno") : fail(`ranking: ${JSON.stringify(r.rows)}`);
+r = await as(STUDENT, `select * from public.global_ranking('week')`);
+r.rows.length >= 1 ? ok("ranking da semana") : fail("ranking semana");
+await expectError("visitante não vê ranking geral", () => as(null, `select * from public.global_ranking('all')`));
+await expectError("período inválido", () => as(STUDENT, `select * from public.global_ranking('ano')`));
+
 console.log(process.exitCode ? "\nFALHOU" : "\nTODOS OS TESTES PASSARAM");

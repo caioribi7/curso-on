@@ -6,14 +6,23 @@ Você não precisa saber programar: o painel **`curso-on`**, feito em Rust, roda
 
 **Stack:** Next.js 16 (App Router, Server Actions), Supabase (Auth + Postgres com RLS), Tailwind CSS v4, Zod, e o painel em Rust (ratatui).
 
-## Comece em 3 passos
+## Instalação em 1 comando
 
-1. Instale o [Node.js](https://nodejs.org) (LTS) e o [Git](https://git-scm.com).
-2. Baixe o `curso-on` para o seu sistema em [Releases](https://github.com/caioribi7/curso-on/releases), ou instale com Rust:
-   ```bash
-   cargo install --git https://github.com/caioribi7/curso-on curso-on
-   ```
-3. Rode `curso-on` e siga o menu: **Configurar → Abrir a plataforma → Criar conta → Importar cursos ENEM**.
+**Linux e macOS**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/caioribi7/curso-on/main/install.sh | sh
+```
+
+**Windows (PowerShell)**
+
+```powershell
+irm https://raw.githubusercontent.com/caioribi7/curso-on/main/install.ps1 | iex
+```
+
+O instalador baixa o painel `curso-on` da [última Release](https://github.com/caioribi7/curso-on/releases/latest), confere o SHA-256 e coloca no PATH. Depois, rode `curso-on` e siga o menu: **Configurar → Abrir a plataforma → Criar conta → Importar cursos ENEM**. Você vai precisar do [Node.js](https://nodejs.org) (LTS) e do [Git](https://git-scm.com).
+
+Prefere compilar? `cargo install --git https://github.com/caioribi7/curso-on curso-on`
 
 Nunca usou nada disso? O [guia para iniciantes](docs/primeiros-passos.md) explica cada passo, inclusive como criar a conta no Supabase. O mesmo guia abre dentro do painel.
 
@@ -57,7 +66,9 @@ As 13 matérias do ENEM, por área, ficam em [`content/subjects.json`](content/s
 |---|---|
 | **Auth** | Cadastro, login, Google OAuth, confirmação por e-mail, recuperação e troca de senha, rotas protegidas no `proxy.ts` |
 | **Estúdio** (`/studio`) | Criar curso (matéria do ENEM, nível 1 ou 2, título), módulos e aulas com reordenação, editor de aula (texto + vídeo YouTube/Vimeo, prévia grátis, XP), banco de questões com gabarito, publicar/despublicar, lista de alunos |
-| **Aluno** (`/app`) | Painel com nível, XP, sequência e meta diária; trilha do curso; aula com "Concluir"; prática de questões com feedback; ranking |
+| **Aluno** (`/app`) | Painel com nível, XP, sequência e meta diária; trilha do curso; aula com "Concluir"; prática de questões com feedback; ranking do curso e ranking geral (`/app/ranking`) |
+| **Conquistas** | 12 emblemas liberados pelo banco (Calouro, Primeira Aula, Gabarito, Polímata…) e card do aluno em `/app/perfil` e público em `/u/[id]` |
+| **Tema** | Claro e escuro: segue o sistema e tem botão para trocar (salvo em cookie) |
 | **Vitrine** (`/cursos`) | Catálogo por área do ENEM, com os níveis 1 e 2 lado a lado, e página do curso com currículo e botão “Começar curso” (matrícula grátis) |
 
 ## Segurança

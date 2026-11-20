@@ -19,7 +19,7 @@ export function Practice({ questions }: { questions: Q[] }) {
 
   if (!q) {
     return (
-      <div className="flex flex-col items-center gap-4 rounded-[32px] border border-line bg-white p-10 text-center">
+      <div className="flex flex-col items-center gap-4 rounded-[32px] border border-line bg-surface p-10 text-center">
         <p className="text-5xl">🏆</p>
         <h2 className="text-3xl font-black">Rodada concluída!</h2>
         <p className="text-lg text-muted">
@@ -59,14 +59,14 @@ function QuestionCard({ q, number, total, onNext }: { q: Q; number: number; tota
   const result = state.result;
 
   return (
-    <form action={action} className="flex flex-col gap-6 rounded-[32px] border border-line bg-white p-6 sm:p-10">
+    <form action={action} className="flex flex-col gap-6 rounded-[32px] border border-line bg-surface p-6 sm:p-10">
       <input type="hidden" name="questionId" value={q.id} />
       <input type="hidden" name="optionId" value={selected ?? ""} />
       <div className="flex items-center justify-between gap-4">
         <span className="font-display text-sm font-extrabold uppercase tracking-wide text-course">
           Questão {number} de {total}
         </span>
-        <span className="rounded-full bg-sun-soft px-3 py-1 font-display text-sm font-black text-[#B87C00]">+{q.xp_reward} XP</span>
+        <span className="rounded-full bg-sun-soft px-3 py-1 font-display text-sm font-black text-sun-ink">+{q.xp_reward} XP</span>
       </div>
       <div className="h-2.5 rounded-full bg-course-soft">
         <div className="h-2.5 rounded-full bg-course" style={{ width: `${((number - 1) / total) * 100}%` }} />

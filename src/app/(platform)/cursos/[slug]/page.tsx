@@ -63,7 +63,7 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
   return (
     <div className="flex flex-col gap-8" style={courseThemeVars(course.theme_color)}>
       {course.status !== "published" ? (
-        <p className="rounded-2xl bg-sun-soft px-5 py-3 text-sm font-semibold text-[#8A5D00]">
+        <p className="rounded-2xl bg-sun-soft px-5 py-3 text-sm font-semibold text-sun-ink">
           Rascunho: só você vê esta página. Publique o curso no Estúdio.
         </p>
       ) : null}
@@ -80,13 +80,13 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
                 <span className="rounded-full bg-white/20 px-3 py-1.5">{outline.length} módulos</span>
                 <span className="rounded-full bg-white/20 px-3 py-1.5">{lessons.length} aulas</span>
                 {minutes ? <span className="rounded-full bg-white/20 px-3 py-1.5">{minutes < 60 ? `${minutes} min` : `${Math.round(minutes / 60)}h`} de conteúdo</span> : null}
-                {xp ? <span className="rounded-full bg-sun px-3 py-1.5 text-ink">até {xp} XP</span> : null}
+                {xp ? <span className="rounded-full bg-sun px-3 py-1.5 text-on-sun">até {xp} XP</span> : null}
               </div>
             </div>
           </section>
 
           {course.description ? (
-            <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-white p-6 sm:p-8">
+            <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-surface p-6 sm:p-8">
               <h2 className="text-2xl font-black">Sobre o curso</h2>
               <p className="whitespace-pre-line text-[17px] leading-[1.7] text-ink">{course.description}</p>
             </section>
@@ -95,7 +95,7 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
           <section className="flex flex-col gap-4">
             <h2 className="text-2xl font-black">O que você vai estudar</h2>
             {outline.map((m, mi) => (
-              <details key={m.id} open={mi === 0} className="group rounded-[24px] border border-line bg-white">
+              <details key={m.id} open={mi === 0} className="group rounded-[24px] border border-line bg-surface">
                 <summary className="flex cursor-pointer list-none items-center gap-4 p-5">
                   <span className={cn("flex size-14 shrink-0 items-center justify-center rounded-2xl", moduleIconBg(m.icon))}>
                     <ModuleGlyph icon={m.icon} size={38} />
@@ -124,7 +124,7 @@ export default async function CourseSalesPage({ params, searchParams }: PageProp
         </div>
 
         <aside className="lg:sticky lg:top-28 lg:self-start">
-          <div className="flex flex-col gap-5 overflow-hidden rounded-[28px] border border-line bg-white">
+          <div className="flex flex-col gap-5 overflow-hidden rounded-[28px] border border-line bg-surface">
             <div className="flex h-48 items-center justify-center bg-course-soft">
               <CourseBadge course={course} size={128} />
             </div>

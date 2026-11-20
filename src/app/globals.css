@@ -2,43 +2,119 @@
 
 /*
  * Curso On design tokens.
+ * Light is the default. Dark follows the system (prefers-color-scheme) unless
+ * the visitor picked a theme: the server writes <html data-theme="light|dark">
+ * from the `theme` cookie, so there is no flash on first paint.
  * --course-* tokens are the per-course accent: every course page overrides them
- * inline (see CourseTheme), so creators can pick their own color.
+ * inline (see courseThemeVars), so creators can pick their own color.
  */
 :root {
+  color-scheme: light;
+  --ink: #14161c;
+  --muted: #5b6170;
+  --subtle: #8a8f9c;
+  --line: #ecf0f6;
+  --line-strong: #e1e5f0;
+  --canvas: #f6f7fa;
+  --surface: #ffffff;
+  --brand-soft: #eef1ff;
+  --sun-soft: #fff6db;
+  --sun-ink: #8a5d00;
+  --coral-soft: #fff0ee;
+  --mint-soft: #e6f8f0;
+  /* How much lighter accent text gets (0 in light, raised in dark for contrast). */
+  --accent-lift: 0%;
+
   --course-primary: #3b5bfd;
   --course-primary-dark: #2a44d4;
   --course-primary-soft: #eef1ff;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #eceef4;
+  --muted: #a4aabb;
+  --subtle: #7c8293;
+  --line: #262a36;
+  --line-strong: #333847;
+  --canvas: #0e1016;
+  --surface: #171a23;
+  --brand-soft: #1d2552;
+  --sun-soft: #3a3016;
+  --sun-ink: #ffd56b;
+  --coral-soft: #3d201d;
+  --mint-soft: #133328;
+  --accent-lift: 45%;
+  --course-primary-soft: color-mix(in oklab, var(--course-primary) 22%, var(--surface));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ink: #eceef4;
+    --muted: #a4aabb;
+    --subtle: #7c8293;
+    --line: #262a36;
+    --line-strong: #333847;
+    --canvas: #0e1016;
+    --surface: #171a23;
+    --brand-soft: #1d2552;
+    --sun-soft: #3a3016;
+    --sun-ink: #ffd56b;
+    --coral-soft: #3d201d;
+    --mint-soft: #133328;
+    --accent-lift: 45%;
+    --course-primary-soft: color-mix(in oklab, var(--course-primary) 22%, var(--surface));
+  }
 }
 
 @theme inline {
   --font-display: var(--font-nunito);
   --font-sans: var(--font-nunito-sans);
 
-  --color-ink: #14161c;
-  --color-muted: #5b6170;
-  --color-subtle: #8a8f9c;
-  --color-line: #ecf0f6;
-  --color-line-strong: #e1e5f0;
-  --color-canvas: #f6f7fa;
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
 
   --color-brand: #3b5bfd;
   --color-brand-dark: #2a44d4;
-  --color-brand-soft: #eef1ff;
+  --color-brand-soft: var(--brand-soft);
   --color-sun: #ffc93c;
   --color-sun-dark: #f2a818;
-  --color-sun-soft: #fff6db;
+  --color-sun-soft: var(--sun-soft);
+  --color-sun-ink: var(--sun-ink);
+  /* Text on yellow stays dark in both themes. */
+  --color-on-sun: #14161c;
   --color-coral: #ff6b5b;
-  --color-coral-soft: #fff0ee;
+  --color-coral-soft: var(--coral-soft);
   --color-mint: #2bc48a;
   --color-mint-dark: #1e9e6e;
-  --color-mint-soft: #e6f8f0;
+  --color-mint-soft: var(--mint-soft);
 
   --color-course: var(--course-primary);
   --color-course-dark: var(--course-primary-dark);
   --color-course-soft: var(--course-primary-soft);
 
   --radius-card: 24px;
+}
+
+/*
+ * Accent-colored text (course color, brand, dark mint) is lifted towards white
+ * in dark mode so it stays readable on dark surfaces. Unlayered, so it wins over
+ * the utilities with the same name.
+ */
+.text-course {
+  color: color-mix(in oklab, var(--course-primary), white var(--accent-lift));
+}
+.text-brand {
+  color: color-mix(in oklab, #3b5bfd, white var(--accent-lift));
+}
+.text-mint-dark {
+  color: color-mix(in oklab, #1e9e6e, white var(--accent-lift));
 }
 
 body {

@@ -49,7 +49,7 @@ export function CourseForm({ course }: { course?: Course }) {
                     onClick={() => pick(s.key, level)}
                     aria-pressed={subject === s.key}
                     className={cn(
-                      "flex items-center gap-2 rounded-2xl border-2 bg-white py-1.5 pl-1.5 pr-4 font-display text-sm font-extrabold transition",
+                      "flex items-center gap-2 rounded-2xl border-2 bg-surface py-1.5 pl-1.5 pr-4 font-display text-sm font-extrabold transition",
                       subject === s.key ? "border-ink" : "border-line hover:border-line-strong",
                     )}
                   >
@@ -72,7 +72,7 @@ export function CourseForm({ course }: { course?: Course }) {
                 onClick={() => pick(subject, l)}
                 aria-pressed={level === l}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl border-2 bg-white p-2 pr-5 text-left transition",
+                  "flex items-center gap-3 rounded-2xl border-2 bg-surface p-2 pr-5 text-left transition",
                   level === l ? "border-ink" : "border-line hover:border-line-strong",
                 )}
               >
@@ -111,7 +111,7 @@ export function CourseForm({ course }: { course?: Course }) {
           </Field>
         ) : null}
 
-        <label className="flex w-fit items-center gap-3 rounded-full border border-line bg-white py-1 pl-1 pr-4 text-sm font-semibold text-muted">
+        <label className="flex w-fit items-center gap-3 rounded-full border border-line bg-surface py-1 pl-1 pr-4 text-sm font-semibold text-muted">
           <input
             type="color"
             value={color}
@@ -133,7 +133,7 @@ export function CourseForm({ course }: { course?: Course }) {
       {/* Live preview — the course palette re-themes the whole card. */}
       <aside className="lg:sticky lg:top-28 lg:self-start" style={courseThemeVars(color)}>
         <p className="mb-3 font-display text-sm font-bold text-muted">Pré-visualização</p>
-        <div className="overflow-hidden rounded-[28px] border border-line bg-white">
+        <div className="overflow-hidden rounded-[28px] border border-line bg-surface">
           <div className="flex h-40 items-center justify-center bg-course-soft">
             <SubjectIcon subject={subject} level={level} size={112} />
           </div>

@@ -14,7 +14,7 @@ function CourseCard({ course }: { course: Course }) {
     <Link
       href={`/cursos/${course.slug}`}
       style={courseThemeVars(course.theme_color)}
-      className="flex items-center gap-4 rounded-[24px] border border-line bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-lg"
+      className="flex items-center gap-4 rounded-[24px] border border-line bg-surface p-4 transition hover:-translate-y-0.5 hover:shadow-lg"
     >
       <CourseBadge course={course} size={64} />
       <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -70,7 +70,7 @@ export default async function CatalogPage({ searchParams }: PageProps<"/cursos">
               aria-current={active ? "page" : undefined}
               className={cn(
                 "shrink-0 rounded-2xl px-5 py-3 font-display font-extrabold transition",
-                active ? "text-white" : "bg-white text-muted hover:text-ink",
+                active ? "text-white" : "bg-surface text-muted hover:text-ink",
               )}
               style={active ? { background: t.color } : undefined}
             >
@@ -125,7 +125,7 @@ export default async function CatalogPage({ searchParams }: PageProps<"/cursos">
       ) : null}
 
       {courses.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-[32px] border-2 border-dashed border-line-strong bg-white px-6 py-12 text-center">
+        <div className="flex flex-col items-center gap-4 rounded-[32px] border-2 border-dashed border-line-strong bg-surface px-6 py-12 text-center">
           <CourseIllustration icon="bulb" size={80} />
           <p className="max-w-md text-muted">
             Ainda não há cursos publicados. Rode <code className="rounded bg-canvas px-1.5 py-0.5">curso-on</code> e escolha

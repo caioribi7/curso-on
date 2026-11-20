@@ -57,7 +57,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
         </p>
       ) : null}
       {isOwner ? (
-        <p className="rounded-2xl bg-sun-soft px-5 py-3 text-sm font-semibold text-[#8A5D00]">
+        <p className="rounded-2xl bg-sun-soft px-5 py-3 text-sm font-semibold text-sun-ink">
           Você está vendo o curso como aluno.{" "}
           <Link href={`/studio/cursos/${course.id}`} className="underline">
             Voltar ao Estúdio
@@ -69,7 +69,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
       <section className="relative overflow-hidden rounded-[32px] bg-course p-8 text-white shadow-[0_8px_0_var(--course-primary-dark)] sm:p-10">
         <div className="absolute -right-16 -top-24 size-80 rounded-full bg-white/10" />
         <div className="relative flex flex-wrap items-center gap-8">
-          <div className="flex size-36 shrink-0 items-center justify-center rounded-[32px] bg-white">
+          <div className="flex size-36 shrink-0 items-center justify-center rounded-[32px] bg-surface">
             <CourseBadge course={course} size={108} />
           </div>
           <div className="flex min-w-0 flex-1 flex-col gap-3">
@@ -80,7 +80,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             {course.subtitle ? <p className="text-lg text-white/85">{course.subtitle}</p> : null}
             <div className="flex max-w-md items-center gap-3">
               <div className="h-3 flex-1 rounded-full bg-white/25">
-                <div className="h-3 rounded-full bg-sun" style={{ width: `${total ? (completed / total) * 100 : 0}%` }} />
+                <div className="h-3 rounded-full bg-sun text-on-sun" style={{ width: `${total ? (completed / total) * 100 : 0}%` }} />
               </div>
               <span className="font-display font-black">
                 {completed}/{total}
@@ -92,7 +92,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
               <PlayIcon /> {completed === 0 ? "Começar" : "Continuar"}
             </ButtonLink>
           ) : total > 0 ? (
-            <span className="rounded-2xl bg-white px-5 py-3 font-display font-black text-course">Curso concluído! 🏆</span>
+            <span className="rounded-2xl bg-surface px-5 py-3 font-display font-black text-course">Curso concluído! 🏆</span>
           ) : null}
         </div>
       </section>
@@ -107,7 +107,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             </ButtonLink>
           </div>
           {outline.length === 0 ? (
-            <p className="rounded-[28px] border-2 border-dashed border-line-strong bg-white p-8 text-center text-muted">
+            <p className="rounded-[28px] border-2 border-dashed border-line-strong bg-surface p-8 text-center text-muted">
               Este curso ainda não tem aulas.
             </p>
           ) : null}
@@ -115,7 +115,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             const mDone = m.lessons.filter((l) => done.has(l.id)).length;
             const complete = m.lessons.length > 0 && mDone === m.lessons.length;
             return (
-              <article key={m.id} className="rounded-[28px] border border-line bg-white">
+              <article key={m.id} className="rounded-[28px] border border-line bg-surface">
                 <header className="flex items-center gap-4 p-5">
                   <span className={cn("flex size-16 shrink-0 items-center justify-center rounded-[20px]", moduleIconBg(m.icon))}>
                     <ModuleGlyph icon={m.icon} size={44} />
@@ -178,7 +178,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
 
         {/* Side column */}
         <aside className="flex flex-col gap-5">
-          <section className="flex items-center gap-5 rounded-[28px] border border-line bg-white p-5">
+          <section className="flex items-center gap-5 rounded-[28px] border border-line bg-surface p-5">
             <Ring value={todayXp / DAILY_GOAL} size={104} stroke={12}>
               <span className="font-display text-xl font-black leading-none">{Math.min(todayXp, DAILY_GOAL)}</span>
               <span className="text-xs font-semibold text-muted">/{DAILY_GOAL} XP</span>
@@ -189,7 +189,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             </div>
           </section>
 
-          <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-white p-5">
+          <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-surface p-5">
             <div className="flex items-center gap-2">
               <FlameIcon size={24} />
               <p className="font-display text-lg font-black">{streak} dias de sequência</p>
@@ -209,7 +209,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             </ol>
           </section>
 
-          <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-white p-5">
+          <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-surface p-5">
             <div className="flex items-center gap-2">
               <TrophyIcon size={26} />
               <p className="font-display text-lg font-black">Ranking da turma</p>
@@ -224,7 +224,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
                     className={cn("flex items-center gap-3 rounded-2xl px-3 py-2.5", r.user_id === user.id ? "bg-course-soft" : "bg-canvas")}
                   >
                     <span className="w-5 font-display font-black text-muted">{i + 1}</span>
-                    <span className="flex size-9 items-center justify-center rounded-full bg-sun font-display text-sm font-black">
+                    <span className="flex size-9 items-center justify-center rounded-full bg-sun font-display text-sm font-black text-on-sun">
                       {initials(r.full_name || "?")}
                     </span>
                     <span className="min-w-0 flex-1 truncate font-semibold">{r.user_id === user.id ? "Você" : r.full_name || "Aluno"}</span>
@@ -235,7 +235,7 @@ export default async function CourseHomePage({ params, searchParams }: PageProps
             )}
           </section>
 
-          <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-white p-5">
+          <section className="flex flex-col gap-3 rounded-[28px] border border-line bg-surface p-5">
             <p className="font-display text-lg font-black">Seu progresso</p>
             <ProgressBar value={total ? (completed / total) * 100 : 0} />
             <p className="text-sm text-muted">

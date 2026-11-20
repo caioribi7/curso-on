@@ -18,7 +18,21 @@ Sem Docker, você usa o Supabase na nuvem, que é grátis. Os dois caminhos est�
 
 ## 2. Pegue o painel `curso-on`
 
-Baixe o arquivo do seu sistema na página Releases do GitHub do projeto (github.com/caioribi7/curso-on/releases) e coloque numa pasta que esteja no PATH. Ou, se tiver Rust instalado:
+Copie e cole no terminal um destes comandos (ele baixa, confere e instala):
+
+Linux e macOS:
+
+```
+curl -fsSL https://raw.githubusercontent.com/caioribi7/curso-on/main/install.sh | sh
+```
+
+Windows (no PowerShell):
+
+```
+irm https://raw.githubusercontent.com/caioribi7/curso-on/main/install.ps1 | iex
+```
+
+Ou, se tiver Rust instalado:
 
 ```
 cargo install --git https://github.com/caioribi7/curso-on curso-on

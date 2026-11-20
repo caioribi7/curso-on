@@ -10,10 +10,10 @@ const base =
 const variants: Record<ButtonVariant, string> = {
   primary:
     "bg-course text-white shadow-[0_4px_0_var(--course-primary-dark)] hover:brightness-105 active:shadow-[0_2px_0_var(--course-primary-dark)]",
-  sun: "bg-sun text-ink shadow-[0_4px_0_#F2A818] hover:brightness-105 active:shadow-[0_2px_0_#F2A818]",
-  secondary: "border-[1.5px] border-line-strong bg-white text-ink hover:bg-canvas",
+  sun: "bg-sun text-on-sun shadow-[0_4px_0_#F2A818] hover:brightness-105 active:shadow-[0_2px_0_#F2A818]",
+  secondary: "border-[1.5px] border-line-strong bg-surface text-ink hover:bg-canvas",
   ghost: "text-muted hover:bg-canvas hover:text-ink",
-  danger: "border-[1.5px] border-coral/40 bg-white text-coral hover:bg-coral-soft",
+  danger: "border-[1.5px] border-coral/40 bg-surface text-coral hover:bg-coral-soft",
 };
 
 const sizes = {

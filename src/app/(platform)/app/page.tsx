@@ -58,14 +58,14 @@ export default async function DashboardPage() {
           </div>
           <p className="font-display text-[44px] font-black leading-none">{xp.toLocaleString("pt-BR")} XP</p>
           <div className="h-3 rounded-full bg-white/25">
-            <div className="h-3 rounded-full bg-sun" style={{ width: `${(lvl.current / lvl.next) * 100}%` }} />
+            <div className="h-3 rounded-full bg-sun text-on-sun" style={{ width: `${(lvl.current / lvl.next) * 100}%` }} />
           </div>
           <p className="text-sm text-[#DCE3FF]">
             {lvl.next - lvl.current} XP para o nível {lvl.level + 1}
           </p>
         </section>
 
-        <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-white p-6">
+        <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-surface p-6">
           <div className="flex items-center gap-3">
             <span className="flex size-12 items-center justify-center rounded-2xl bg-coral-soft">
               <FlameIcon size={28} />
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
           </ol>
         </section>
 
-        <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-white p-6">
+        <section className="flex flex-col gap-4 rounded-[28px] border border-line bg-surface p-6">
           <div className="flex items-center gap-3">
             <span className="flex size-12 items-center justify-center rounded-2xl bg-sun-soft">
               <TrophyIcon size={30} />
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
         {courses.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 rounded-[32px] border-2 border-dashed border-line-strong bg-white px-6 py-14 text-center">
+          <div className="flex flex-col items-center gap-4 rounded-[32px] border-2 border-dashed border-line-strong bg-surface px-6 py-14 text-center">
             <CourseIllustration icon="rocket" size={96} />
             <h3 className="text-xl font-black">Nenhum curso por aqui ainda</h3>
             <p className="max-w-md text-muted">Escolha um curso no catálogo — ou crie o seu no Estúdio.</p>
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
                       <li key={course.id} style={courseThemeVars(course.theme_color)}>
                         <Link
                           href={`/app/cursos/${course.slug}`}
-                          className="flex h-full items-center gap-5 rounded-[28px] border border-line bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-lg"
+                          className="flex h-full items-center gap-5 rounded-[28px] border border-line bg-surface p-5 transition hover:-translate-y-0.5 hover:shadow-lg"
                         >
                           <span className="flex size-20 shrink-0 items-center justify-center rounded-[20px] bg-course-soft">
                             <CourseBadge course={course} size={60} />

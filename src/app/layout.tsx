@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito, Nunito_Sans } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -22,13 +23,16 @@ export const metadata: Metadata = {
     "Plataforma gratuita e open source para criar cursos preparatórios para o ENEM, com aulas, questões e gamificação.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Saved choice from the theme toggle; without it, CSS follows the system theme.
+  const saved = (await cookies()).get("theme")?.value;
+  const theme = saved === "dark" || saved === "light" ? saved : undefined;
   return (
-    <html lang="pt-BR" className={`${nunito.variable} ${nunitoSans.variable}`}>
+    <html lang="pt-BR" data-theme={theme} className={`${nunito.variable} ${nunitoSans.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh antialiased">{children}</body>
     </html>
   );

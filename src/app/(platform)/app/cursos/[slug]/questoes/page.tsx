@@ -22,7 +22,7 @@ export default async function QuestionsPage({ params }: PageProps<"/app/cursos/[
         <p className="text-muted">Cada acerto na primeira vez vale XP. Errou? Tente de novo depois, sem penalidade.</p>
       </header>
       {questions.length === 0 ? (
-        <p className="rounded-[28px] border-2 border-dashed border-line-strong bg-white p-10 text-center text-muted">
+        <p className="rounded-[28px] border-2 border-dashed border-line-strong bg-surface p-10 text-center text-muted">
           O professor ainda não adicionou questões.
         </p>
       ) : (

@@ -4,11 +4,13 @@ import { BoltIcon, FlameIcon, NavIcon } from "@/components/icons/flat-icons";
 import { effectiveStreak, getProfile } from "@/lib/dal";
 import { initials } from "@/lib/utils";
 import { signOut } from "@/app/(auth)/actions";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { NavLink } from "./nav-link";
 
 const LINKS = [
   { href: "/app", label: "Início", icon: "home" as const, exact: true },
   { href: "/cursos", label: "Explorar", icon: "lessons" as const },
+  { href: "/app/ranking", label: "Ranking", icon: "ranking" as const },
   { href: "/studio", label: "Estúdio", icon: "studio" as const },
 ];
 
@@ -17,7 +19,7 @@ export async function Navbar() {
   const streak = profile ? effectiveStreak(profile) : 0;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
       <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-6 px-4 sm:px-8 lg:px-12">
         <Logo size="sm" href="/app" />
 
@@ -32,6 +34,7 @@ export async function Navbar() {
 
         {!profile ? (
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link href="/login" className="rounded-xl px-4 py-2.5 font-display font-bold text-muted hover:text-ink">
               Entrar
             </Link>
@@ -41,17 +44,18 @@ export async function Navbar() {
           </div>
         ) : (
         <div className="flex items-center gap-2.5">
+          <ThemeToggle />
           <span className="flex items-center gap-1.5 rounded-full bg-coral-soft px-3.5 py-2 font-display text-[15px] font-black text-coral" title="Dias seguidos estudando">
             <FlameIcon /> {streak}
           </span>
-          <span className="hidden items-center gap-1.5 rounded-full bg-sun-soft px-3.5 py-2 font-display text-[15px] font-black text-[#B87C00] sm:flex" title="XP total">
+          <span className="hidden items-center gap-1.5 rounded-full bg-sun-soft px-3.5 py-2 font-display text-[15px] font-black text-sun-ink sm:flex" title="XP total">
             <BoltIcon /> {(profile?.xp ?? 0).toLocaleString("pt-BR")} XP
           </span>
           <details className="relative">
-            <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-full border-[3px] border-brand bg-sun font-display text-[16px] font-black text-ink">
+            <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-full border-[3px] border-brand bg-sun font-display text-[16px] font-black text-on-sun">
               {initials(profile?.full_name || "Você")}
             </summary>
-            <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-line bg-white p-2 shadow-xl">
+            <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-line bg-surface p-2 shadow-xl">
               <p className="truncate px-3 py-2 font-display text-sm font-extrabold">{profile?.full_name || "Sua conta"}</p>
               <Link href="/app/perfil" className="block rounded-xl px-3 py-2 text-sm hover:bg-canvas">
                 Meu perfil

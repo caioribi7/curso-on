@@ -201,3 +201,56 @@ export async function getAnswerKey(courseId: string) {
   const { data } = await supabase.from("question_answers").select("question_id, correct_option_id").eq("course_id", courseId);
   return new Map(((data as { question_id: string; correct_option_id: string }[] | null) ?? []).map((r) => [r.question_id, r.correct_option_id]));
 }
+
+// ---------------------------------------------------------------------------
+// Conquistas, perfil público e ranking geral
+// ---------------------------------------------------------------------------
+
+export type AchievementView = {
+  slug: string;
+  name: string;
+  description: string;
+  icon: string;
+  position: number;
+  unlockedAt: string | null;
+};
+
+/** The 12 achievements in order, with the date `userId` unlocked each one (null if locked). */
+export async function getAchievements(userId: string): Promise<AchievementView[]> {
+  const supabase = await createClient();
+  const [{ data: all }, { data: mine }] = await Promise.all([
+    supabase.from("achievements").select("slug, name, description, icon, position").order("position"),
+    supabase.from("user_achievements").select("achievement_slug, unlocked_at").eq("user_id", userId),
+  ]);
+  const unlocked = new Map(
+    ((mine as { achievement_slug: string; unlocked_at: string }[] | null) ?? []).map((r) => [r.achievement_slug, r.unlocked_at]),
+  );
+  return ((all as Omit<AchievementView, "unlockedAt">[] | null) ?? []).map((a) => ({ ...a, unlockedAt: unlocked.get(a.slug) ?? null }));
+}
+
+export type PublicProfile = {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  xp: number;
+  streak_days: number;
+  last_study_date: string | null;
+  created_at: string;
+};
+
+/** Public fields only (works for visitors too). */
+export const getPublicProfile = cache(async (userId: string): Promise<PublicProfile | null> => {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("public_profile", { p_user: userId });
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row as PublicProfile | undefined) ?? null;
+});
+
+export type RankingRow = { pos: number; user_id: string; full_name: string; xp: number; is_me: boolean };
+
+export async function getGlobalRanking(period: "all" | "week"): Promise<RankingRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("global_ranking", { p_period: period, p_limit: 50 });
+  if (error) console.error("[getGlobalRanking]", error.message);
+  return ((data as RankingRow[] | null) ?? []).map((r) => ({ ...r, pos: Number(r.pos), xp: Number(r.xp) }));
+}

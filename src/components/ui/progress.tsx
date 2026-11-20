@@ -44,5 +44,5 @@ export function Ring({ value, size = 112, stroke = 14, children }: { value: numb
 }
 
 export function Card({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn("rounded-[28px] border border-line bg-white", className)}>{children}</div>;
+  return <div className={cn("rounded-[28px] border border-line bg-surface", className)}>{children}</div>;
 }

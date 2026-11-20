@@ -1,29 +1,34 @@
 import type { Metadata } from "next";
-import { getProfile, levelFromXp, requireUser } from "@/lib/dal";
-import { initials } from "@/lib/utils";
+import Link from "next/link";
+import { StudentCard } from "@/components/achievements/student-card";
+import { getProfile, requireUser } from "@/lib/dal";
+import { getAchievements } from "@/lib/queries";
 import { ProfileForm } from "./profile-form";
 
 export const metadata: Metadata = { title: "Meu perfil" };
 
 export default async function ProfilePage() {
   const user = await requireUser("/app/perfil");
-  const profile = await getProfile();
-  const lvl = levelFromXp(profile?.xp ?? 0);
+  const [profile, achievements] = await Promise.all([getProfile(), getAchievements(user.id)]);
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-8">
-      <header className="flex items-center gap-5">
-        <span className="flex size-20 items-center justify-center rounded-full border-4 border-brand bg-sun font-display text-2xl font-black">
-          {initials(profile?.full_name || "Você")}
-        </span>
-        <div>
-          <h1 className="text-[32px] font-black leading-tight">{profile?.full_name || "Seu perfil"}</h1>
-          <p className="text-muted">
-            Nível {lvl.level} · {(profile?.xp ?? 0).toLocaleString("pt-BR")} XP
-          </p>
-        </div>
+    <div className="mx-auto flex max-w-4xl flex-col gap-8">
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <h1 className="text-[32px] font-black leading-tight">Meu perfil</h1>
+        <Link href={`/u/${user.id}`} className="font-display font-extrabold text-brand hover:underline">
+          Ver meu card público →
+        </Link>
       </header>
-      <section className="flex flex-col gap-6 rounded-[28px] border border-line bg-white p-6">
+      <StudentCard
+        profile={{
+          full_name: profile?.full_name ?? "",
+          xp: profile?.xp ?? 0,
+          streak_days: profile?.streak_days ?? 0,
+          last_study_date: profile?.last_study_date ?? null,
+        }}
+        achievements={achievements}
+      />
+      <section className="flex flex-col gap-6 rounded-[28px] border border-line bg-surface p-6">
         <ProfileForm fullName={profile?.full_name ?? ""} email={user.email} />
       </section>
     </div>

@@ -36,7 +36,7 @@ export function courseThemeVars(hex: string): CSSProperties {
   return {
     ["--course-primary" as string]: color,
     ["--course-primary-dark" as string]: `color-mix(in oklab, ${color} 78%, black)`,
-    ["--course-primary-soft" as string]: `color-mix(in oklab, ${color} 10%, white)`,
+    ["--course-primary-soft" as string]: `color-mix(in oklab, ${color} 12%, var(--surface))`,
   };
 }
 
