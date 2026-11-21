@@ -11,6 +11,15 @@ pub enum Progress {
     Done { created: usize, skipped: usize, failed: usize },
 }
 
+/// O que aconteceu com cada curso do pacote.
+enum Outcome {
+    Created,
+    /// Você já tinha esse curso.
+    Mine,
+    /// Outro professor desta plataforma já usa esse endereço.
+    Taken,
+}
+
 /// Roda numa thread separada e manda o andamento pelo canal.
 pub fn run(api: Api, tx: Sender<Progress>) {
     let pack = content::pack();
@@ -18,14 +27,18 @@ pub fn run(api: Api, tx: Sender<Progress>) {
     for course in &pack.courses {
         let name = content::title(&course.subject, course.level);
         match import_course(&api, course) {
-            Ok(true) => {
+            Ok(Outcome::Created) => {
                 created += 1;
                 let lessons: usize = course.modules.iter().map(|m| m.lessons.len()).sum();
                 let _ = tx.send(Progress::Line(format!("✓ {name}: {} módulos, {lessons} aulas, {} questões", course.modules.len(), course.questions.len())));
             }
-            Ok(false) => {
+            Ok(Outcome::Mine) => {
                 skipped += 1;
-                let _ = tx.send(Progress::Line(format!("· {name}: já existe, pulei")));
+                let _ = tx.send(Progress::Line(format!("· {name}: você já tem, pulei")));
+            }
+            Ok(Outcome::Taken) => {
+                skipped += 1;
+                let _ = tx.send(Progress::Line(format!("· {name}: outro professor desta plataforma já tem, pulei")));
             }
             Err(e) => {
                 failed += 1;
@@ -40,14 +53,15 @@ fn id(v: &Value) -> Result<String> {
     v["id"].as_str().map(str::to_owned).ok_or_else(|| anyhow!("resposta sem id"))
 }
 
-/// `Ok(false)` quando o curso já existe (o endereço é o mesmo).
-fn import_course(api: &Api, c: &PackCourse) -> Result<bool> {
+/// O endereço (slug) de cada curso do pacote é único na plataforma inteira.
+fn import_course(api: &Api, c: &PackCourse) -> Result<Outcome> {
     let owner = api.user_id()?.to_owned();
     let slug = content::slug(&c.subject, c.level);
-    if !api.select(&format!("courses?select=id&slug=eq.{slug}"))?.is_empty() {
-        return Ok(false);
+    if let Some(row) = api.select(&format!("courses?select=owner_id&slug=eq.{slug}"))?.first() {
+        return Ok(if row["owner_id"].as_str() == Some(owner.as_str()) { Outcome::Mine } else { Outcome::Taken });
     }
-    let course = api.insert_one(
+    // Rascunho de outro professor não aparece para você (RLS), mas ocupa o endereço.
+    let inserted = api.insert_one(
         "courses",
         json!({
             "owner_id": owner,
@@ -61,7 +75,12 @@ fn import_course(api: &Api, c: &PackCourse) -> Result<bool> {
             "level": c.level,
             "status": "draft",
         }),
-    )?;
+    );
+    let course = match inserted {
+        Ok(course) => course,
+        Err(e) if e.to_string().starts_with("Já existe um registro igual") => return Ok(Outcome::Taken),
+        Err(e) => return Err(e),
+    };
     let course_id = id(&course)?;
 
     let result = (|| -> Result<()> {
@@ -101,7 +120,7 @@ fn import_course(api: &Api, c: &PackCourse) -> Result<bool> {
         let _ = api.delete("courses", &format!("id=eq.{course_id}"));
         return Err(e);
     }
-    Ok(true)
+    Ok(Outcome::Created)
 }
 
 /// Questão + alternativas + gabarito (o gabarito fica numa tabela que aluno não lê).

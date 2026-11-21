@@ -1256,7 +1256,7 @@ impl App {
                     Progress::Line(l) => self.import_log.push(l),
                     Progress::Done { created, skipped, failed } => {
                         self.import_done = true;
-                        let msg = format!("Importação concluída: {created} criados, {skipped} já existiam, {failed} com erro.");
+                        let msg = format!("Importação concluída: {created} criados, {skipped} pulados (já existiam), {failed} com erro.");
                         self.status = Some((msg, failed > 0));
                     }
                 }
