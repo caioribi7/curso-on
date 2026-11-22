@@ -17,6 +17,8 @@ export function MathText({ text, className }: { text: string; className?: string
         s.kind === "text" ? (
           <span key={i}>{s.value}</span>
         ) : (
+          // Seguro: só entra HTML gerado pelo KaTeX com trust:false (sem links, eventos ou imagens).
+          // tests/math.test.mjs ataca isso com XSS a cada CI.
           <span
             key={i}
             className={s.kind === "block" ? "math-block" : "math-inline"}
